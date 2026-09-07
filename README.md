@@ -1,3 +1,93 @@
+# gpt-play-pokemon-firered-daemons
+
+> **A fork of [Clad3815/gpt-play-pokemon-firered][up], pointed at a different
+> game and a local model.** All the hard parts — the mGBA Lua bridge, the RAM
+> reader, the agent loop, the dashboard — are Clad3815's. Their README is kept
+> in full below.
+
+[up]: https://github.com/Clad3815/gpt-play-pokemon-firered
+
+This fork drives **CONTEXT / CONTENT**, a total conversion of FireRed where the
+creatures are daemons and the type chart is an argument about consciousness.
+
+| | |
+|---|---|
+| the design | [CodeMusic/DAEMONS](https://github.com/CodeMusic/DAEMONS) |
+| the ROM | [CodeMusic/pokefirered-daemons](https://github.com/CodeMusic/pokefirered-daemons) |
+| this | the harness that lets a model play it |
+
+## What is different here
+
+**One code change, and it is inert without an environment variable.** The
+client was `new OpenAI({ apiKey })` with no `baseURL`, so it could only ever
+reach OpenAI. It now takes `OPENAI_BASE_URL`, falling back to `api.openai.com`
+exactly as before when unset.
+
+**Everything else is configuration**, and it lives in the DAEMONS repo:
+`./bindDaemons.sh --ai` builds the ROM, regenerates the symbol table from that
+build, finds the model proxy, reads its key, and starts the bridge and agent.
+
+## If you are trying this against a local model, read this first
+
+**It is not one environment variable.** The call sites use
+`openai.responses.create()` — the **Responses API** — with `input:` rather than
+`messages:`, plus `reasoning: {effort, summary}`, `service_tier`, `store: true`
+and `stream: true` consumed as typed events. LM Studio, llama.cpp and Ollama
+serve `/v1/chat/completions` and **not** `/v1/responses`, so a base URL alone
+404s on the first call.
+
+What works is **LiteLLM proxy** in front, with two settings that are easy to
+miss:
+
+```yaml
+litellm_params:
+  use_chat_completions_api: true   # opt-in per model. Without it LiteLLM
+                                   # forwards /v1/responses straight through
+                                   # into the 404 the proxy exists to avoid.
+litellm_settings:
+  drop_params: true                # service_tier, store, reasoning.summary
+```
+
+Verified including streaming: the full `response.created` → `in_progress` →
+`output_item.added` → `content_part.added` → `output_text` → `completed`
+sequence arrives intact through the bridge.
+
+## Symbols, and why ours are generated
+
+The harness resolves game state **by symbol name** from a `pokefirered.sym`,
+and its loader honours `FIRERED_SYM_PATH`. The one it ships describes retail
+FireRed. Measured against a build of our ROM:
+
+| region | symbols | agree |
+|---|---|---|
+| EWRAM + IWRAM — live state | 892 | **99.3%** |
+| ROM — static data | 48,804 | **3.8%** |
+
+So the shipped file against a modified ROM reads party, position and battle
+state **correctly**, and move names, item names and the type chart as garbage.
+That is the worst failure available: it looks like it is working.
+`tools/gbasym.py` in the DAEMONS repo emits ours from the ELF on every run.
+
+## Loading the Lua bridge
+
+mGBA **0.10.5 has no `--script`** — that arrived in 0.11 — so this step is
+manual and there is no way around it on that version:
+
+1. `./bindDaemons.sh --ai` (starts the emulator, the bridge and the agent)
+2. In mGBA: **Tools → Scripting**
+3. In the scripting window: **File → Load script**
+4. Choose `engineAi/mgba/scripts/FireRedBridgeSocketServer.lua`
+
+The scripting window prints the socket server starting. Leave it open — closing
+it stops the bridge. If the agent logs connection refused, this is the step
+that was missed.
+
+---
+
+*Everything below is Clad3815's original README, unchanged.*
+
+---
+
 # GPT Plays Pokemon FireRed
 
 > An autonomous AI agent that plays Pokemon FireRed in real time, powered by OpenAI's LLM — with a live web dashboard for monitoring.
