@@ -487,8 +487,39 @@ You can safely update them all at once.
   return userInputText;
 }
 
+//  DAEMONS: do not advertise tools the schema does not carry.
+//
+//  The lean schema has five tools and no add_marker. The prompt describes
+//  add_marker four times anyway, including a "VERY IMPORTANT: MARKER PLACEMENT
+//  RULE" in the map legend, so the model dutifully tried:
+//
+//    add_marker @ (undefined, undefined) map ?
+//    Error: Invalid marker coordinates.
+//
+//  That is the harness telling the model to do something, the model obeying,
+//  and the harness rejecting it. Switching to --full-schema would fix the
+//  contradiction by adding three more tools plus a rule that pulls a small
+//  model toward annotating maps instead of leaving the room -- the wrong
+//  direction. Removing the advertisement is cheaper and truer.
+function stripMarkerGuidance(text) {
+    return text
+        //  the tool's own bullet, up to the next top-level bullet
+        .replace(/\* \*\*`add_marker`[\s\S]*?(?=\n\* \*\*`)/g, "")
+        //  the emphatic placement rule
+        .replace(/^.*MARKER PLACEMENT RULE.*$/gm, "")
+        //  and any lingering mention in a tool list
+        .replace(/, `add_marker`/g, "")
+        .replace(/`add_marker` \/ `delete_marker`/g, "")
+        .replace(/\n{3,}/g, "\n\n");
+}
+
 async function buildDeveloperPrompt() {
-  const gamePrompt = await fs.readFile(path.join(config.promptsDir, "game.txt"), "utf8");
+  let gamePrompt = await fs.readFile(path.join(config.promptsDir, "game.txt"), "utf8");
+  //  Only the full schema carries add_marker. Keyed off the same env var
+  //  defineTools() reads, so the prompt and the tool list cannot disagree.
+  if ((process.env.DAEMONS_SCHEMA || "lean") !== "full") {
+    gamePrompt = stripMarkerGuidance(gamePrompt);
+  }
   return {
     role: "developer",
     content: [{ type: "input_text", text: gamePrompt }],
