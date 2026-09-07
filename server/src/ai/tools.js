@@ -791,10 +791,44 @@ function toolOutput(text) {
                             overallSuccess = false;
                             console.warn(`WARN: Skipping key_press action ${i + 1} as one was already executed this turn.`);
                         } else if (individualAction.keys && Array.isArray(individualAction.keys) && individualAction.keys.length > 0) {
+                            //  DAEMONS: report the MOVE, not just the send.
+                            //
+                            //  The model pressed right ten times at x=11 on a
+                            //  map 12 wide -- into the east wall, which cannot
+                            //  be walked through -- and did it again the next
+                            //  turn. The feedback it got was
+                            //  "interruptedByCollision: true" and a
+                            //  collisionStreak number, inside a 46k-token
+                            //  prompt. That is true and unreadable.
+                            //
+                            //  So say it plainly: where you were, where you
+                            //  are, and if those are the same, that you did
+                            //  not move and how big the map is.
+                            const beforePos = gameDataJson?.current_trainer_data?.position || null;
                             const response = await sendCommandsToPythonServer(individualAction.keys);
                             actionResult.success = response.status;
+                            let moveNote = "";
+                            if (response.status && beforePos) {
+                                try {
+                                    const after = await fetchGameData();
+                                    const a = after?.current_trainer_data?.position;
+                                    if (a && Number.isFinite(a.x) && Number.isFinite(a.y)) {
+                                        if (a.x === beforePos.x && a.y === beforePos.y) {
+                                            const grid = after?.minimap_data?.grid;
+                                            const size = Array.isArray(grid) && Array.isArray(grid[0])
+                                                ? ` This map is ${grid[0].length}x${grid.length}, so x is 0..${grid[0].length - 1} and y is 0..${grid.length - 1}.`
+                                                : "";
+                                            moveNote = ` YOU DID NOT MOVE. Still at (${a.x}, ${a.y}) on ${a.map_name}`
+                                                + ` -- something is blocking you in that direction.${size}`
+                                                + " Do not repeat the same keys; try another direction, or use the stairs/door to leave.";
+                                        } else {
+                                            moveNote = ` Moved (${beforePos.x}, ${beforePos.y}) -> (${a.x}, ${a.y}).`;
+                                        }
+                                    }
+                                } catch (e) { /* feedback is a bonus, never a failure */ }
+                            }
                             actionResult.message = response.status
-                                ? `Keys sent: ${individualAction.keys.join(', ')}`
+                                ? `Keys sent: ${individualAction.keys.join(', ')}.${moveNote}`
                                 : "Failed to send keys.";
                             actionResult.details_for_ai = summarizeTracePayloadMarkdown(response);
                             actionResult.details = "";
