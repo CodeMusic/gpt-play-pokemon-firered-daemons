@@ -1055,6 +1055,36 @@ function toolOutput(text) {
                         let path = null;
                         let findPathError = null;
                         const maxRetries = 5;
+                        //  DAEMONS: refuse arguments that were never parsed properly.
+                        //
+                        //  mlx-vlm's parameter regex insists on a closing
+                        //  </parameter>, so when the model emits a bare "</"
+                        //  and moves on, the value runs to the FOLLOWING close
+                        //  and swallows the next tag whole. It arrived here as
+                        //    x = undefined, y = undefined,
+                        //    map_id = "4-1 </ <parameter=explanation> Exploring left..."
+                        //  and was dispatched, because nothing between that
+                        //  parser and this switch checks anything. The error it
+                        //  produced then quoted the XML back inside a sentence
+                        //  about maps, which reads as a game bug and is not one.
+                        //
+                        //  Our own salvage path validates against the schema,
+                        //  but a call mlx-vlm parses successfully never reaches
+                        //  it -- so the gate belongs here, where every source
+                        //  passes through.
+                        if (!Number.isFinite(Number(path_x)) || !Number.isFinite(Number(path_y))
+                            || typeof path_map_id !== "string" || path_map_id.includes("<")) {
+                            actionResult.success = false;
+                            actionResult.message =
+                                "Error: 'path_to_location' needs a numeric x, a numeric y and a plain map_id"
+                                + ` -- got x=${JSON.stringify(path_x)}, y=${JSON.stringify(path_y)},`
+                                + ` map_id=${JSON.stringify(path_map_id)}.`
+                                + " Close every <parameter> tag with </parameter> and try again.";
+                            actionResult.details = "Arguments rejected before pathfinding.";
+                            overallSuccess = false;
+                            console.warn("WARN: rejected path_to_location with unparseable arguments");
+                            break;
+                        }
                         console.log(`INFO: Finding path to (${path_x}, ${path_y}) on map ${path_map_id} with explanation: ${path_explanation}`);
 
 

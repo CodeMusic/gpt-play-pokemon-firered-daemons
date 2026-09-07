@@ -24,7 +24,15 @@
 //  pip upgrade would silently revert a vendored fix and we would be reading
 //  that 38% as model behaviour again.
 const TAG = /<function=([^>\s]+)>([\s\S]*?)<\/function>/g;
-const PARAM = /<parameter=([^>\s]+)>([\s\S]*?)<\/parameter>/g;
+//  Bounded on purpose. The model does not always close a <parameter> -- it
+//  has emitted a bare "</" and moved straight on to the next one -- and a
+//  pattern that insists on </parameter> then runs to the FOLLOWING close,
+//  swallowing the next parameter's tag and body into this one's value. That is
+//  how mlx-vlm's own parser handed us
+//  map_id = "4-1 </ <parameter=explanation> Exploring left path...".
+//  So a value ends at whichever comes first: its close, the next parameter,
+//  the end of the function, or the end of the text.
+const PARAM = /<parameter=([^>\s]+)>([\s\S]*?)(?=<\/parameter>|<parameter=|<\/function>|$)/g;
 
 //  Pull out every top-level {...} that balances, ignoring braces inside
 //  strings. Recovers the good objects from a bad array without trusting the
@@ -207,4 +215,4 @@ function salvageToolCalls(text, toolSchemas) {
     return calls;
 }
 
-module.exports = { salvageToolCalls, balancedObjects, splitBareList };
+module.exports = { salvageToolCalls, balancedObjects, splitBareList, fit };
