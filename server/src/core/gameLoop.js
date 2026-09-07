@@ -10,6 +10,7 @@ const { buildVisionPayload } = require('../services/screenshotService');
 const { buildUserInputText, buildDeveloperPrompt } = require('../ai/promptBuilder');
 const { processHistoryForAPI } = require('../ai/historyProcessor');
 const { defineTools, handleToolCall } = require('../ai/tools');
+const { salvageToolCalls } = require('../ai/salvageToolCall.js');
 const { updateProgressSteps, updateLastVisitedMaps } = require('./progressTracker');
 const { openai } = require('./openaiClient');
 const { startLoop, recordLoopUsage, flush, getCumulativeTotals } = require('../utils/tokenUsageTracker');
@@ -1131,6 +1132,40 @@ async function gameLoop() {
                     }
                 }
             }
+            //  DAEMONS: before scolding the model for not calling a tool,
+            //  check whether it DID and the serving layer dropped it.
+            //
+            //  mlx-vlm parses MiniCPM's XML with the qwen3_coder parser, which
+            //  runs each <parameter> body through json.loads and then
+            //  ast.literal_eval. When both fail it logs a warning and discards
+            //  the whole call, and the text arrives here as ordinary prose. On
+            //  a real run that was 25 of 55 requests -- nearly two turns in
+            //  five doing nothing, which is most of why it looked like the
+            //  model would not move.
+            if (!haveToolCall) {
+                const prose = (finalResponse.output || [])
+                    .filter((item) => item.type === "message")
+                    .flatMap((item) => item.content || [])
+                    .map((part) => part.text || "")
+                    .join("\n");
+                const salvaged = salvageToolCalls(prose, tools);
+                for (const call of salvaged) {
+                    haveToolCall = true;
+                    console.log(`INFO: [salvaged] recovered ${call.name} from a tool call the server could not parse`);
+                    setIsThinking(false);
+                    const item = {
+                        type: "function_call",
+                        id: `fc_salvaged_${Date.now()}`,
+                        call_id: `salvaged_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`,
+                        name: call.name,
+                        arguments: call.arguments,
+                    };
+                    state.history.push(item);       // keep the transcript honest
+                    const toolResult = await handleToolCall(item, gameDataJson);
+                    state.history.push(toolResult);
+                }
+            }
+
             if (!haveToolCall) {
                 // Add a message to the history to remind the player to use tools
                 state.history.push({
