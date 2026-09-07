@@ -443,7 +443,7 @@
 
     const lines = [
       ["Name", escapeHtml(t.name || "PLAYER")],
-      ["Cache", `$${formatNumber(t.money || 0)}`],
+      ["Cache", `¥${formatNumber(t.money || 0)}`],
       ["Map", `${escapeHtml(pos.map_name || "-")} <span class="muted">(${escapeHtml(pos.map_id || "-")})</span>`],
       ["Position", `<span class="mono">X=${formatNumber(pos.x)} Y=${formatNumber(pos.y)}</span>`],
       ["Marks", formatNumber(t.badge_count || badgeNames.length)],
