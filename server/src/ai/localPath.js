@@ -61,6 +61,12 @@ function isWalkable(id) {
  * grid over the remembered minimap -- the same precedence minimapToMarkdown
  * uses, so the path is planned against exactly what the model is shown.
  */
+function mapBounds(gameDataJson) {
+    const g = gameDataJson?.minimap_data?.grid;
+    if (!Array.isArray(g) || !g.length || !Array.isArray(g[0])) return null;
+    return { w: g[0].length, h: g.length };
+}
+
 function makeTileReader(gameDataJson) {
     const minimapGrid = gameDataJson?.minimap_data?.grid;
     const areaGrid = gameDataJson?.game_area_meta_tiles;
@@ -166,13 +172,40 @@ function planPath(gameDataJson, targetX, targetY) {
     }
 
     if (!found) {
-        const what = targetId == null
-            ? "that tile is unexplored (fog of war)"
-            : `that tile reads as ${(MARKDOWN_TILES[targetId] || ["?", "an unknown tile"])[1]}`;
+        //  Say WHICH of the three it is. "Unexplored" was the first guess for
+        //  all of them, and it sent me looking for fog when the real answer
+        //  was that the tile does not exist.
+        const bounds = mapBounds(gameDataJson);
+        let what;
+        if (bounds && (targetX < 0 || targetY < 0 || targetX >= bounds.w || targetY >= bounds.h)) {
+            what = `(${targetX}, ${targetY}) is OUTSIDE this map, which is `
+                 + `${bounds.w}x${bounds.h} -- x must be 0..${bounds.w - 1} and `
+                 + `y must be 0..${bounds.h - 1}`;
+        } else if (targetId == null) {
+            what = `(${targetX}, ${targetY}) is unexplored (fog of war)`;
+        } else {
+            what = `(${targetX}, ${targetY}) reads as `
+                 + `${(MARKDOWN_TILES[targetId] || ["?", "an unknown tile"])[1]}, `
+                 + "and no open route reaches it";
+        }
+
+        //  The search already visited everything reachable, so the nearest
+        //  reachable tile is free to report -- and it turns a dead end into a
+        //  move the model can actually make next.
+        let best = null, bestD = Infinity;
+        for (const k of cameFrom.keys()) {
+            const [bx, by] = k.split(",").map(Number);
+            const d = Math.abs(bx - targetX) + Math.abs(by - targetY);
+            if (d < bestD) { bestD = d; best = [bx, by]; }
+        }
+        const hint = best && bestD > 0
+            ? ` Nearest reachable tile is (${best[0]}, ${best[1]}).`
+            : "";
+
         throw new Error(
-            `No walkable route from (${startX}, ${startY}) to (${targetX}, ${targetY}): ${what}, `
-            + "or every route to it is blocked. Ledges, water, ice and spinner tiles are not "
-            + "used for routing -- walk those manually with key_press."
+            `No walkable route from (${startX}, ${startY}): ${what}.${hint}`
+            + " Ledges, water, ice and spinner tiles are not used for routing --"
+            + " walk those manually with key_press."
         );
     }
 

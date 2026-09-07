@@ -1034,7 +1034,9 @@ function toolOutput(text) {
                             break;
                         }
 
+                        let pathAttempts = 0;
                         for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                            pathAttempts = attempt;
                             try {
                                 console.log(`INFO: Attempt ${attempt}/${maxRetries} to find path to (${path_x}, ${path_y}) on map ${path_map_id}`);
                                 path = await findPath(path_x, path_y, path_map_id, path_explanation);
@@ -1088,7 +1090,7 @@ function toolOutput(text) {
                         } else {
                             actionResult.success = false;
                             actionResult.message = findPathError
-                                ? `Failed to find path to (${path_x}, ${path_y}) after ${maxRetries} attempts. Last error: ${findPathError.message}`
+                                ? `Failed to find path to (${path_x}, ${path_y}) after ${pathAttempts} attempt${pathAttempts === 1 ? "" : "s"}. Last error: ${findPathError.message}`
                                 : `No path found or path was empty to (${path_x}, ${path_y}) \nExplanation: ${path.explanation}`;
                             actionResult.details = findPathError ? findPathError.stack : "Pathfinding logic returned empty path.";
                         }
