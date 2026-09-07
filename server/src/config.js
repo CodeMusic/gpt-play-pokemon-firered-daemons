@@ -122,7 +122,17 @@ const config = {
     keepLastNUserMessagesWithMinimap: 1,
     keepLastNUserMessagesWithMemory: 1,
     keepLastNUserMessagesWithViewMap: 5,
-    keepLastNUserMessagesWithImages: 10,
+    // DAEMONS: 10 turns of screenshots is 13 images and 486 KB of base64 in a
+    // single request, and on a local VLM that is the whole cost -- one measured
+    // decision took 279 SECONDS end to end. A frontier API absorbs that; a
+    // model on one machine does not.
+    //
+    // The agent needs to see the screen it is acting on. Older screens are
+    // already described in the text state and the explored map, so keeping ten
+    // of them buys very little and pays for it every single step.
+    // DAEMONS_KEEP_IMAGES raises it again for anyone who wants the old
+    // behaviour.
+    keepLastNUserMessagesWithImages: Number(process.env.DAEMONS_KEEP_IMAGES || 2),
     keepLastNUserMessagesWithDetailedData: 4,
     keepLastNUserMessagesWithPokedex: 1,
     limitAssistantMessagesForSelfCriticism: 55,
