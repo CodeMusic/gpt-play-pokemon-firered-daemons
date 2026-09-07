@@ -227,7 +227,14 @@ async function gameLoop() {
             // const assistantHistoryLength = history.filter(item => item.type === "function_call").length;
             // console.log("Assistant history length:", assistantHistoryLength);
             const lastSummaryText = state.summaries.length > 0 ? state.summaries[state.summaries.length - 1].text : ""; // Get text from the last summary object
-            const lastCriticism = fsSync.existsSync(config.paths.lastCriticismSaveFile) ? fsSync.readFileSync(config.paths.lastCriticismSaveFile, "utf8") : "";
+            //  Turning the critique OFF also stops replaying the last one. The
+            //  file outlives the setting, and the stale critique on disk is
+            //  the one asserting "No loops detected" mid-loop -- injecting
+            //  that into every prompt is the harm, not generating it.
+            const lastCriticism = (process.env.DAEMONS_SELF_CRITIQUE || "0") === "1"
+                && fsSync.existsSync(config.paths.lastCriticismSaveFile)
+                ? fsSync.readFileSync(config.paths.lastCriticismSaveFile, "utf8")
+                : "";
             broadcast({
                 type: 'full_state', // Or create specific update types
                 payload: {
@@ -824,7 +831,31 @@ async function gameLoop() {
 
 
             // Only criticize if enough steps have passed AND we are not summarizing this turn
-            const shouldCriticize = stepsSinceLastCriticism >= config.history.limitAssistantMessagesForSelfCriticism;
+            //  DAEMONS: self-critique is off by default for local models,
+            //  because the critique it produced was confidently false.
+            //
+            //  Verbatim, from a run that had spent the previous hour pressing
+            //  `left` into the same wall from the same tile:
+            //
+            //    "## Loop Analysis
+            //     No loops detected; the player is systematically exploring
+            //     and placing markers, moving toward objective completion
+            //     without repeating ineffective paths."
+            //
+            //  It also assessed battle conduct ("supports the objective of
+            //  defeating trainers") in a run that has never had a battle, and
+            //  then recommended writing that up as a tips_ memory entry.
+            //
+            //  It is not merely a wasted call. Its output is saved and
+            //  injected as <last_criticism> into every prompt until the next
+            //  one, so a wrong reading contaminates the following 55 steps --
+            //  and "no loops detected" is the exact opposite of the thing the
+            //  run most needed to notice.
+            //
+            //  DAEMONS_SELF_CRITIQUE=1 restores it for a model that can do it.
+            const critiqueEnabled = (process.env.DAEMONS_SELF_CRITIQUE || "0") === "1";
+            const shouldCriticize = critiqueEnabled
+                && stepsSinceLastCriticism >= config.history.limitAssistantMessagesForSelfCriticism;
             if (shouldCriticize) { // Use the pre-calculated flag and remove assistantHistoryLength check
                 const selfCriticismPrompt = await fs.readFile(path.join(config.promptsDir, "self_criticism.txt"), "utf8");
                 const newUserMessage = {
