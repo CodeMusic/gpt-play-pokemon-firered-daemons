@@ -586,16 +586,58 @@ function defineTools() {
         avatar_emotion: z.enum(AVATAR_EMOTIONS).describe("Select the avatar emotion that best matches your current mood, reaction, or activity. Choose from basic emotions (happy, sad, angry, etc.), specific reactions (surprised, confused, thinking, etc.), action-based emotions (reading, throwing_pokeball, etc.), or themed cosplay options when appropriate for the context."),
     });
 
-    // Definition of the unique tool
-    return [
-        {
+    // DAEMONS: FLAT TOOLS, BECAUSE THAT IS WHAT THE MODELS ACTUALLY EMIT.
+    //
+    // With one execute_action wrapping a union, LM Studio logged
+    //     Failed generating function tool request 'key_press' due to an
+    //     invalid tool name. Skipping function_call output item.
+    // -- minicpm-v-4.6 was calling key_press directly, because key_press is
+    // the thing it wants to do; the wrapper is our idea, not the model's. And
+    // qwen3-vl-8b mangled the same union in its own way, emitting the
+    // identical call 27 times in one response. Two models, two symptoms, one
+    // cause: a nested discriminated union is hard to emit and easy to flatten.
+    //
+    // So each action becomes its own tool, which is the shape they reach for
+    // unprompted. handleToolCall normalises a flat call back into the
+    // execute_action envelope, so every dispatch path below is unchanged.
+    //
+    // DAEMONS_TOOLS=nested restores the single wrapper.
+    const flat = (process.env.DAEMONS_TOOLS || "flat") !== "nested";
+    if (!flat) {
+        console.log("Tool shape: nested (1 tool, union of " + actionVariants.length + ")");
+        return [
+            {
+                type: "function",
+                name: "execute_action",
+                description: "Executes an action in the game: movement, interaction, or memorizing information. Adapt the action to the context (dialogue or free movement).",
+                parameters: zodToJsonSchema(executeActionSchema),
+                strict: config.tools.strict,
+            },
+        ];
+    }
+
+    const NARRATION = {
+        step_details: z.string().describe("What happened in the previous step and what this step does."),
+        chat_message: z.string().describe("A short narrative comment on your intent."),
+    };
+    const tools = actionVariants.map((variant) => {
+        //  the literal `type` becomes the tool NAME, so it is dropped from the
+        //  parameters -- a model that has to restate its own tool name in the
+        //  arguments is being asked the same question twice.
+        const name = variant.shape.type._def.value;
+        const body = variant.omit({ type: true }).extend(NARRATION);
+        return {
             type: "function",
-            name: "execute_action",
-            description: "Executes an action in the game: movement, interaction, or memorizing information. Adapt the action to the context (dialogue or free movement).",
-            parameters: zodToJsonSchema(executeActionSchema),
+            name,
+            description: variant.shape.type._def.description
+                || ("Perform the " + name + " action."),
+            parameters: zodToJsonSchema(body),
             strict: config.tools.strict,
-        },
-    ];
+        };
+    });
+    console.log("Tool shape: flat (" + tools.length + " tools: "
+        + tools.map((t) => t.name).join(", ") + ")");
+    return tools;
 }
 
 /**
@@ -605,7 +647,25 @@ function defineTools() {
  * @returns {Promise<object>} The result of the function call for the history.
  */
 async function handleToolCall(toolCall, gameDataJson) {
-    const { name, arguments: argsString, call_id } = toolCall;
+    let { name, arguments: argsString, call_id } = toolCall;
+
+    //  DAEMONS: a flat tool call is an execute_action with one action in it.
+    //  Rewriting it here means every dispatch path below stays exactly as it
+    //  was, and a run can switch shapes without two code paths to keep honest.
+    if (name !== "execute_action") {
+        try {
+            const a = JSON.parse(argsString || "{}");
+            const { step_details, chat_message, ...rest } = a;
+            argsString = JSON.stringify({
+                step_details: step_details || ("Performing " + name + "."),
+                chat_message: chat_message || "",
+                actions: [{ type: name, ...rest }],
+            });
+            name = "execute_action";
+        } catch (e) {
+            /* fall through to the unknown-tool path below, which reports it */
+        }
+    }
     const toolBatchStart = Date.now();
     let allActionResults = [];
     let overallSuccess = true;
