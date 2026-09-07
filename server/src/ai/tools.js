@@ -586,7 +586,26 @@ function defineTools() {
         avatar_emotion: z.enum(AVATAR_EMOTIONS).describe("Select the avatar emotion that best matches your current mood, reaction, or activity. Choose from basic emotions (happy, sad, angry, etc.), specific reactions (surprised, confused, thinking, etc.), action-based emotions (reading, throwing_pokeball, etc.), or themed cosplay options when appropriate for the context."),
     });
 
-    // DAEMONS: FLAT TOOLS, BECAUSE THAT IS WHAT THE MODELS ACTUALLY EMIT.
+    // DAEMONS: TOOL SHAPE IS PER-MODEL, AND NESTED IS THE DEFAULT.
+    //
+    // Measured, streaming, same prompt:
+    //                     nested                    flat
+    //   minicpm-v-4.6     completed, 1 call         FAILED, 0 calls
+    //   qwen3-vl-8b       completed, 27 duplicates  completed, 1 call
+    //
+    // AND THE MINICPM ROW IS NOT A SCHEMA PROBLEM AT ALL. LM Studio:
+    //     Prediction failed: Failed to parse tool call:
+    //     Expected "<parameter=", but got "<keys=['A'," at index 33
+    // MiniCPM emits tool calls in its own XML dialect and LM Studio's parser
+    // expects another. It needs SGLang's --tool-call-parser minicpm5 or vLLM's
+    // parser plugin, neither of which is LM Studio -- so minicpm cannot make a
+    // tool call here whatever shape we ask for, and its "invalid tool name"
+    // warning is the downstream symptom of that parse failure rather than a
+    // complaint about the name. I read that symptom as a diagnosis twice.
+    //
+    // So flat is the default: it is the shape that works for the model that
+    // works. DAEMONS_TOOLS=nested is upstream's, kept for a serving layer that
+    // can parse minicpm properly.
     //
     // With one execute_action wrapping a union, LM Studio logged
     //     Failed generating function tool request 'key_press' due to an
