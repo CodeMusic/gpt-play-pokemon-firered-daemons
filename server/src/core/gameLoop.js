@@ -1111,6 +1111,11 @@ async function gameLoop() {
             // Add response elements (reasoning, message, function call) to history
             // Handle reasoning replacement logic if necessary (WARNING: fragile)
             // let lastThinkingForReplacement = currentReasoning; // Use the streamed reasoning // Removed replacement logic
+            //  DAEMONS: remember where this turn's own words start, so a turn
+            //  that provably did nothing can be taken back out again. See the
+            //  echo-chamber note after the tool calls below.
+            const turnMark = state.history.length;
+            const posBefore = gameDataJson?.current_trainer_data?.position || null;
             if (finalResponse.output) {
                 finalResponse.output.forEach(item => {
                     // Specific logic to replace 'reasoning' in tool args REMOVED
@@ -1176,6 +1181,62 @@ async function gameLoop() {
                 });
                 state.skipNextUserMessage = true;
             }
+            //  DAEMONS: do not let the model teach itself a mistake by repetition.
+            //
+            //  It decided the DAEMON Center was at (11,11) -- a tile that does
+            //  not exist on a 12x9 map -- and walked east into a wall. Every
+            //  correction we added landed: the pathfinder said OUTSIDE this
+            //  map, key_press said YOU DID NOT MOVE, and it repeated the call
+            //  anyway. Because by then the persisted history held 617
+            //  occurrences of (11,11), 59 of them its own "Moving right to
+            //  (11,11)". Each correction is one line per turn against six
+            //  hundred repetitions in its own voice. It was not ignoring the
+            //  feedback so much as being outvoted by itself.
+            //
+            //  Nothing trimmed assistant messages -- keepLastN* covers tool
+            //  results and user messages only -- so a wrong plan restated every
+            //  turn compounded, and it survived restarts in gpt_data.
+            //
+            //  So a turn that repeats the previous action AND moves nowhere is
+            //  rolled back out of the history and replaced by one line saying
+            //  it failed. The action already ran; this only decides what the
+            //  model gets to read about it next turn. The function_call and its
+            //  output are removed together, so the pairing the API requires
+            //  stays intact.
+            const signature = (finalResponse.output || [])
+                .filter((item) => item.type === "function_call")
+                .map((item) => `${item.name}:${item.arguments}`)
+                .join("|");
+            if (signature) {
+                let movedNowhere = false;
+                try {
+                    const after = await fetchGameData();
+                    const a = after?.current_trainer_data?.position;
+                    movedNowhere = Boolean(
+                        posBefore && a && a.x === posBefore.x && a.y === posBefore.y
+                        && a.map_id === posBefore.map_id
+                    );
+                } catch (e) { /* if we cannot tell, leave the history alone */ }
+
+                if (movedNowhere && signature === state.lastNoMoveSignature) {
+                    state.history.length = turnMark;
+                    state.history.push({
+                        role: "user",
+                        content: [{
+                            type: "input_text",
+                            text: "<system>You just repeated an action that had already failed, and it "
+                                + "failed again -- you did not move. That attempt has been removed from "
+                                + "your history so you do not read it back as a plan. Do something "
+                                + "DIFFERENT: a different direction, or look for stairs, a door or a warp "
+                                + "to leave this map. If you are aiming at a tile, check it exists within "
+                                + "the map size given above.</system>",
+                        }],
+                    });
+                    console.log("INFO: [loop guard] rolled back a repeated action that moved nowhere");
+                }
+                state.lastNoMoveSignature = movedNowhere ? signature : null;
+            }
+
             state.counters.currentStep++;
             console.log(`Step counter incremented to: ${state.counters.currentStep}`);
             if (state.selfCritiqueReminderAcknowledged) {
