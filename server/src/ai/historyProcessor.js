@@ -28,6 +28,42 @@ function cleanTextSections(text, sectionsToRemove) {
   return cleanedText;
 }
 
+//  DAEMONS: drop the model's own thinking out of its own context.
+//
+//  Measured on a real 486-item conversation totalling 882,686 chars:
+//
+//    105 x reasoning            248,324  28.1%
+//     58 x message              235,364  26.7%
+//    126 x user                 235,755  26.7%
+//     98 x function_call_output  67,160   7.6%
+//      1 x developer             59,216   6.7%
+//     98 x function_call         36,867   4.2%
+//
+//  The model's own output is 54.8% of what it is asked to read. keepLastN*
+//  trims tool results and user messages and never touched either category, so
+//  the prompt reached 82,524 tokens -- about 41 seconds of prefill before the
+//  model thinks at all, and still climbing.
+//
+//  Reasoning blocks are the clearest waste: they are the thinking that
+//  produced an action, and once the action is taken and its result recorded,
+//  they inform nothing. They are also exactly the material the model echoes
+//  back at itself. Hosted reasoning models drop them from context by
+//  convention; here they were all kept.
+//
+//  Older ones are dropped entirely. The most recent few stay, so the immediate
+//  train of thought survives into the next turn.
+function dropOldReasoning(history) {
+  const keep = config.history.keepLastNReasoningItems;
+  if (!Number.isFinite(keep) || keep < 0) return history;
+  const reasoningIndices = history.reduce((acc, item, i) => {
+    if (item && item.type === "reasoning") acc.push(i);
+    return acc;
+  }, []);
+  if (reasoningIndices.length <= keep) return history;
+  const drop = new Set(reasoningIndices.slice(0, reasoningIndices.length - keep));
+  return history.filter((_, i) => !drop.has(i));
+}
+
 function processHistoryForAPI(currentHistory) {
   const isSystemToolReminder = (message) => {
     if (message.role !== "user" || !message.content || !Array.isArray(message.content)) {
@@ -40,6 +76,8 @@ function processHistoryForAPI(currentHistory) {
         "<system>You must include tools in your response ! Always call 'execute_action' tool with your messages to continue your actions !</system>"
     );
   };
+
+  currentHistory = dropOldReasoning(currentHistory);
 
   const dataMessageIndices = currentHistory.reduce((acc, message, index) => {
     const isUserDataMessage = message.role && message.role === "user" && !isSystemToolReminder(message);

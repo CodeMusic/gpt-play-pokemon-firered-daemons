@@ -130,6 +130,10 @@ const config = {
 
   // --- History Processing Configuration ---
   history: {
+    //  The model's own thinking, replayed to it every turn. 105 of these were
+    //  28.1% of an 882k-char prompt. Keep the recent train of thought, drop the
+    //  rest. 0 disables reasoning history entirely.
+    keepLastNReasoningItems: Number(process.env.DAEMONS_KEEP_REASONING || 2),
     keepLastNToolPartialResults: 20,
     keepLastNToolFullResults: 6,
     keepLastNUserMessagesWithMinimap: 1,
