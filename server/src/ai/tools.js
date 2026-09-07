@@ -1,5 +1,6 @@
 const fs = require('fs').promises;
 const fsSync = require('fs');
+const { planPath } = require("./localPath.js");
 const path = require('path');
 const axios = require('axios');
 const FormData = require('form-data');
@@ -1044,6 +1045,14 @@ function toolOutput(text) {
                                 console.error(`ERROR: Attempt ${attempt} failed for findPath(${path_x}, ${path_y}):`, error.message);
                                 findPathError = error; // Store the last error
                                 // Check if the error message contains "Player is not on map"
+                                //  A BFS is deterministic: retrying it four
+                                //  more times produces the same refusal and
+                                //  four more identical log lines.
+                                if (error.message.startsWith("No walkable route")) {
+                                    actionResult.success = false;
+                                    actionResult.message = error.message;
+                                    break;
+                                }
                                 if (error.message.includes("Player is not on map")) {
                                     console.error(`ERROR: Player is not on map ${path_map_id}.`);
                                     actionResult.success = false;
@@ -1179,6 +1188,28 @@ function toolOutput(text) {
 
 async function findPath(x, y, map_id, explanation) {
     const gameDataJson = await fetchGameData();
+
+    //  DAEMONS: solve it here unless explicitly told not to.
+    //
+    //  Everything below this branch runs on OpenAI's Code Interpreter --
+    //  openai.containers.create() and hardcoded api.openai.com container URLs
+    //  that no base-URL setting redirects -- so against a local model it fails
+    //  five times and stalls the run. The grid it would reason about is
+    //  already in gameDataJson, so a BFS answers exactly, instantly, and
+    //  without a network call. DAEMONS_PATHFINDER=openai restores upstream's.
+    if ((process.env.DAEMONS_PATHFINDER || "local") !== "openai") {
+        const { position } = gameDataJson.current_trainer_data;
+        if (position.map_id !== map_id) {
+            throw new Error(`Player is not on map ${map_id}. Current map: ${position.map_id}`);
+        }
+        if (gameDataJson.is_talking_to_npc) {
+            throw new Error("Player is in a dialogue. Cannot find path.");
+        }
+        const planned = planPath(gameDataJson, x, y);
+        console.log(`INFO: [local BFS] ${planned.explanation}`);
+        return { keys: planned.keys, explanation: planned.explanation };
+    }
+
     const pathfindingStart = Date.now();
     const { current_trainer_data } = gameDataJson;
     const { position } = current_trainer_data;
