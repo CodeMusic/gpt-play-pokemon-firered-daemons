@@ -1,6 +1,17 @@
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const { planPath } = require("./localPath.js");
+
+//  DAEMONS: the exact key sequence that just failed to move the player, or
+//  null. Advice did not break the loop -- the result already said YOU DID NOT
+//  MOVE in capitals and it sent the same keys three turns running -- so the
+//  same keys are refused once instead of being sent into the same wall again.
+//  Refused ONCE: cleared immediately after, because a blocked tile is not
+//  always blocked (an NPC steps aside), and a permanent ban would be a worse
+//  bug than the loop.
+let lastBlockedKeys = null;
+let blockedAtPosition = null;   // where we were when those keys failed
+let blockedRefusals = 0;        // consecutive refusals, so we can re-probe
 const path = require('path');
 const axios = require('axios');
 const FormData = require('form-data');
@@ -791,6 +802,37 @@ function toolOutput(text) {
                             overallSuccess = false;
                             console.warn(`WARN: Skipping key_press action ${i + 1} as one was already executed this turn.`);
                         } else if (individualAction.keys && Array.isArray(individualAction.keys) && individualAction.keys.length > 0) {
+                            const keySig = JSON.stringify(individualAction.keys);
+                            const herePos = gameDataJson?.current_trainer_data?.position || null;
+                            const samePlace = Boolean(
+                                herePos && blockedAtPosition
+                                && herePos.x === blockedAtPosition.x
+                                && herePos.y === blockedAtPosition.y
+                                && herePos.map_id === blockedAtPosition.map_id
+                            );
+                            //  Hold the refusal while NOTHING has changed -- same keys, same
+                            //  tile, same map -- rather than letting every second attempt
+                            //  through. But re-probe every 5th, because a blocked tile is not
+                            //  always blocked: an NPC steps aside, and a permanent ban would be
+                            //  a worse bug than the loop it fixes.
+                            if (keySig === lastBlockedKeys && samePlace && (blockedRefusals % 5) !== 4) {
+                                blockedRefusals++;
+                                actionResult.success = false;
+                                actionResult.message =
+                                    `Refused: ${individualAction.keys.join(", ")} is exactly what you`
+                                    + " just tried, and it did not move you. Sending it again cannot"
+                                    + " work. Pick a DIFFERENT direction, or head for the stairs, a"
+                                    + " door or a warp to leave this map.";
+                                actionResult.details = "Repeated action blocked before execution.";
+                                overallSuccess = false;
+                                console.warn(`WARN: refused repeat #${blockedRefusals} of blocked keys ${keySig}`);
+                                break;
+                            }
+                            //  Reset unconditionally: we are about to SEND, so the next
+                            //  repeat starts a fresh run of four refusals. Resetting only
+                            //  on change let a re-probe through twice in a row.
+                            blockedRefusals = 0;
+
                             //  DAEMONS: report the MOVE, not just the send.
                             //
                             //  The model pressed right ten times at x=11 on a
@@ -818,10 +860,15 @@ function toolOutput(text) {
                                             const size = Array.isArray(grid) && Array.isArray(grid[0])
                                                 ? ` This map is ${grid[0].length}x${grid.length}, so x is 0..${grid[0].length - 1} and y is 0..${grid.length - 1}.`
                                                 : "";
+                                            lastBlockedKeys = keySig;
+                                            blockedAtPosition = { x: a.x, y: a.y, map_id: a.map_id };
                                             moveNote = ` YOU DID NOT MOVE. Still at (${a.x}, ${a.y}) on ${a.map_name}`
                                                 + ` -- something is blocking you in that direction.${size}`
                                                 + " Do not repeat the same keys; try another direction, or use the stairs/door to leave.";
                                         } else {
+                                            lastBlockedKeys = null;
+                                            blockedAtPosition = null;
+                                            blockedRefusals = 0;
                                             moveNote = ` Moved (${beforePos.x}, ${beforePos.y}) -> (${a.x}, ${a.y}).`;
                                         }
                                     }

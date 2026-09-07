@@ -1125,11 +1125,19 @@ async function gameLoop() {
 
             state.skipNextUserMessage = false; // Reset the flag after processing the final response, handleToolCall will set it again if needed
             let haveToolCall = false;
+            //  Every call that actually RAN, whichever path produced it. The
+            //  loop guard below used to read finalResponse.output directly,
+            //  which is empty on a salvaged turn -- and salvage is not the rare
+            //  path here, it is 118 of 119 calls, because mlx-vlm's parser
+            //  fails on nearly every one. So the guard was blind to almost
+            //  every action the agent took, and fired once in a whole run.
+            const executedCalls = [];
             // 8. Execute tool calls and add results to history
             if (finalResponse.output) {
                 for (const item of finalResponse.output) {
                     if (item.type === "function_call") {
                         haveToolCall = true;
+                        executedCalls.push(item);
                         // Pass gameDataJson AND the call_id (which is item.id)
                         setIsThinking(false);
                         const toolResult = await handleToolCall(item, gameDataJson);
@@ -1166,6 +1174,7 @@ async function gameLoop() {
                         arguments: call.arguments,
                     };
                     state.history.push(item);       // keep the transcript honest
+                    executedCalls.push(item);
                     const toolResult = await handleToolCall(item, gameDataJson);
                     state.history.push(toolResult);
                 }
@@ -1211,8 +1220,7 @@ async function gameLoop() {
             //  "Moving right to explore important connections" the next. The
             //  guard then never fired on exactly the loop it exists to catch.
             const NARRATION = new Set(["step_details", "chat_message", "avatar_emotion", "explanation"]);
-            const signature = (finalResponse.output || [])
-                .filter((item) => item.type === "function_call")
+            const signature = executedCalls
                 .map((item) => {
                     let args = item.arguments;
                     try {
