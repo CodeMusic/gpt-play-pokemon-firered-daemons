@@ -371,7 +371,7 @@ async function gameLoop() {
                                 break;
                             case "response.completed":
                                 responseCompleted = true;
-                                console.log("\n=== End of OpenAI Response ===");
+                                console.log("\n=== End of model response ===");
                                 console.log("Usage Tokens:", JSON.stringify(event.response.usage, null, 2));
                                 finalResponse = event.response; // Store the final response
                                 const summaryDuration = Date.now() - summaryStart;
@@ -403,7 +403,7 @@ async function gameLoop() {
                                 broadcast({ type: 'summary_end', payload: 'History summary finished.' });
                                 break;
                             case "error":
-                                console.error("\n--- OpenAI Stream Error ---");
+                                console.error("\n--- model stream error ---");
                                 console.error(event.error);
                                 if (!responseCompleted) {
                                     broadcast({ type: 'error_message', payload: `OpenAI Stream Error: ${event.error?.message || 'Unknown error'}` }); // <<< Broadcast API error
@@ -417,7 +417,7 @@ async function gameLoop() {
                     }
                 } catch (streamError) {
                     if (!responseCompleted) {
-                        console.error("\n--- OpenAI Stream Processing Error ---");
+                        console.error("\n--- model stream processing error ---");
                         console.error(streamError);
                         broadcast({ type: 'error_message', payload: `OpenAI Stream Processing Error: ${streamError?.message || 'Unknown error'}` });
                         throw streamError; // Re-throw if we didn't complete successfully
@@ -765,7 +765,7 @@ async function gameLoop() {
             const tools = defineTools();
 
             // 5. Call the OpenAI API with streaming
-            console.log("\n--- Sending to OpenAI ---");
+            console.log(`\n--- Sending to ${config.openai.model} ---`);
             // console.log("API Input (history size):", apiInput.length); // Debug
 
 
@@ -841,7 +841,7 @@ async function gameLoop() {
                                 break;
                             case "response.completed":
                                 responseCompleted = true;
-                                console.log("\n=== End of OpenAI Response ===");
+                                console.log("\n=== End of model response ===");
                                 console.log("Usage Tokens:", JSON.stringify(event.response.usage, null, 2));
                                 finalResponse = event.response; // Store the final response
                                 const criticismDuration = Date.now() - criticismStart;
@@ -869,7 +869,7 @@ async function gameLoop() {
                                 broadcast({ type: 'criticism_end', payload: 'Self-criticism finished.' });
                                 break;
                             case "error":
-                                console.error("\n--- OpenAI Stream Error ---");
+                                console.error("\n--- model stream error ---");
                                 console.error(event.error);
                                 if (!responseCompleted) {
                                     broadcast({ type: 'error_message', payload: `OpenAI Stream Error: ${event.error?.message || 'Unknown error'}` }); // <<< Broadcast API error
@@ -884,7 +884,7 @@ async function gameLoop() {
                     }
                 } catch (streamError) {
                     if (!responseCompleted) {
-                        console.error("\n--- OpenAI Stream Processing Error ---");
+                        console.error("\n--- model stream processing error ---");
                         console.error(streamError);
                         broadcast({ type: 'error_message', payload: `OpenAI Stream Processing Error: ${streamError?.message || 'Unknown error'}` });
                         throw streamError; // Re-throw if we didn't complete successfully
@@ -982,7 +982,7 @@ async function gameLoop() {
                             break;
                         case "response.completed":
                             responseCompleted = true;
-                            console.log("\n=== End of OpenAI Response ===");
+                            console.log("\n=== End of model response ===");
                             console.log("Usage Tokens:", JSON.stringify(event.response.usage, null, 2));
                             finalResponse = event.response; // Store the final response
                             const mainDuration = Date.now() - mainCallStart;
@@ -1011,7 +1011,7 @@ async function gameLoop() {
                             }
                             break;
                         case "error":
-                            console.error("\n--- OpenAI Stream Error ---");
+                            console.error("\n--- model stream error ---");
                             console.error(event.error);
                             if (!responseCompleted) {
                                 broadcast({ type: 'error_message', payload: `OpenAI Stream Error: ${event.error?.message || 'Unknown error'}` }); // <<< Broadcast API error
@@ -1025,7 +1025,7 @@ async function gameLoop() {
                 }
             } catch (streamError) {
                 if (!responseCompleted) {
-                    console.error("\n--- OpenAI Stream Processing Error ---");
+                    console.error("\n--- model stream processing error ---");
                     console.error(streamError);
                     broadcast({ type: 'error_message', payload: `OpenAI Stream Processing Error: ${streamError?.message || 'Unknown error'}` });
                     throw streamError; // Re-throw if we didn't complete successfully

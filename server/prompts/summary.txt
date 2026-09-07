@@ -1,6 +1,6 @@
 The conversation has been too long; it is time to summarize the gameplay history so we can continue the journey without losing context.
 
-Your task is to create a detailed, continuation-ready summary of the Pokémon FireRed gameplay history.  
+Your task is to create a detailed, continuation-ready summary of the DAEMON FireRed gameplay history.  
 This summary must be complete enough that gameplay can resume immediately with minimal confusion.
 
 ---
@@ -10,9 +10,9 @@ This summary must be complete enough that gameplay can resume immediately with m
 1) **Current state must come from the latest RAM snapshot**
 - Treat the latest `<extracted_ram_data>` as the **authoritative source** for:
   - Current location (map/coords/facing)
-  - Party, HP, status, moves + PP
+  - Party, HP, status, ROUTINES + PP
   - Inventory + money
-  - Badges and flags visible in RAM
+  - MARKS and flags visible in RAM
 - If the latest `<extracted_ram_data>` is not present in the conversation context, you must mark current-state fields as **UNKNOWN**.  
   **Do not guess.**
 
@@ -75,12 +75,12 @@ Keep it concise but meaningful.
 ## Current Game State (RAM-Authoritative)
 - Location (map + coords + facing) [CONFIRMED/INFERRED/UNKNOWN]
 - Current objective / immediate goal [CONFIRMED/INFERRED/UNKNOWN]
-- Badges obtained (Kanto count, max 8) [CONFIRMED/INFERRED/UNKNOWN]
+- MARKS obtained (Kanto count, max 8) [CONFIRMED/INFERRED/UNKNOWN]
 - Money [CONFIRMED/UNKNOWN]
 - Any active menus/battle/dialog status if currently relevant [CONFIRMED/UNKNOWN]
 
-## Pokémon Team (Party)
-For each party Pokémon, include:
+## DAEMON Team (Party)
+For each party DAEMON, include:
 - Nickname + species [CONFIRMED/UNKNOWN]
 - Level [CONFIRMED/UNKNOWN]
 - Sex (only if visible) [CONFIRMED/UNKNOWN]
@@ -98,7 +98,7 @@ Do not attempt a full bag dump if it is not visible; prioritize what matters.
 
 ## Bag Kits Readiness (Context-Based)
 Summarize whether we are ready for the next context:
-- Catch readiness (balls + status tools) [INFERRED/UNKNOWN]
+- Bind readiness (balls + status tools) [INFERRED/UNKNOWN]
 - Dungeon readiness (heals + status cures + escape rope) [INFERRED/UNKNOWN]
 - Boss readiness (strong heals + status cures + optional X-items) [INFERRED/UNKNOWN]
 If not ready, state what’s missing.
@@ -109,15 +109,15 @@ If not ready, state what’s missing.
 - Important TMs obtained/used (only notable ones) [CONFIRMED/INFERRED/UNKNOWN]
 - Major story gates cleared/unlocked (e.g., new regions, key events) [CONFIRMED/INFERRED/UNKNOWN]
 
-## PC Items / Pokémon Storage
-- Pokémon stored in PC that matter (HM mules, backups, candidates for roles) [CONFIRMED/UNKNOWN]
+## PC Items / DAEMON Storage
+- DAEMON stored in PC that matter (HM mules, backups, candidates for roles) [CONFIRMED/UNKNOWN]
 - Items stored in PC if referenced [CONFIRMED/UNKNOWN]
 If storage is not visible in logs, write: **UNKNOWN**.
 
 ## Boss Dossier Highlights
 Record only what we actually observed:
-- Gym leaders / Rival / Team Rocket bosses / Elite Four / Champion (Rival) attempts:
-  - What we fought (species seen, notable moves/status/strategies) [CONFIRMED/INFERRED/UNKNOWN]
+- BENCHMARK leaders / Rival / Team Rocket bosses / Elite Four / Champion (Rival) attempts:
+  - What we fought (species seen, notable ROUTINES/status/strategies) [CONFIRMED/INFERRED/UNKNOWN]
   - What worked / what failed [INFERRED/UNKNOWN]
   - Any planned fixes (levels, TMs, items, lead changes) [INFERRED/UNKNOWN]
 Keep it concise but actionable.
@@ -150,15 +150,15 @@ Preserve prior restart entries from the previous summary and append new ones.
 
 ## Defeat History (Cumulative)
 A “defeat” includes:
-- Any official **whiteout/blackout** (all party fainted), AND
-- Any restart that was triggered to avoid an imminent whiteout (e.g., resetting before the last Pokémon fainted).
+- Any official **whiteout/blackout** (all party HALTED), AND
+- Any restart that was triggered to avoid an imminent whiteout (e.g., resetting before the last DAEMON HALTED).
 For each defeat:
 - Step / timestamp (or UNKNOWN) [CONFIRMED/UNKNOWN]
 - Location [CONFIRMED/UNKNOWN]
 - Cause (which battle/encounter, key threat, mistake/RNG if known) [CONFIRMED/INFERRED/UNKNOWN]
 - Whether it was:
-  - **Whiteout** (full faint) OR
-  - **Reset-Avoided Defeat** (restart used before full faint)  
+  - **Whiteout** (full HALT) OR
+  - **Reset-Avoided Defeat** (restart used before full HALT)  
   [CONFIRMED/INFERRED/UNKNOWN]
 - What changed afterward (team prep, items, routing, strategy) [INFERRED/UNKNOWN]
 Preserve prior defeat entries and append new ones.
@@ -169,11 +169,11 @@ It must not omit meaningful events, but it may group them sensibly to remain rea
 
 Format rules:
 - Use chronological order.
-- Group by “segment” (usually location/dungeon/route/gym/town) with a header:
+- Group by “segment” (usually location/dungeon/route/BENCHMARK/town) with a header:
   - Example: **[Step range or time] Location / Segment Name**
 - Under each header, write:
   - A short paragraph summarizing what happened there, AND/OR
-  - Bullet points for key events (captures, evolutions, defeats, restarts, gym battles, items, routing decisions, puzzles, legendaries, major purchases, major strategy changes).
+  - Bullet points for key events (captures, evolutions, defeats, restarts, BENCHMARK battles, items, routing decisions, puzzles, legendaries, major purchases, major strategy changes).
 - Do not explode into micro-steps. Focus on meaningful events.
 - Preserve earlier timeline entries from the previous summary and append the newest segment(s).
 
@@ -184,7 +184,7 @@ A higher-detail view of the most recent portion (since the last summary):
 
 ## Critical Decisions & Strategy Notes
 Highlight high-impact strategic choices and why they mattered:
-- Team building moves (TMs, role assignments, evolutions)
+- Team building ROUTINES (TMs, role assignments, evolutions)
 - XP routing decisions
 - Inventory management decisions (restocks, kits)
 - Boss preparation/adjustments

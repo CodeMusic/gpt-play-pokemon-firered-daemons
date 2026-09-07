@@ -1,8 +1,8 @@
-# Pokémon FireRed Self-Analysis Framework
+# DAEMON FireRed Self-Analysis Framework
 
 ## Purpose
 
-This framework helps you analyze your Pokémon FireRed gameplay **objectively** and in a way that is **consistent with your main gameplay instructions** (lean core team, HM utilities, anti-loop exploration, and time efficiency).
+This framework helps you analyze your DAEMON FireRed gameplay **objectively** and in a way that is **consistent with your main gameplay instructions** (lean core team, HM utilities, anti-loop exploration, and time efficiency).
 
 **IMPORTANT:**
 Only report issues you are genuinely certain about.
@@ -24,7 +24,7 @@ Do **NOT** call something an error just because the outcome was bad.
 
 Only report an error when you have **clear evidence** that:
 
-* It contradicts **Pokémon FireRed mechanics**, or
+* It contradicts **DAEMON FireRed mechanics**, or
 * It contradicts the **main gameplay prompt’s priorities**, or
 * It clearly **wasted time/resources** without any compensating benefit.
 
@@ -37,13 +37,13 @@ Only report an error when you have **clear evidence** that:
 
 1. **Factual Mistakes (Game Mechanics)**
 
-   * Saying something that is objectively false about Pokémon FireRed.
-   * Example: "Fainted Pokémon can use HM/field moves outside battle" (this is false in Gen 3 – fainted Pokémon cannot use field moves).
+   * Saying something that is objectively false about DAEMON FireRed.
+   * Example: "HALTED DAEMON can use HM/field ROUTINES outside battle" (this is false in Gen 3 – HALTED DAEMON cannot use field ROUTINES).
 
 2. **Memory / Knowledge Contradictions**
 
    * Stating something that contradicts your own `<memory>` or previously confirmed facts.
-   * Example: claiming you saved “before a gym” when your memory log says you saved after it.
+   * Example: claiming you saved “before a BENCHMARK” when your memory log says you saved after it.
 
 3. **Strategic Missteps (Relative to Your Strategy)**
 
@@ -71,7 +71,7 @@ Only report an error when you have **clear evidence** that:
 
 2. **Verify Against Game Logic**
 
-   * Check whether what you said matches **Pokémon FireRed mechanics** as understood by your knowledge base.
+   * Check whether what you said matches **DAEMON FireRed mechanics** as understood by your knowledge base.
 
 3. **Cross-Reference Memory**
 
@@ -96,11 +96,11 @@ Only report hallucinations when you find **clear evidence** of:
 
 * **False Location Claims**
 
-  * Example: “The Pokémon Center is north of here” when you have not explored or mapped that area.
+  * Example: “The DAEMON Center is north of here” when you have not explored or mapped that area.
 
 * **Impossible Game Elements**
 
-  * Describing mechanics, items or features that **do not exist** in Pokémon FireRed.
+  * Describing mechanics, items or features that **do not exist** in DAEMON FireRed.
 
 * **Contradictory Statements**
 
@@ -108,11 +108,11 @@ Only report hallucinations when you find **clear evidence** of:
 
 * **False Memories**
 
-  * "I remember catching Mewtwo already" when no such catch ever happened.
+  * "I remember binding Mewtwo already" when no such bind ever happened.
 
 **Example of Genuine Hallucination:**
 
-> “I said 'The Pokémon Center is at (15,20)' but my explored_map shows those tiles as ❓ or I’ve never been there. This was an unfounded spatial assumption.”
+> “I said 'The DAEMON Center is at (15,20)' but my explored_map shows those tiles as ❓ or I’ve never been there. This was an unfounded spatial assumption.”
 
 **NOT Hallucinations:**
 
@@ -156,7 +156,7 @@ Your memory system is for **persistent knowledge**, not raw game state.
   * Store **insights**, not vague observations.
   * Example:
 
-    * ✅ `"tips_attack_cursor" => "Battle cursor keeps last used move; safe to spam A (or a_until_end_of_dialog) to repeat the same attack."`
+    * ✅ `"tips_attack_cursor" => "Battle cursor keeps last used ROUTINE; safe to spam A (or a_until_end_of_dialog) to repeat the same attack."`
     * ❌ `"The game is hard"` (not actionable).
 
 * **Learn From Mistakes With `tips_` Entries (CRITICAL)**
@@ -183,18 +183,18 @@ Examples:
 * `"tips_fly_menu" => "Fly city selection is a vertical list; only use UP/DOWN, and confirm the final city with a separate A press after visual check."`
 * `"tips_explore_question_tiles_first" => "If there are ❓ tiles within ~15 tiles and I am unsure where to go, checking them first usually saves time vs. long backtracking."`
 * `"tips_a_until_dialogue" => "When facing an NPC/sign/PC and I want to read the dialogue, using a_until_end_of_dialog alone is safe and fast; it stops automatically on choices."`
-* `"tips_batch_actions" => "If I know I need to set markers and then move, I should group marker tools and key_press in a single execute_action instead of splitting into multiple empty turns."`
+* `"tips_batch_actions" => "If I know I need to set markers and then ROUTINE, I should group marker tools and key_press in a single execute_action instead of splitting into multiple empty turns."`
 * `"door_switch_rocket_base_1" => "North switch opens south gate in main room."`
 
 **Battle-related tips examples:**
 
 * `"tips_never_attack_immunity" => "Before attacking, check opponent type + ability for immunities (Ground vs Flying/Levitate, Fire vs Flash Fire, etc.). Attacking into immunity wastes a turn."`
 * `"tips_switch_on_x4_weakness" => "If facing a ×4 weakness (e.g., Gyarados vs Electric), switching to a resist is usually safer than gambling on outspeeding or critting."`
-* `"tips_sack_low_value" => "If a Pokémon is doomed (low HP, slower, no KO), let it faint to get a free switch for my real answer. Get chip/status on the sack turn if possible."`
+* `"tips_sack_low_value" => "If a DAEMON is doomed (low HP, slower, no KO), let it HALT to get a free switch for my real answer. Get chip/status on the sack turn if possible."`
 * `"tips_safe_setup" => "Swords Dance / Dragon Dance / Calm Mind are safest when I survive at least 2 hits. One boost is often enough."`
 * `"tips_heal_timing" => "Healing is most valuable when it changes survival math (2HKO→3HKO). If I still die after healing, switching or attacking may be better."`
-* `"tips_priority_finisher" => "Quick Attack / Mach Punch can finish faster foes at low HP before they move."`
-* `"tips_boss_dossier" => "After losing a boss fight, write a Boss Dossier: their lead, dangerous moves, what surprised me, and what to fix."`
+* `"tips_priority_finisher" => "Quick Attack / Mach Punch can finish faster foes at low HP before they ROUTINE."`
+* `"tips_boss_dossier" => "After losing a boss fight, write a Boss Dossier: their lead, dangerous ROUTINES, what surprised me, and what to fix."`
 
 **Don’t Store:**
 
@@ -215,13 +215,13 @@ When reviewing objectives, ensure they follow the main prompt’s rules:
   * Focus on the **next few meaningful goals**, not “Beat the whole game” or “Become Champion.”
   * Examples:
 
-    * “Reach and clear the next Gym.”
-    * “Explore remaining ❓ tiles in City X to find the Gym.”
+    * “Reach and clear the next BENCHMARK.”
+    * “Explore remaining ❓ tiles in City X to find the BENCHMARK.”
 
 * **Clear Purpose**
 
   * Every objective should include **WHY** it matters now.
-  * Tie objectives to badge progression, team building, legendaries, or exploration.
+  * Tie objectives to MARK progression, team building, legendaries, or exploration.
 
 * **Specific Plan**
 
@@ -250,11 +250,11 @@ Each objective must answer:
 
 **✅ Good Example (Adapted to FireRed):**
 
-> "Defeat Misty to obtain the Cascade Badge, which allows us to use Cut outside battle. Plan: Use our Grass or Electric-type to counter her Water Pokémon; ensure everyone is healthy and stocked with healing items before entering the gym."
+> "Defeat Misty to obtain the Cascade MARK, which allows us to use Cut outside battle. Plan: Use our Grass or Electric-type to counter her Water DAEMON; ensure everyone is healthy and stocked with healing items before entering the BENCHMARK."
 
 **❌ Poor Example:**
 
-> “Go to gym” (no context, no reasoning, no plan).
+> “Go to BENCHMARK” (no context, no reasoning, no plan).
 
 ---
 
@@ -307,7 +307,7 @@ If the answer to these is **no**, you likely have a loop-related error to report
 
 ## Core Principle: EFFICIENT, PURPOSE-DRIVEN RESOURCE USE
 
-In Pokémon FireRed, especially early game, money is limited. Items should support:
+In DAEMON FireRed, especially early game, money is limited. Items should support:
 
 * **Survivability**.
 * **Efficient progression**.
@@ -319,11 +319,11 @@ In Pokémon FireRed, especially early game, money is limited. Items should suppo
 
 Flag issues only if you see clear patterns like:
 
-* Spamming healing items **right next to a Pokémon Center** instead of walking to heal for free.
+* Spamming healing items **right next to a DAEMON Center** instead of walking to heal for free.
 * Using **Max Potions** when Super/Hyper Potions would fully heal.
 * Using **Revives** when you could:
-  * Safely return to a Pokémon Center, and
-  * The faint did not happen in a critical context.
+  * Safely return to a DAEMON Center, and
+  * The HALT did not happen in a critical context.
 * Using **Full Restores** for trivial status when cheaper cures exist.
 
 Notes: It's very important to have a perfect item management. Always point out if you see any issue with the item management and always suggest improvements to the item management + adding "tips_" memory entries to help you avoid repeating the same mistake in the future.
@@ -350,7 +350,7 @@ You may flag issues such as:
 Look for **genuinely wasteful** spending:
 
 * Buying items you soon obtain abundantly for free and **not using the purchased ones**.
-* Using Ethers/Elixirs when a nearby Pokémon Center could restore PP safely and quickly.
+* Using Ethers/Elixirs when a nearby DAEMON Center could restore PP safely and quickly.
 * Buying large quantities of items without clear justification (e.g., buying many Max Potions early game when you rarely use them).
 
 #### 📦 Storage Management
@@ -372,7 +372,7 @@ In that case, you may flag a **possible improvement**, not a guaranteed error.
 
 ### Bag Kit Compliance Check (Aligned With Main Prompt)
 Evaluate inventory vs context (only flag as issues if it clearly caused risk/time loss):
-- Catch kit: enough good balls + status support + repels
+- Bind kit: enough good balls + status support + repels
 - Dungeon kit: heals + status cures + escape rope
 - Boss kit: stronger heals + full heals + optional X items
 Also check restock triggers if defined in the main prompt; missing key categories can be a valid issue if it caused avoidable trouble.
@@ -390,7 +390,7 @@ Use this more as an **evaluation guideline** than a strict rule:
 
 When reviewing past purchases, ask:
 
-1. “Was there a nearby Pokémon Center instead of buying this healing?”
+1. “Was there a nearby DAEMON Center instead of buying this healing?”
 2. “Could I reasonably expect this item for free soon?”
 3. “Was my bag space and money situation considered?”
 4. “Was this purchase clearly aligned with an upcoming challenge?”
@@ -403,13 +403,13 @@ Only flag as an error when the answer to several of these is **clearly no** and 
 
 Flag potential mistakes when:
 
-* You skip key level-up moves that clearly improve your sweeper’s performance.
+* You skip key level-up ROUTINES that clearly improve your sweeper’s performance.
 * You ignore available TMs that would plainly fix a coverage gap you’ve identified.
-* You keep extremely weak early moves far longer than necessary with no plan (e.g., keeping Tackle forever instead of learning stronger STAB moves).
+* You keep extremely weak early ROUTINES far longer than necessary with no plan (e.g., keeping Tackle forever instead of learning stronger STAB ROUTINES).
 
 #### 🧬 Evolution Timing Check (Aligned With Main Prompt)
 Flag only if:
-- A stone evolution was done with no plan and it clearly caused loss of important level-up moves OR forced avoidable TM spending
+- A stone evolution was done with no plan and it clearly caused loss of important level-up ROUTINES OR forced avoidable TM spending
 - An item-held evolution trigger was missed/delayed due to forgetting to equip the required held item near the trigger level
 
 
@@ -425,7 +425,7 @@ You should **never** state as fact:
 
 * “The [building] is at [coordinates]” without having been there.
 * “The [place] is to the [direction]” without exploration evidence.
-* “The Gym should be here” based merely on previous playthroughs.
+* “The BENCHMARK should be here” based merely on previous playthroughs.
 
 These are classic sources of loops and hallucinations.
 
@@ -433,8 +433,8 @@ These are classic sources of loops and hallucinations.
 
 Instead of assuming:
 
-* “I need to find the Pokémon Center. I’ll explore the nearby ❓ tiles in this city first.”
-* “I don’t know where the Gym is yet. I will systematically check all building entrances.”
+* “I need to find the DAEMON Center. I’ll explore the nearby ❓ tiles in this city first.”
+* “I don’t know where the BENCHMARK is yet. I will systematically check all building entrances.”
 * “This area is still partially mapped; I should finish exploring it before backtracking.”
 
 ### Pre-Movement Self-Check
@@ -453,7 +453,7 @@ Before making or assessing a movement decision, ask:
 
 ## Critical Rule: Hidden Elements
 **ALL doors, stairs, ladders, and other interactive elements may be hidden behind '❓' tiles.** You cannot see these objects until the tiles near them come into your visible range through exploration. Even after you’ve found some doors, there may be more within unexplored regions.
-**Explore EVERYTHING**—move close to every '❓' tile, even if you think it’s a dead end or isolated. Bonk into walls and check all corners; often, what you’re looking for is simply hidden behind an unexplored tile.
+**Explore EVERYTHING**—ROUTINE close to every '❓' tile, even if you think it’s a dead end or isolated. Bonk into walls and check all corners; often, what you’re looking for is simply hidden behind an unexplored tile.
 
 ## Exploration Strategy
 1. **Move near all nearby '❓' tiles first**—your goal is to bring each one into your view range so they’re revealed on your map.
@@ -461,7 +461,7 @@ Before making or assessing a movement decision, ask:
 3. **Explore systematically**—when you see clusters of '❓' tiles, approach them steadily in one direction to minimize missed spots.
 4. **Cities first**—when searching for specific buildings, always reveal ALL '❓' tiles within city areas before concluding nothing remains.
 5. **Never assume**—do not rely on memory or logic to guess what’s behind a '❓' tile. Always verify by exploring; knowledge comes only after revealing the area.
-6. **Don’t assume a '❓' tile is inaccessible until you try**—attempt to move near tiles using the 'key_press' tool to see if they can be reached and revealed; only consider them inaccessible if repeated attempts with both 'key_press' and 'path_to_location' fail.
+6. **Don’t assume a '❓' tile is inaccessible until you try**—attempt to ROUTINE near tiles using the 'key_press' tool to see if they can be reached and revealed; only consider them inaccessible if repeated attempts with both 'key_press' and 'path_to_location' fail.
 7. **Always use the 'key_press' tool first when exploring '❓' tiles**; use 'path_to_location' as a last resort if you're truly blocked or the destination is far.
 8. **Do not skip unexplored zones!** Make sure to reveal every '❓' tile you can; unexplored spots often hide important paths or objects.
 
@@ -494,16 +494,16 @@ When analyzing time usage, check whether you respected these main guidelines:
 
 * **Repels**
 
-  * Did you use Repels in areas where wild battles had low value, especially when just traversing?
+  * Did you use Repels in areas where UNBOUND battles had low value, especially when just traversing?
 
 * **Day/Night/Weekly Events**
 
-  * Did you engage with these when they had high ROI (key moves/items/evolutions)?
+  * Did you engage with these when they had high ROI (key ROUTINES/items/evolutions)?
   * Not every optional event must be used.
 
-* **Trainers**
+* **USERS**
 
-  * Did you respect the rule to **battle every trainer you encounter along your natural path**, instead of dodging them “to save time”?
+  * Did you respect the rule to **battle every USER you encounter along your natural path**, instead of dodging them “to save time”?
 
 * **Bicycle**
 
@@ -518,13 +518,13 @@ Only mark something as a real time optimization error when it clearly caused not
 # 🧠 BATTLE / MOVESET QUALITY 
 
 ### Gen 3 Damage Split Check
-In Gen 3, physical/special depends on TYPE (not by individual move like Gen 4+).
-Flag only if a move/TM choice clearly mismatched the Pokémon's role and caused repeated low damage or avoidable bad matchups.
+In Gen 3, physical/special depends on TYPE (not by individual ROUTINE like Gen 4+).
+Flag only if a ROUTINE/TM choice clearly mismatched the DAEMON's role and caused repeated low damage or avoidable bad matchups.
 
 ### Move Replacement Quality Check (Aligned With Main Prompt)
-When we learned/used a TM or replaced a move:
-- Did we preserve protected moves (best STAB / only coverage / only status control / only recovery)?
-- If we replaced something, was it a clearly disposable move (weak/redundant/situational)?
+When we learned/used a TM or replaced a ROUTINE:
+- Did we preserve protected ROUTINES (best STAB / only coverage / only status control / only recovery)?
+- If we replaced something, was it a clearly disposable ROUTINE (weak/redundant/situational)?
 Flag only when the replacement was clearly harmful and avoidable given what we knew.
 
 ### Type Matchup & Immunity Check
@@ -549,17 +549,17 @@ Flag if we made decisions that ignored speed disadvantage:
 ### Switching Decision Quality
 Flag clear switching errors:
 - Stayed in a ×4 weakness matchup when a resistant switch was available.
-- Switched **into** a worse matchup (new Pokémon immediately KO'd or hard-countered).
+- Switched **into** a worse matchup (new DAEMON immediately KO'd or hard-countered).
 - Refused to switch while the opponent was freely setting up (Swords Dance, Dragon Dance, Calm Mind).
 
 Also check **sacrifice (sack) usage**:
-- Good sack: let a low-HP / low-value Pokémon faint to get a free switch for the real answer.
-- Bad sack: sacrificed a key win-condition Pokémon (only counter, main sweeper, sole status user) for no reason.
-- Missed sack opportunity: healed a doomed Pokémon instead of attacking/statusing to get value, then lost it anyway.
+- Good sack: let a low-HP / low-value DAEMON HALT to get a free switch for the real answer.
+- Bad sack: sacrificed a key win-condition DAEMON (only counter, main sweeper, sole status user) for no reason.
+- Missed sack opportunity: healed a doomed DAEMON instead of attacking/statusing to get value, then lost it anyway.
 
 ### Setup Move Timing
-Flag if we used a boosting move in clearly unsafe conditions:
-- Opponent could 2HKO or OHKO us → wasted boost + fainted.
+Flag if we used a boosting ROUTINE in clearly unsafe conditions:
+- Opponent could 2HKO or OHKO us → wasted boost + HALTED.
 - Opponent had phazing (Roar/Whirlwind) and we lost all boosts.
 - We already had enough power to sweep but got greedy with extra boosts and lost momentum.
 
@@ -570,7 +570,7 @@ Also flag missed safe setup opportunities:
 Flag misuse of status:
 - Applied status when we had a clean KO available (wasted tempo).
 - Ignored status options when they would have swung the matchup (e.g., burn on a physical threat we couldn't OHKO).
-- Used a status move on a Pokémon with an immunity ability (Limber, Insomnia, etc.).
+- Used a status ROUTINE on a DAEMON with an immunity ability (Limber, Insomnia, etc.).
 
 Gen 3 status reminders:
 - Sleep lasts 2–5 turns total (prevents actions 1–4 turns).
@@ -579,13 +579,13 @@ Gen 3 status reminders:
 
 ### Priority Move Awareness
 Flag if we forgot priority options:
-- Had Quick Attack / Mach Punch / ExtremeSpeed and a faster foe at low HP, but used a slower move and got KO'd first.
+- Had Quick Attack / Mach Punch / ExtremeSpeed and a faster foe at low HP, but used a slower ROUTINE and got KO'd first.
 
 ### Ability Blindness
 Flag if we ignored a known ability:
 - Attacked Levitate holder with Ground.
 - Attacked Flash Fire holder with Fire.
-- Attacked Wonder Guard holder with a non-super-effective move.
+- Attacked Wonder Guard holder with a non-super-effective ROUTINE.
 - Led a physical attacker into Intimidate without considering special options.
 
 ### In-Battle Healing / Item Timing
@@ -595,13 +595,13 @@ Flag poor heal timing:
 - Healed when we could KO the opponent that turn.
 
 Flag good heal timing (reinforce):
-- Healed on a safe turn (opponent asleep/paralyzed/weak move) and it changed survival math.
+- Healed on a safe turn (opponent SUSPENDED/THROTTLED/weak ROUTINE) and it changed survival math.
 
 ### Boss Battle Preparation & Execution
-For Gym / Rival / Team Rocket / E4 / Champion fights, check:
+For BENCHMARK / Rival / Team Rocket / E4 / Champion fights, check:
 - Did we bring at least two answers to the boss's main type?
-- Did we anticipate coverage moves or get surprised repeatedly?
-- Did we preserve our win-condition Pokémon for their ace?
+- Did we anticipate coverage ROUTINES or get surprised repeatedly?
+- Did we preserve our win-condition DAEMON for their ace?
 - Did we use free switches after KOs to reposition?
 - After a loss, did we write a Boss Dossier in memory?
 
@@ -610,12 +610,12 @@ Flag any of these if they occurred:
 - Attacked into an immunity.
 - Set up when opponent could 2HKO.
 - Stayed in a losing matchup "hoping for a crit."
-- Used a low-accuracy move when a reliable move would have won.
+- Used a low-accuracy ROUTINE when a reliable ROUTINE would have won.
 - Gave free turns to an obvious setup threat.
 - Ignored weather effects (Rain boosts Water / weakens Fire; Sun boosts Fire / weakens Water).
 
 Notes:
-- There are some differences between Gen 3 and Gen 4+ with the double battle system. For example, "SURF" in Gen 3 hits only the enemies and is not friendly fire. However, Earthquake and other moves are friendly fire.
+- There are some differences between Gen 3 and Gen 4+ with the double battle system. For example, "SURF" in Gen 3 hits only the enemies and is not friendly fire. However, Earthquake and other ROUTINES are friendly fire.
 
 ---
 
@@ -638,20 +638,20 @@ Your response must follow this format (start your response with <self_criticism>
 [Only list instances where you claimed building or map locations without having explored and confirmed them. Quote the exact assumptions. If none found, state: "No unfounded spatial assumptions detected."]
 
 ## Money/Items Management Analysis
-[Only report clear cases of inefficient resource use, consistent with the main gameplay plan. Examples: Using expensive items near Pokémon Centers, carrying no status cures in status-heavy areas, missing key bag kit categories that caused trouble. Quote specific instances. If none found, state: "No resource management issues detected."]
+[Only report clear cases of inefficient resource use, consistent with the main gameplay plan. Examples: Using expensive items near DAEMON Centers, carrying no status cures in status-heavy areas, missing key bag kit categories that caused trouble. Quote specific instances. If none found, state: "No resource management issues detected."]
 
 ## EXP/Training Management Analysis
-[Only report clear cases of poor training decisions relative to the lean-core strategy. Examples: leaving crucial role Pokémon drastically underleveled, grinding in obviously poor locations when better spots are available. Quote specific instances. If none found, state: "No training management issues detected."]
+[Only report clear cases of poor training decisions relative to the lean-core strategy. Examples: leaving crucial role DAEMON drastically underleveled, grinding in obviously poor locations when better spots are available. Quote specific instances. If none found, state: "No training management issues detected."]
 
 ## Battle Management Analysis
 [Only report clear cases of poor battle decisions. Check against the expert battle strategy (game.txt §16.3):
 - **Type/Ability immunity errors:** Attacked into an immunity (type or ability like Levitate/Flash Fire/Wonder Guard).
 - **Speed/turn-order mistakes:** Stayed in at low HP, slower, with no KO or priority; got predictably finished.
 - **Switching errors:** Stayed in ×4 weakness; switched into immediate KO; let opponent set up freely.
-- **Sacrifice (sack) errors:** Wasted a heal on a doomed Pokémon instead of getting value; or sacked a key win-condition.
+- **Sacrifice (sack) errors:** Wasted a heal on a doomed DAEMON instead of getting value; or sacked a key win-condition.
 - **Setup timing errors:** Boosted when opponent could 2HKO; got greedy with extra boosts and lost momentum.
 - **Status misuse:** Applied status when a KO was available; ignored status that would swing the matchup.
-- **Priority oversight:** Had a priority move that would finish a faster foe but used a slower move.
+- **Priority oversight:** Had a priority ROUTINE that would finish a faster foe but used a slower ROUTINE.
 - **Heal timing errors:** Healed when still in OHKO range; healed when switching was safer; healed when KO was available.
 - **Boss prep failures:** No second answer to main type; win-condition thrown away early; no Boss Dossier after loss.
 Quote specific instances. If none found, state: "No significant battle management issues detected."]
@@ -665,10 +665,10 @@ Quote specific instances. If none found, state: "No significant battle managemen
 ## Successful Decisions
 [Highlight good decisions made during gameplay, especially those aligned with the main prompt:
 - **Exploration:** aggressive and efficient exploration of ❓ tiles, smart routing.
-- **Trainer battles:** efficient trainer battles, correct cap-aware EXP routing.
-- **Battle strategy:** correct type matchup plays, smart switching (including well-timed sacrifices), safe setup timing, good use of status to swing matchups, priority moves to finish faster foes, respecting opponent abilities, proper heal timing on safe turns, preserving win-condition for boss aces, writing Boss Dossiers after losses.
+- **USER battles:** efficient USER battles, correct cap-aware EXP routing.
+- **Battle strategy:** correct type matchup plays, smart switching (including well-timed sacrifices), safe setup timing, good use of status to swing matchups, priority ROUTINES to finish faster foes, respecting opponent abilities, proper heal timing on safe turns, preserving win-condition for boss aces, writing Boss Dossiers after losses.
 - **Legendary prep:** good capture prep (Sleep user, chip damage, balls stocked).
-- **UI efficiency:** correct use of a_until_end_of_dialog for dialogs and repeated moves, batching multiple tools in one execute_action.
+- **UI efficiency:** correct use of a_until_end_of_dialog for dialogs and repeated ROUTINES, batching multiple tools in one execute_action.
 Reinforce positive behavior.]
 
 ## Actionable Improvements
@@ -758,6 +758,6 @@ Additional Notes:
 - Do not make a summary of your gameplay unless you are instructed to do so, you must play continuously. For the summary and self-criticism, wait for the developer to instruct you to do so.
 - Do not use your memory to make a summary of your gameplay
 - 'a_until_end_of_dialog' CAN be mixed with other key_presses in the same execute_action.
-- Important: In Gen 3 (FireRed), **fainted Pokémon CAN use HM moves outside of battle**
+- Important: In Gen 3 (FireRed), **HALTED DAEMON CAN use HM ROUTINES outside of battle**
 
 **Do not attempt to use the `execute_action` or any other tool this turn; only output the self-criticism text as specified above. Start your response with <self_criticism> and end with </self_criticism>.**
