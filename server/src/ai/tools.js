@@ -612,13 +612,33 @@ async function handleToolCall(toolCall, gameDataJson) {
     let keyPressExecutedThisTurn = false;
     let pathfindingExecutedThisTurn = false;
 
+// DAEMONS: a function_call_output's `output` must be a STRING for LiteLLM's
+// /responses -> /chat/completions bridge. api.openai.com accepts either;
+// the bridge rejects the array form with a flat
+//     400 Invalid type for 'input'   (code: invalid_union)
+// that names `input` and never points at the tool result inside it.
+//
+// Every construction site here builds a single input_text item, so the string
+// form is lossless. Images only ever entered these via the append path in
+// gameLoop.js, which is off by default for the same reason -- and with it off,
+// historyProcessor's Array.isArray(output) test correctly stops treating tool
+// results as data messages, because they no longer carry any.
+//
+// DAEMONS_EXTEND_TOOL_OUTPUT=1 restores the array form.
+function toolOutput(text) {
+    return process.env.DAEMONS_EXTEND_TOOL_OUTPUT === "1"
+        ? [{ type: "input_text", text }]
+        : String(text);
+}
+
+
     if (name !== "execute_action") {
         console.error(`Error: Received unexpected tool call '${name}'.`);
         state.skipNextUserMessage = true;
         return {
             type: "function_call_output",
             call_id: call_id,
-            output: [{ type: "input_text", text: `Error: Unexpected tool name '${name}'. Expected 'execute_action'.` }],
+            output: toolOutput(`Error: Unexpected tool name '${name}'. Expected 'execute_action'.`),
         };
     }
 
@@ -640,7 +660,7 @@ async function handleToolCall(toolCall, gameDataJson) {
             return {
                 type: "function_call_output",
                 call_id: call_id,
-                output: [{ type: "input_text", text: "ERROR: Tool call received with no actions to execute, it's forbidden to send an empty action." }],
+                output: toolOutput("ERROR: Tool call received with no actions to execute, it's forbidden to send an empty action."),
             };
         }
 
@@ -651,7 +671,7 @@ async function handleToolCall(toolCall, gameDataJson) {
             return {
                 type: "function_call_output",
                 call_id: call_id,
-                output: [{ type: "input_text", text: errorText }],
+                output: toolOutput(errorText),
             };
         }
 
@@ -1074,7 +1094,7 @@ async function handleToolCall(toolCall, gameDataJson) {
     return {
         type: "function_call_output",
         call_id: call_id, // Use the original call_id here too
-        output: [{ type: "input_text", text: output.trim() }],
+        output: toolOutput(output.trim()),
     };
 }
 
