@@ -277,19 +277,39 @@ const EXIT_TILES = {
     23: "exit carpet",
 };
 
+//  Stairs, ladders and escalators move you between floors of the SAME
+//  building. Doors, entrances and warps lead somewhere else, usually outside.
+//  Listing all of them undifferentiated is what sent the agent back up the
+//  stairs it had just come down: on the ground floor it read
+//    "exit carpet at (10, 2), stairs at (11, 2), exit carpet at (4, 8),
+//     door at (4, 9)"
+//  and walked at the stairs, which are the way BACK.
+const FLOOR_CHANGE = new Set(["stairs", "ladder", "escalator"]);
+
 function exitsLine(grid) {
     if (!Array.isArray(grid) || !Array.isArray(grid[0])) return null;
-    const found = [];
+    const out = [], floors = [];
     for (let y = 0; y < grid.length; y++) {
         for (let x = 0; x < grid[y].length; x++) {
             const kind = EXIT_TILES[grid[y][x]];
-            if (kind) found.push(`${kind} at (${x}, ${y})`);
+            if (!kind) continue;
+            (FLOOR_CHANGE.has(kind) ? floors : out).push(`${kind} at (${x}, ${y})`);
         }
     }
-    if (!found.length) {
+    if (!out.length && !floors.length) {
         return "**Exits on this map:** none discovered yet -- explore toward the ❓ tiles to find one.";
     }
-    return `**Exits on this map (use one of these to LEAVE):** ${found.join(", ")}.`;
+    const parts = [];
+    if (out.length) {
+        parts.push(`**To LEAVE this building/area:** ${out.join(", ")}.`);
+    }
+    if (floors.length) {
+        parts.push(`**Other floors of the same building (NOT the way out):** ${floors.join(", ")}.`);
+    }
+    if (!out.length) {
+        parts.push("No way out discovered yet -- explore toward the ❓ tiles.");
+    }
+    return parts.join(" ");
 }
 
 function minimapToMarkdown(mm, minimapPlayerX, minimapPlayerY, map_id, map_name, playerOrientationId, gameAreaGrid, gameAreaLocalPlayerRow, gameAreaLocalPlayerCol, npcEntries = null, isPathFinding = false) {
