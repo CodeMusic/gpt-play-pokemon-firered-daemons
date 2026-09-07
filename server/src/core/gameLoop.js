@@ -330,7 +330,7 @@ async function gameLoop() {
 	                        effort: config.openai.reasoningEffortSummary,
 	                        summary: config.openai.reasoningSummary,
                     },
-                    max_output_tokens: 32000,
+                    max_output_tokens: config.openai.maxOutputTokens,
                     store: true, // Important to get call details in the final response
 
                     // store: false, // Important to get call details in the final response,
@@ -854,7 +854,7 @@ async function gameLoop() {
 	                        effort: config.openai.reasoningEffortCriticism,
 	                        summary: config.openai.reasoningSummary,
                     },
-                    max_output_tokens: 32000,
+                    max_output_tokens: config.openai.maxOutputTokens,
                     store: true, // Important to get call details in the final response
                     // store: false, // Important to get call details in the final response,
                     // include: ["reasoning.encrypted_content"],
@@ -995,7 +995,7 @@ async function gameLoop() {
                 tools: tools,
                 tool_choice: "required",
                 parallel_tool_calls: false,
-                max_output_tokens: 32000,
+                max_output_tokens: config.openai.maxOutputTokens,
                 store: true, // Important to get call details in the final response,
                 // store: false, // Important to get call details in the final response,
                 // include: ["reasoning.encrypted_content"],

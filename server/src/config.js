@@ -10,6 +10,19 @@ const config = {
   openai: {
     apiKey: process.env.OPENAI_API_KEY,
     model: process.env.OPENAI_MODEL || "gpt-5.2",
+    //  DAEMONS: a ceiling on generation, because "high" reasoning against a
+    //  local model is not the same trade as against a hosted one.
+    //
+    //  max_output_tokens was hardcoded to 32000 at every call site. On gpt-5.2
+    //  that is a formality; on a 4-bit MiniCPM at ~70 tok/s it is a 457-second
+    //  ceiling on ONE turn. A real turn here emits 180-1120 tokens, and the run
+    //  that prompted this spent 290s emitting 21,190 -- 623 consecutive
+    //  response.reasoning_text.delta events, thinking itself in circles and
+    //  never reaching a tool call.
+    //
+    //  2048 is generous against the observed maximum and caps a runaway at
+    //  ~30s instead of ~7.5 minutes. Raise it for a model that earns it.
+    maxOutputTokens: Number(process.env.DAEMONS_MAX_OUTPUT_TOKENS || 32000),
     reasoningEffort: process.env.OPENAI_REASONING_EFFORT || "high",
     reasoningEffortBattle: process.env.OPENAI_REASONING_EFFORT_BATTLE || "high",
     reasoningEffortDialog: process.env.OPENAI_REASONING_EFFORT_DIALOG || "high",
