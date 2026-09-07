@@ -71,16 +71,28 @@ That is the worst failure available: it looks like it is working.
 ## Loading the Lua bridge
 
 mGBA **0.10.5 has no `--script`** — that arrived in 0.11 — so this step is
-manual and there is no way around it on that version:
+manual, and there is one trap in it.
 
-1. `./bindDaemons.sh --ai` (starts the emulator, the bridge and the agent)
-2. In mGBA: **Tools → Scripting**
-3. In the scripting window: **File → Load script**
-4. Choose `engineAi/mgba/scripts/FireRedBridgeSocketServer.lua`
+**Tools → Scripting** opens a window whose only obvious control is a text box
+with a **Run** button. ***That box is a Lua REPL, not a file picker.*** Typing a
+path into it gets `[ERROR] prompt:1: unexpected symbol near '~'`, because `~`
+is not a Lua token. Two ways through:
 
-The scripting window prints the socket server starting. Leave it open — closing
-it stops the bridge. If the agent logs connection refused, this is the step
-that was missed.
+**Paste this, and press Run** — the reliable one, and note Lua does not expand
+`~`, so it must be an absolute path:
+
+```lua
+dofile("/ABSOLUTE/PATH/TO/mgba/scripts/FireRedBridgeSocketServer.lua")
+```
+
+`./bindDaemons.sh --ai` prints the exact line, resolved through the symlink.
+
+**Or use the menu**, which on macOS is in the screen's menu bar rather than in
+the window: with the Scripting window focused, **File → Load script…**
+
+Either way the scripting window reports the socket server starting. **Leave it
+open — closing it stops the bridge.** If the agent logs connection refused,
+this is the step that was missed.
 
 ---
 
