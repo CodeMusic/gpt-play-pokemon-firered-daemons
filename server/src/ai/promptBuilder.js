@@ -397,12 +397,14 @@ async function buildUserInputText(gameDataJson) {
 <game_state timestamp="${new Date().toISOString()}" current_step="${counters.currentStep}">
 <current_situation>
   <not_started>true</not_started>
-  <note>The game has NOT started yet. No save is loaded, so there is no map,
-  no position and no party -- any location data you may have seen is
-  uninitialised memory, not a place. Look at the SCREENSHOT and nothing else.
-  You are most likely on the title screen, an intro sequence, or the opening
-  narration. Press START or A to advance. When a name is asked for, choose one
-  and enter it. When a choice is offered, read it on screen and pick.</note>
+  <note>The game has NOT started. No save is loaded, so there is no map, no
+  position and no party -- any location data is uninitialised memory, not a
+  place. Read the SCREENSHOT and nothing else. You are on the title screen, an
+  intro sequence, or the opening narration.</note>
+  <required_action>Call execute_action NOW with a key_press. Do not reply with
+  text. Press "start" on a title screen, or "a" to advance narration or a
+  dialogue. If a name is being entered, use the on-screen keyboard and confirm.
+  If a choice is offered, read it and pick one.</required_action>
 </current_situation>
 </game_state>`;
   }
