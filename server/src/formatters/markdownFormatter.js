@@ -269,6 +269,12 @@ function gameAreaToMarkdown(
 const EXIT_TILES = {
     9: "warp", 26: "door", 27: "ladder", 28: "escalator",
     30: "stairs", 31: "entrance", 32: "warp arrow",
+    //  23 is the red exit carpet, and leaving it out was a real bug: on the
+    //  ground floor of the house the ONLY thing this listed was "stairs at
+    //  (11,2)" -- the stairs back UP. The carpet is the door to the town.
+    //  markdownFormatter's own legend already says so: "When you see a 🟥 exit
+    //  carpet, you can walk through it to exit the map."
+    23: "exit carpet",
 };
 
 function exitsLine(grid) {
