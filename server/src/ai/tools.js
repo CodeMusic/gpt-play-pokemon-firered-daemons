@@ -477,7 +477,15 @@ function summarizeTracePayloadMarkdown(payload) {
 function defineTools() {
     // Individual schemas for each action type.
     const keyPressActionSchema = z.object({
-        type: z.literal("key_press").describe("Action of pressing one or more keys."),
+        //  DAEMONS: say "several", because the cost of a turn is the PROMPT.
+        //  A turn spends ~193s re-reading 35k tokens and ~0.3s writing 60
+        //  tokens, so one key per turn is 3.5 minutes to move one tile. The
+        //  keys are a list; filling it costs nothing.
+        type: z.literal("key_press").describe(
+            "Press one or SEVERAL keys in sequence. Send the whole run at once -- "
+            + "['up','up','up','left'] costs exactly as much as ['up'] and covers "
+            + "four tiles instead of one. Sending a single key when you know the "
+            + "next few wastes an entire turn."),
         keys: z.array(z.enum(ALLOWED_KEYPRESS_KEYS)).describe("Keys to send (e.g., 'up', 'down', 'left', 'right', 'a', 'b', 'start', 'select'). Use 'face_up', 'face_down', 'face_left', 'face_right' to change the orientation of the player without moving.")
     });
 
@@ -532,7 +540,18 @@ function defineTools() {
 
     // Pathfinding schema
     const pathfindingActionSchema = z.object({
-        type: z.literal("path_to_location").describe("Action to pathfind to a specific location, use this action when you need to move more than 20 tiles in a row or for complex paths."),
+        //  DAEMONS: the 20-tile threshold was written when this ran on OpenAI's
+        //  Code Interpreter -- a model writing Python, uploaded to a container,
+        //  executed remotely. Rationing it made sense. It is now a breadth-first
+        //  search over the collision grid already in memory: exact, instant,
+        //  free, and it cannot route through a wall. The advice is now backwards,
+        //  and the run it produced was one tile per 3.5-minute turn.
+        type: z.literal("path_to_location").describe(
+            "Walk to a tile on this map. PREFER THIS over key_press for any move "
+            + "of more than a step or two: it is instant, it costs no more than a "
+            + "single key press, and it routes around walls and furniture for you. "
+            + "Give it the destination and it does the whole journey in one turn -- "
+            + "the stairs, a door, the far side of the room."),
         x: z.number().describe("X coordinate of the destination."),
         y: z.number().describe("Y coordinate of the destination."),
         map_id: z.string().describe("ID of the map where the destination is located."),
