@@ -721,7 +721,25 @@ async function gameLoop() {
             } else if (!state.skipNextUserMessage) { // <<< Check the flag BEFORE creating newUserMessage
                 const userInputText = await buildUserInputText(gameDataJson);
                 const lastHistoryItem = state.history.length > 0 ? state.history[state.history.length - 1] : null;
-                const canExtendLastToolOutput = lastHistoryItem?.type === "function_call_output" && Array.isArray(lastHistoryItem.output);
+                // DAEMONS: appending image/text items INTO a function_call_output
+                // makes its `output` an ARRAY. api.openai.com accepts that;
+                // LiteLLM's /responses -> /chat/completions bridge does not,
+                // and rejects the whole request with
+                //     400 Invalid type for 'input'  (code invalid_union)
+                // which names `input` and never mentions the tool output that
+                // caused it. Verified directly against the proxy: identical
+                // request with a STRING output passes, with a LIST fails.
+                //
+                // The else branch below builds the same images and the same
+                // text as an ordinary user message, so taking it costs nothing
+                // -- the model sees exactly what it would have seen.
+                //
+                // Set DAEMONS_EXTEND_TOOL_OUTPUT=1 to restore the original
+                // behaviour when talking to an endpoint that supports it.
+                const allowArrayToolOutput = process.env.DAEMONS_EXTEND_TOOL_OUTPUT === "1";
+                const canExtendLastToolOutput = allowArrayToolOutput
+                    && lastHistoryItem?.type === "function_call_output"
+                    && Array.isArray(lastHistoryItem.output);
                 // console.log("User input text:", userInputText);
                 // Broadcast the generated map
                 // if (mapDisplayRef) {
