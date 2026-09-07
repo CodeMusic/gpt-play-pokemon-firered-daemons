@@ -537,17 +537,46 @@ function defineTools() {
         type: z.literal("restart_console").describe("Action to reboot the Game Boy console back to the title screen. BE SURE TO HAVE SAVED THE GAME BEFORE USING THIS TOOL."),
     });
 
-    // Union of possible action schemas
-    const actionUnionSchema = z.union([
+    // Union of possible action schemas.
+    //
+    // DAEMONS_SCHEMA=lean (the default) drops three variants. It is NOT a
+    // speed measure, and the first version of this comment said it was.
+    //
+    // MEASURED, warmed and alternating so neither owned the cold call:
+    //     lean(5)  median 3.7s     full(8)  median 3.8s
+    // No difference. The 9.3s and 11.4s that motivated the trim were cold
+    // starts -- LM Studio reported the model as not-loaded, so the first call
+    // of a batch paid a model load and every ordering I ran gave the second
+    // variant an unearned win. The schema was never the bottleneck.
+    //
+    // What lean is still for: three fewer branches for a small model to
+    // disambiguate, which is the failure that produced "Executing Action 1/2:
+    // undefined". That is a CORRECTNESS argument and it is untested. The three
+    // dropped only annotate -- add_marker and delete_marker decorate the
+    // dashboard's minimap, restart_console is an escape hatch that should
+    // almost never fire -- so lean costs nothing that plays the game.
+    //
+    // update_objectives stays despite being 35% of the schema: it is how the
+    // agent carries a plan across the summarisation fold.
+    //
+    // DAEMONS_SCHEMA=full restores all eight.
+    const leanSchema = (process.env.DAEMONS_SCHEMA || "lean") !== "full";
+    const actionVariants = [
         keyPressActionSchema,
-        addMarkerActionSchema,
         writeMemoryActionSchema,
         deleteMemoryActionSchema,
         updateObjectivesActionSchema,
-        deleteMarkerActionSchema,
         pathfindingActionSchema,
-        restartConsoleActionSchema,
-    ]);
+    ];
+    if (!leanSchema) {
+        actionVariants.push(
+            addMarkerActionSchema,
+            deleteMarkerActionSchema,
+            restartConsoleActionSchema,
+        );
+    }
+    console.log(`Action schema: ${leanSchema ? "lean" : "full"} (${actionVariants.length} variants)`);
+    const actionUnionSchema = z.union(actionVariants);
 
     // Main schema for the execute_action tool
     const executeActionSchema = z.object({
