@@ -101,7 +101,25 @@ function formatObjectives(objectives) {
   const third = safe(objectives.third);
   const others = Array.isArray(objectives.others) ? objectives.others : [];
 
+  //  DAEMONS: an empty objectives block has to ASK, not just be empty.
+  //
+  //  A --fresh run wipes objectives.json, and what the model then reads is
+  //  <primary short=""></primary> -- silent empty tags. Across a whole run it
+  //  called update_objectives exactly zero times and wandered a bedroom with
+  //  no stated goal at all. Nothing in 14,810 tokens of instruction ever says
+  //  "these are blank and setting them is your job", and blank reads as
+  //  "nothing here", the same way the unnamed staircase did.
+  const nothingSet = !(primary.short_description || secondary.short_description
+                       || third.short_description || others.length);
+
   const lines = ["<objectives>"];
+  if (nothingSet) {
+    lines.push(
+      "  <!-- EMPTY. You have no objectives yet. Call update_objectives NOW,"
+      + " before moving, and set a primary objective you can actually act on"
+      + " this turn -- e.g. leaving this map by one of the exits listed above. -->"
+    );
+  }
   lines.push(
     `  <primary short="${escapeXml(primary.short_description || "")}">${escapeXml(primary.description || "")}</primary>`
   );
