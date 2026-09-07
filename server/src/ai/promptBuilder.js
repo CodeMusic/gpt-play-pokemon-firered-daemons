@@ -378,6 +378,35 @@ async function buildUserInputText(gameDataJson) {
   const trainerName = trainer?.name || "PLAYER";
   const money = trainer?.money ?? 0;
   const badgeCount = trainer?.badge_count ?? 0;
+  // DAEMONS: BEFORE A GAME IS RUNNING, THE RAM IS NOT STATE -- IT IS ZEROES.
+  // On the title screen no save is loaded, so gSaveBlock1Ptr resolves to
+  // nothing, map id 0-0 comes back as BATTLE_COLOSSEUM_2_P, the position reads
+  // 0,0 and the dialog flag is garbage. The agent was being told, in
+  // structured text it trusts more than the screenshot, that it stood in a
+  // battle colosseum inside a dialogue -- and pressing buttons to escape that
+  // is a reasonable answer to a false premise. It never pressed START because
+  // nothing ever said there was a title screen.
+  //
+  // Detected rather than assumed: map 0-0 at exactly 0,0 with no player name
+  // is not a place anyone can stand.
+  const preGame = (pos.map_id === "0-0" || !pos.map_id)
+      && Number(pos.x) === 0 && Number(pos.y) === 0
+      && (!trainer?.name || trainer.name === "PLAYER");
+  if (preGame) {
+    return `
+<game_state timestamp="${new Date().toISOString()}" current_step="${counters.currentStep}">
+<current_situation>
+  <not_started>true</not_started>
+  <note>The game has NOT started yet. No save is loaded, so there is no map,
+  no position and no party -- any location data you may have seen is
+  uninitialised memory, not a place. Look at the SCREENSHOT and nothing else.
+  You are most likely on the title screen, an intro sequence, or the opening
+  narration. Press START or A to advance. When a name is asked for, choose one
+  and enter it. When a choice is offered, read it on screen and pick.</note>
+</current_situation>
+</game_state>`;
+  }
+
   let userInputText = `
 <game_state timestamp="${new Date().toISOString()}" current_step="${counters.currentStep}">
 <current_situation>
