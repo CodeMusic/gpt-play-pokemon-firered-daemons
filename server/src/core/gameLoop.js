@@ -1203,9 +1203,29 @@ async function gameLoop() {
             //  model gets to read about it next turn. The function_call and its
             //  output are removed together, so the pairing the API requires
             //  stays intact.
+            //  The signature is the ACTION, never the commentary. Including
+            //  step_details and chat_message meant two identical `right`
+            //  presses into the same wall compared as different turns, purely
+            //  because the model reworded its own caption -- "Exploring
+            //  rightward path to find important connections" one turn,
+            //  "Moving right to explore important connections" the next. The
+            //  guard then never fired on exactly the loop it exists to catch.
+            const NARRATION = new Set(["step_details", "chat_message", "avatar_emotion", "explanation"]);
             const signature = (finalResponse.output || [])
                 .filter((item) => item.type === "function_call")
-                .map((item) => `${item.name}:${item.arguments}`)
+                .map((item) => {
+                    let args = item.arguments;
+                    try {
+                        const parsed = JSON.parse(item.arguments || "{}");
+                        for (const key of Object.keys(parsed)) {
+                            if (NARRATION.has(key)) delete parsed[key];
+                        }
+                        //  Stable key order, so a reordered object is still the
+                        //  same action.
+                        args = JSON.stringify(parsed, Object.keys(parsed).sort());
+                    } catch (e) { /* unparseable: compare the raw string */ }
+                    return `${item.name}:${args}`;
+                })
                 .join("|");
             if (signature) {
                 let movedNowhere = false;
