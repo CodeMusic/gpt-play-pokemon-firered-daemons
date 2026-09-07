@@ -443,10 +443,10 @@
 
     const lines = [
       ["Name", escapeHtml(t.name || "PLAYER")],
-      ["Money", `$${formatNumber(t.money || 0)}`],
+      ["Cache", `$${formatNumber(t.money || 0)}`],
       ["Map", `${escapeHtml(pos.map_name || "-")} <span class="muted">(${escapeHtml(pos.map_id || "-")})</span>`],
       ["Position", `<span class="mono">X=${formatNumber(pos.x)} Y=${formatNumber(pos.y)}</span>`],
-      ["Badges", formatNumber(t.badge_count || badgeNames.length)],
+      ["Marks", formatNumber(t.badge_count || badgeNames.length)],
       [
         "Flags",
         [
@@ -460,7 +460,7 @@
           .join(" "),
       ],
       [
-        "Badges list",
+        "Marks list",
         badgeNames.length > 0
           ? badgeNames.map((b) => `<span class="badge">${escapeHtml(b)}</span>`).join(" ")
           : `<span class="muted">None</span>`,
