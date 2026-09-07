@@ -2,10 +2,18 @@ const OpenAI = require("openai");
 const { config } = require("../config");
 
 //  DAEMONS: point the client at any OpenAI-compatible endpoint.
-//  The harness reads game state out of RAM rather than from screenshots, so
-//  nothing here needs vision and the decision is text-in / button-out -- which
-//  a local model can do. Unset, this falls back to api.openai.com exactly as
-//  before, so the change is inert for anyone not using it.
+//
+//  The model MUST take images. The harness reads state out of RAM *and*
+//  attaches a screenshot to every decision, so "it reads RAM, nothing needs
+//  vision" is wrong -- ai/litellm/config.yaml already records the symptom:
+//  ternary-bonsai-8b-mlx returned "The provided input contains images, but
+//  ternary-bonsai-8b-mlx does not support image inputs." I wrote that wrong
+//  claim here anyway, and then repeated it out loud a session later.
+//
+//  A text-only model is only usable with DAEMONS_KEEP_IMAGES=0.
+//
+//  Unset, this falls back to api.openai.com exactly as before, so the change
+//  is inert for anyone not using it.
 //  DAEMONS: retries are not free against a local model, they are multiplied.
 //
 //  The SDK defaults to maxRetries 2 and this client never set it. Against

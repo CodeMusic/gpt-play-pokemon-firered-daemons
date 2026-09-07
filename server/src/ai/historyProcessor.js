@@ -95,13 +95,23 @@ function processHistoryForAPI(currentHistory) {
     return acc;
   }, []);
 
-  const minimapKeepIndices = new Set(dataMessageIndices.slice(-config.history.keepLastNUserMessagesWithMinimap));
-  const viewMapKeepIndices = new Set(dataMessageIndices.slice(-config.history.keepLastNUserMessagesWithViewMap));
-  const detailedDataKeepIndices = new Set(dataMessageIndices.slice(-config.history.keepLastNUserMessagesWithDetailedData));
-  const imagesKeepIndices = new Set(dataMessageIndices.slice(-config.history.keepLastNUserMessagesWithImages));
-  const toolResultKeepIndices = new Set(toolResultIndices.slice(-config.history.keepLastNToolFullResults));
-  const memoryKeepIndices = new Set(dataMessageIndices.slice(-config.history.keepLastNUserMessagesWithMemory));
-  const pokedexKeepIndices = new Set(dataMessageIndices.slice(-config.history.keepLastNUserMessagesWithPokedex));
+  //  DAEMONS: keepLast(0) has to mean NONE, and slice(-0) means ALL.
+  //
+  //  -0 === 0 in JavaScript, so `arr.slice(-0)` is `arr.slice(0)` -- the whole
+  //  array. Every one of these knobs therefore did the exact opposite of what
+  //  its name says at its most useful setting: DAEMONS_KEEP_IMAGES=0 kept
+  //  images on EVERY message in the history instead of none of them. I told
+  //  Christopher to test with 0 to cut prompt size; it would have silently
+  //  ballooned it.
+  const keepLast = (arr, n) => (n > 0 ? arr.slice(-n) : []);
+
+  const minimapKeepIndices = new Set(keepLast(dataMessageIndices, config.history.keepLastNUserMessagesWithMinimap));
+  const viewMapKeepIndices = new Set(keepLast(dataMessageIndices, config.history.keepLastNUserMessagesWithViewMap));
+  const detailedDataKeepIndices = new Set(keepLast(dataMessageIndices, config.history.keepLastNUserMessagesWithDetailedData));
+  const imagesKeepIndices = new Set(keepLast(dataMessageIndices, config.history.keepLastNUserMessagesWithImages));
+  const toolResultKeepIndices = new Set(keepLast(toolResultIndices, config.history.keepLastNToolFullResults));
+  const memoryKeepIndices = new Set(keepLast(dataMessageIndices, config.history.keepLastNUserMessagesWithMemory));
+  const pokedexKeepIndices = new Set(keepLast(dataMessageIndices, config.history.keepLastNUserMessagesWithPokedex));
 
   return currentHistory
     .map((message, index) => {
