@@ -780,6 +780,17 @@ async function gameLoop() {
             const developerPrompt = await buildDeveloperPrompt();
             const processedHistory = processHistoryForAPI(newUserMessage ? [...state.history, newUserMessage] : state.history); // Clean old messages
             const apiInput = [developerPrompt, ...processedHistory];
+
+            // DAEMONS: dump the exact request that goes on the wire, so a 400
+            // naming only `input` can be bisected instead of guessed at. Three
+            // guesses cost a day; the file costs nothing.
+            if (process.env.DAEMONS_DUMP_INPUT) {
+                try {
+                    require("fs").writeFileSync(
+                        process.env.DAEMONS_DUMP_INPUT,
+                        JSON.stringify(apiInput, null, 1));
+                } catch (e) { /* never let debugging break the run */ }
+            }
             const tools = defineTools();
 
             // 5. Call the OpenAI API with streaming
