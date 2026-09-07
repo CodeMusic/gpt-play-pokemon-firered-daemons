@@ -256,6 +256,36 @@ function gameAreaToMarkdown(
  * @param {number}     gameAreaLocalPlayerCol Player's column index within gameAreaGrid (e.g., 4)
  * @param {boolean}    isPathFinding Whether this is a pathfinding request
  */
+//  DAEMONS: name the exits, because nothing else does.
+//
+//  The legend says "🧗 : Stairs" and the grid puts one at (9,2), and the model
+//  wandered the room for an hour anyway. Knowing a staircase is a staircase is
+//  not the same as knowing it is the way OUT -- that inference was left to
+//  14,810 tokens of general instruction, and it did not survive the trip.
+//
+//  Every id here is already labelled in constants/tiles.js, so this is a read
+//  of data we ship anyway. It costs about twenty tokens and it answers the
+//  question the run kept failing: where is the door.
+const EXIT_TILES = {
+    9: "warp", 26: "door", 27: "ladder", 28: "escalator",
+    30: "stairs", 31: "entrance", 32: "warp arrow",
+};
+
+function exitsLine(grid) {
+    if (!Array.isArray(grid) || !Array.isArray(grid[0])) return null;
+    const found = [];
+    for (let y = 0; y < grid.length; y++) {
+        for (let x = 0; x < grid[y].length; x++) {
+            const kind = EXIT_TILES[grid[y][x]];
+            if (kind) found.push(`${kind} at (${x}, ${y})`);
+        }
+    }
+    if (!found.length) {
+        return "**Exits on this map:** none discovered yet -- explore toward the ❓ tiles to find one.";
+    }
+    return `**Exits on this map (use one of these to LEAVE):** ${found.join(", ")}.`;
+}
+
 function minimapToMarkdown(mm, minimapPlayerX, minimapPlayerY, map_id, map_name, playerOrientationId, gameAreaGrid, gameAreaLocalPlayerRow, gameAreaLocalPlayerCol, npcEntries = null, isPathFinding = false) {
     if (!mm || !mm.grid) return "## Explored Map State\n_Aucune donnée_\n";
 
@@ -302,7 +332,9 @@ function minimapToMarkdown(mm, minimapPlayerX, minimapPlayerY, map_id, map_name,
         `Every '❓' represents tiles you haven't explored yet. You need to explore them to discover doors, stairs, etc. Otherwise they won't appear on the map.`,
         `Player Position (Map Coords): X=${minimapPlayerX}, Y=${minimapPlayerY}`,
         `Map Name: ${map_name}`,
-        `Map Size: ${W}x${H}\n`,
+        `Map Size: ${W}x${H}`,
+        exitsLine(minimapGrid) || "",
+        "",
         mdRow(header),
         mdSep(header.length),
     ];
