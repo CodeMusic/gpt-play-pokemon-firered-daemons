@@ -779,7 +779,31 @@ async function gameLoop() {
             // 4. Prepare the complete input for the OpenAI API
             const developerPrompt = await buildDeveloperPrompt();
             const processedHistory = processHistoryForAPI(newUserMessage ? [...state.history, newUserMessage] : state.history); // Clean old messages
-            const apiInput = [developerPrompt, ...processedHistory];
+            const apiInput = [developerPrompt, ...processedHistory].map((item) => {
+                // DAEMONS: normalise at the boundary. A function_call_output
+                // whose `output` is an ARRAY is rejected by LiteLLM's
+                // /responses -> /chat/completions bridge with a flat
+                //     400 Invalid type for 'input'   (code: invalid_union)
+                // that names the whole array and not the offending member.
+                //
+                // The four construction sites in tools.js already emit strings
+                // (see toolOutput there), and handleToolCall was verified
+                // returning a string -- yet arrays still reached the wire, and
+                // reading every path between the two did not explain it. So
+                // this coerces here, where the request is actually assembled:
+                // whatever produced the array, it cannot leave this function.
+                //
+                // Lossless for our case: every such output is a single
+                // input_text, and images take the user-message path.
+                if (item && item.type === "function_call_output" && Array.isArray(item.output)) {
+                    const text = item.output
+                        .filter((x) => x && x.type === "input_text")
+                        .map((x) => x.text)
+                        .join("\n");
+                    return { ...item, output: text };
+                }
+                return item;
+            });
 
             // DAEMONS: dump the exact request that goes on the wire, so a 400
             // naming only `input` can be bisected instead of guessed at. Three
