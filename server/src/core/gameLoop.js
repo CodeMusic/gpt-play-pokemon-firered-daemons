@@ -1044,7 +1044,7 @@ async function gameLoop() {
                 tool_choice: "required",
                 parallel_tool_calls: false,
                 max_output_tokens: config.openai.maxOutputTokens,
-                store: config.openai.store,,
+                store: config.openai.store,
                 // store: false, // Important to get call details in the final response,
                 // include: ["reasoning.encrypted_content"],
                 stream: true,
