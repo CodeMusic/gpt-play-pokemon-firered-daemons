@@ -16,6 +16,9 @@ const state = {
   //  Bounded here for the same reason the dashboard bounds its copy: nobody
   //  scrolls back through the inner voice, you read the last few and move on.
   asides: [],
+  //  Who it has turned out to be. Written by `reflect`, read back into every
+  //  prompt so the inner voice has a speaker to be consistent with.
+  selfModel: [],
   allSummaries: [],
   badgeHistory: {},
   previousBadgesState: {},
@@ -216,6 +219,16 @@ async function loadPersistentState() {
   }
 
   try {
+    const selfData = await fs.readFile(config.paths.selfModelSaveFile, "utf-8");
+    const parsedSelf = JSON.parse(selfData);
+    if (Array.isArray(parsedSelf)) state.selfModel = parsedSelf;
+    console.log("Loaded self-model:", state.selfModel.length);
+  } catch (error) {
+    if (error.code !== "ENOENT") console.error("Error loading self-model:", error);
+    state.selfModel = [];
+  }
+
+  try {
     const asidesData = await fs.readFile(config.paths.asidesSaveFile, "utf-8");
     const parsed = JSON.parse(asidesData);
     if (Array.isArray(parsed)) state.asides = parsed;
@@ -359,6 +372,7 @@ async function savePersistentState() {
     await fs.writeFile(config.paths.mapVisitsSaveFile, JSON.stringify(state.mapVisitHistory, null, 2));
     await fs.writeFile(config.paths.summariesSaveFile, JSON.stringify(state.summaries, null, 2));
     await fs.writeFile(config.paths.asidesSaveFile, JSON.stringify(state.asides, null, 2));
+    await fs.writeFile(config.paths.selfModelSaveFile, JSON.stringify(state.selfModel, null, 2));
     await fs.writeFile(config.paths.allSummariesSaveFile, JSON.stringify(state.allSummaries, null, 2));
     await fs.writeFile(config.paths.progressStepsFile, JSON.stringify(state.progressSteps, null, 2));
     await fs.writeFile(config.paths.lastVisitedMapsFile, JSON.stringify(state.lastVisitedMaps, null, 2));

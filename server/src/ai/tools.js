@@ -533,6 +533,28 @@ function defineTools() {
         wasted: z.string().describe(
             "The one thing that wasted turns. If nothing did, say so plainly rather than "
             + "inventing a fault."),
+        //  The self-model, and the reason it exists.
+        //
+        //  `learned` is about the GAME -- exit carpets, ledges, menu order.
+        //  This is about the PLAYER. Without it the inner voice has no speaker:
+        //  every aside is generated fresh with nothing to be consistent with,
+        //  so it drifts to whatever register the field description last nudged
+        //  it toward. Three rewrites of that description produced three
+        //  different degenerate voices -- fragments, then "I am..." on every
+        //  line, then terse procedural notes -- because the problem was never
+        //  the wording.
+        about_self: z.string().describe(
+            "ONE SENTENCE about yourself, not about the game: what this stretch showed "
+            + "you about how YOU play. A tendency, a habit, something you keep doing, a "
+            + "way you tend to react. First person. "
+            + "\n\nGood: \"I commit to a route before I have checked it, and then I am "
+            + "reluctant to turn back.\" / \"I get impatient in menus and start mashing.\" "
+            + "/ \"I am more careful after a faint than before one.\" "
+            + "\n\nWrong: \"I explored the town\" -- that is what happened. \"Exit carpets "
+            + "need a blocked move\" -- that is the `learned` field. This one is about "
+            + "your own character as a player, and it is what your inner voice speaks "
+            + "from. Be honest rather than flattering; a fault named plainly is worth "
+            + "more than a virtue claimed."),
     });
 
     const updateObjectivesActionSchema = z.object({
@@ -748,6 +770,15 @@ function defineTools() {
         aside: z.string().describe(
             "One or two COMPLETE SENTENCES of inner thought, present tense: what you "
             + "are actually thinking, as though nobody can hear it. "
+            + "\n\nSPEAK AS THE PERSON DESCRIBED IN <self>. Those observations are your "
+            + "own, about how you play, and this is the voice they belong to. If <self> "
+            + "is empty you have not reflected yet -- write as yourself anyway, and it "
+            + "will fill in. "
+            + "\n\nIT MUST BE A THOUGHT, NOT A NOTE TO YOURSELF. \"Menu first, then "
+            + "options.\" and \"Three downs should land on OPTION.\" and \"Menu done, back "
+            + "to lab.\" are all WRONG -- they are procedure, clipped down to a label. "
+            + "Nobody's interior monologue sounds like a checklist. If what you are about "
+            + "to write would fit on a sticky note, it belongs in step_details instead. "
             + "\n\nDO NOT START EVERY ONE WITH \"I\". That is the most common failure "
             + "here and it turns this into a template. A run that reads \"I am annoyed "
             + "by...\", \"I am hopeful that...\", \"I am curious what...\" line after line "
@@ -761,6 +792,9 @@ function defineTools() {
             + "\n\nWrong: \"Attacking\" or \"Need heal\" -- fragments, not thoughts. Also "
             + "wrong: anything in second or third person. This is not narration and not "
             + "a status line; it is the voice in your own head. "
+            + "\n\nIt should be possible to tell WHO IS SPEAKING from how it is written. "
+            + "Two different players in the same spot would think different things about "
+            + "it -- write the one that is yours. "
             + "\n\nIt is not a plan and not a summary -- you have other fields for both. "
             + "What do you MAKE of what is in front of you? In a battle: the daemon "
             + "opposite, your own, how this is going. In the world: this place, this "
@@ -1198,6 +1232,23 @@ function toolOutput(text) {
                         //  Reflecting IS the objective boundary, so the progress
                         //  delta restarts here -- the next one measures the next
                         //  stretch rather than the whole run.
+                        //  The self-portrait, kept apart from the tactical
+                        //  memory because it is read back for a different
+                        //  reason -- not "what do I know" but "who am I".
+                        //  Bounded at six: a self-model is a handful of
+                        //  standing observations, not a diary.
+                        if (typeof individualAction.about_self === "string"
+                            && individualAction.about_self.trim()) {
+                            if (!Array.isArray(state.selfModel)) state.selfModel = [];
+                            state.selfModel.push({
+                                text: individualAction.about_self.trim(),
+                                step: state.counters.currentStep,
+                            });
+                            if (state.selfModel.length > 6) {
+                                state.selfModel.splice(0, state.selfModel.length - 6);
+                            }
+                            console.log(`INFO: [reflect/self] ${individualAction.about_self}`);
+                        }
                         state.progressMark = state.progressNow;
                         state.reflectedAtStep = state.counters.currentStep;
                         actionResult.success = true;

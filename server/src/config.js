@@ -141,6 +141,9 @@ const config = {
     get asidesSaveFile() {
       return path.join(ROOT_DIR, config.dataDir, "asides.json");
     },
+    get selfModelSaveFile() {
+      return path.join(ROOT_DIR, config.dataDir, "self_model.json");
+    },
     get progressStepsFile() {
       return path.join(ROOT_DIR, config.dataDir, "progress_steps.json");
     },

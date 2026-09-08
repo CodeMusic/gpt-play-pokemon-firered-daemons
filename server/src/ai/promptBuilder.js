@@ -27,6 +27,31 @@ function formatMemoryStructured(memoryObj) {
   return lines.join("\n") + "\n";
 }
 
+//  Who it has been so far, in its own words.
+//
+//  The inner voice kept collapsing into whatever shape the field description
+//  last pushed it toward -- fragments, then "I am..." on every line, then
+//  clipped procedural notes. Three rewrites, three degenerate registers, and
+//  the reason is that each aside was written with nothing to be consistent
+//  WITH. A voice needs a speaker.
+//
+//  This is that speaker: a handful of standing observations the agent has made
+//  about its own play, written by `reflect` and read back every turn. It is
+//  deliberately NOT instructions -- it is a description, and the aside field
+//  points at it rather than restating it.
+function formatSelfModel(selfModel) {
+  const items = Array.isArray(selfModel) ? selfModel.filter((s) => s?.text) : [];
+  if (!items.length) return "<self />\n";
+  const lines = ["<self>",
+    "  <note>What you have noticed about your own play. This is who your inner",
+    "  voice belongs to -- speak like this person, not like a status line.</note>"];
+  for (const s of items) {
+    lines.push(`  <observation step="${Number(s.step) || 0}">${escapeXml(s.text)}</observation>`);
+  }
+  lines.push("</self>");
+  return lines.join("\n") + "\n";
+}
+
 function formatRecentMarkers(markers, lastVisitedMaps, isInDialog) {
   if (!markers || typeof markers !== "object" || Object.keys(markers).length === 0) {
     return "<markers>No markers set</markers>\n";
@@ -500,6 +525,7 @@ ${progressLine ? "<progress>\n" + progressLine + "\n</progress>\n" : ""}
 </objectives_section>
 
 ${formatMemoryStructured(state.memory)}
+${formatSelfModel(state.selfModel)}
 
 ${formatRecentMarkers(state.markers, state.lastVisitedMaps, isInDialog)}
 
@@ -570,4 +596,4 @@ async function buildDeveloperPrompt() {
   };
 }
 
-module.exports = { buildUserInputText, formatMemoryStructured, buildDeveloperPrompt };
+module.exports = { buildUserInputText, formatMemoryStructured, formatSelfModel, buildDeveloperPrompt };
