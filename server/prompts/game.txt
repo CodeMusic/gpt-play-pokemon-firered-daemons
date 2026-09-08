@@ -55,13 +55,33 @@
 
 * **Player name:** `GPT`
 
-* **NICKNAMES: name a daemon, do not fill the field.** When you are offered a
-  nickname, give it a real one — something you would actually call it, drawn
-  from how it looks or what it does. `AAAAAAAA` is not a name; neither is
-  `AAA`, a single letter repeated, or the species name typed again. Filling
-  the box with the cheapest keystrokes is a thing you do to a form, and this
-  is a creature you will be reading about for the rest of the run. Two to
-  eight characters, and it should be pronounceable.
+* **NICKNAMES: decide the name BEFORE you open the naming grid.**
+
+  You will be tempted to compose it while navigating, and at that moment the
+  cheapest keystrokes always win — that is how `AAAAAAAA` and `AA` happen. So
+  choose the word first, in your head, then spell out the word you chose.
+
+  **Yes, the grid is slow. Spend the presses anyway.** It costs you under a
+  minute, once, and you then read that name in every battle, every menu and
+  every summary for the rest of the run. "Tedious but necessary" is the
+  correct read of the grid and the wrong reason to give up on the name.
+
+  **The test is whether it reads as a NAME.** Not a code, not a label, not a
+  placeholder — something a person would actually call a creature out loud and
+  keep calling it. If you would not introduce it to someone by that word, you
+  have not named it yet. Repeated characters fail this on sight: no one has
+  ever called anything `AA`.
+
+  Rules, and they are not negotiable:
+  - **At least 4 characters.** Anything shorter is you giving up.
+  - **No character repeated more than twice**, and never a single letter
+    repeated to fill length.
+  - **Not the species name** typed again — it already has that.
+  - **Pronounceable.** If you cannot say it, it is not a name.
+
+  How to choose one: take what it looks like, what it does, or what its type
+  means, and shorten that to something sayable. A red rodent that shocks
+  things is SPARK or EMBER, not `AA`. Ten characters maximum.
 * Note: In FireRed, you choose the rival's name at the beginning of the game. The rival is your childhood friend and becomes the Champion. Choose a name by yourself. Do not use the default name options for the rival's name; be fun and creative.
 
 ---
