@@ -226,11 +226,11 @@ function formatPcItems(pcItems) {
 function formatPcPokemon(pcData) {
   const currentBox = Number(pcData?.current_box) || 1;
   const mons = Array.isArray(pcData?.pokemons) ? pcData.pokemons : [];
-  const lines = [`<pc_pokemon current_box="${currentBox}" slot_count="${mons.length}/30">`];
+  const lines = [`<cold_storage current_box="${currentBox}" slot_count="${mons.length}/30">`];
 
   if (mons.length === 0) {
-    lines.push("  <info>No Pokemon in PC</info>");
-    lines.push("</pc_pokemon>");
+    lines.push("  <info>COLD STORAGE is empty</info>");
+    lines.push("</cold_storage>");
     return lines.join("\n") + "\n";
   }
 
@@ -242,7 +242,7 @@ function formatPcPokemon(pcData) {
     const types = Array.isArray(pokemon.types) ? pokemon.types.join(", ") : "";
 
     lines.push(
-      `  <pokemon slot_id="${Number(pokemon.slot_id) || 0}" species="${escapeXml(
+      `  <daemon slot_id="${Number(pokemon.slot_id) || 0}" species="${escapeXml(
         pokemon.species_name || ""
       )}" nickname="${escapeXml(nickname)}" level="${Number(pokemon.level) || 0}">`
     );
@@ -251,20 +251,20 @@ function formatPcPokemon(pcData) {
     lines.push(`    <types>${escapeXml(types)}</types>`);
     lines.push(`    <status>${escapeXml(pokemon.status || "OK")}</status>`);
     lines.push(`    <pokedex_id>${Number(pokemon.pokedex_id) || 0}</pokedex_id>`);
-    lines.push("  </pokemon>");
+    lines.push("  </daemon>");
   }
 
-  lines.push("</pc_pokemon>");
+  lines.push("</cold_storage>");
   return lines.join("\n") + "\n";
 }
 
 function formatPokemonTeam(team) {
   const mons = Array.isArray(team) ? team : [];
-  const lines = ["<pokemon_team>"];
+  const lines = ["<daemon_team>"];
 
   if (mons.length === 0) {
     lines.push("  <info>No Pokémon in party</info>");
-    lines.push("</pokemon_team>");
+    lines.push("</daemon_team>");
     return lines.join("\n") + "\n";
   }
 
@@ -277,7 +277,7 @@ function formatPokemonTeam(team) {
     const heldItemNameRaw = typeof pokemon.held_item_name === "string" ? pokemon.held_item_name : "";
     const heldItemName = heldItemNameRaw || (heldItemId ? "UNKNOWN" : "NONE");
     lines.push(
-      `  <pokemon species="${escapeXml(pokemon.species_name)}" nickname="${escapeXml(
+      `  <daemon species="${escapeXml(pokemon.species_name)}" nickname="${escapeXml(
         nickname
       )}" level="${Number(pokemon.level) || 0}">`
     );
@@ -292,10 +292,10 @@ function formatPokemonTeam(team) {
     lines.push(`    <ability>${escapeXml(ability)}</ability>`);
     lines.push(`    <status>${escapeXml(status)}</status>`);
     lines.push(`    <is_shiny>${pokemon.is_shiny ? "true" : "false"}</is_shiny>`);
-    lines.push("  </pokemon>");
+    lines.push("  </daemon>");
   }
 
-  lines.push("</pokemon_team>");
+  lines.push("</daemon_team>");
   return lines.join("\n") + "\n";
 }
 
@@ -313,7 +313,7 @@ function formatBattleState(battleData) {
     if (!p) continue;
     const nickname = p.nickname || p.species_name;
     lines.push(
-      `    <pokemon species="${escapeXml(p.species_name)}" nickname="${escapeXml(
+      `    <daemon species="${escapeXml(p.species_name)}" nickname="${escapeXml(
         nickname
       )}" level="${Number(p.level) || 0}" position="${escapeXml(p.position || "")}">`
     );
@@ -325,7 +325,7 @@ function formatBattleState(battleData) {
     }
     lines.push("      </moves>");
     lines.push(`      <types>${escapeXml((p.types || []).join(", "))}</types>`);
-    lines.push("    </pokemon>");
+    lines.push("    </daemon>");
   }
   lines.push("  </player_side>");
 
@@ -337,7 +337,7 @@ function formatBattleState(battleData) {
     const hpPct =
       maxHp > 0 ? Math.max(0, Math.min(100, Math.round((curHp / maxHp) * 100))) : null;
     lines.push(
-      `    <pokemon species="${escapeXml(e.species_name)}" level="${Number(e.level) || 0}" position="${escapeXml(
+      `    <daemon species="${escapeXml(e.species_name)}" level="${Number(e.level) || 0}" position="${escapeXml(
         e.position || ""
       )}">`
     );
@@ -345,7 +345,7 @@ function formatBattleState(battleData) {
     lines.push(`      <hp percentage="${hpPct == null ? "unknown" : `${hpPct}%`}" />`);
     lines.push(`      <status>${escapeXml(e.status || "OK")}</status>`);
     lines.push(`      <types>${escapeXml((e.types || []).join(", "))}</types>`);
-    lines.push("    </pokemon>");
+    lines.push("    </daemon>");
   }
   lines.push("  </enemy_side>");
 
