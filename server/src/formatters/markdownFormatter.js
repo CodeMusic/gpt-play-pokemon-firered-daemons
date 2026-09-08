@@ -286,6 +286,39 @@ const EXIT_TILES = {
 //  and walked at the stairs, which are the way BACK.
 const FLOOR_CHANGE = new Set(["stairs", "ladder", "escalator"]);
 
+//  Outdoors there are no exit TILES -- you leave a town or a route by walking
+//  off the edge. The legend has always said so: "Negative coordinates or out of
+//  bounds coordinates (OOB Tiles) walkable mean a map transition!" A
+//  tile-only reader reports "none discovered yet" on every outdoor map, which
+//  is worse than saying nothing, because it is confidently wrong.
+//
+//  Tile 24 is "OOB (Walkable)" and 25 is "OOB (Collision)" -- so a walkable OOB
+//  tile IS the way out. They come in runs along an edge, so they are collapsed
+//  to one entry per side rather than listing forty coordinates.
+const OOB_WALKABLE = 24;
+
+function edgeExits(grid) {
+    const sides = { north: [], south: [], west: [], east: [] };
+    const h = grid.length, w = grid[0].length;
+    for (let y = 0; y < h; y++) {
+        for (let x = 0; x < grid[y].length; x++) {
+            if (grid[y][x] !== OOB_WALKABLE) continue;
+            if (y <= 0) sides.north.push(x);
+            else if (y >= h - 1) sides.south.push(x);
+            else if (x <= 0) sides.west.push(y);
+            else if (x >= w - 1) sides.east.push(y);
+        }
+    }
+    const out = [];
+    for (const [side, hits] of Object.entries(sides)) {
+        if (!hits.length) continue;
+        const mid = hits[Math.floor(hits.length / 2)];
+        const at = (side === "north" || side === "south") ? `x=${mid}` : `y=${mid}`;
+        out.push(`walk off the ${side.toUpperCase()} edge (around ${at})`);
+    }
+    return out;
+}
+
 function exitsLine(grid) {
     if (!Array.isArray(grid) || !Array.isArray(grid[0])) return null;
     const out = [], floors = [];
@@ -296,6 +329,7 @@ function exitsLine(grid) {
             (FLOOR_CHANGE.has(kind) ? floors : out).push(`${kind} at (${x}, ${y})`);
         }
     }
+    out.push(...edgeExits(grid));
     if (!out.length && !floors.length) {
         return "**Exits on this map:** none discovered yet -- explore toward the ❓ tiles to find one.";
     }
