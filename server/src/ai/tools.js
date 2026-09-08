@@ -727,18 +727,45 @@ function defineTools() {
         //  sentence. So the rule is now explicit: a COMPLETE SENTENCE, and it
         //  must contain "I". Showing the failure alongside the fix is what
         //  makes the difference legible to a model.
+        //  THIRD VERSION OF THIS FIELD, and each rewrite was caused by reading
+        //  the output rather than by thinking harder about the wording.
+        //
+        //  v1 asked for "one or two sentences, first person" and got
+        //  "Attacking", "Need heal", "Pick attack" -- log lines wearing an
+        //  inner voice.
+        //
+        //  v2 fixed that with "must contain the word I", and got EVERY LINE
+        //  STARTING WITH IT: "I am annoyed by...", "I am hopeful that...",
+        //  "I am curious what...", eleven in a row. The rule was a proxy for
+        //  first person and the model satisfied the proxy the cheapest way
+        //  available -- put the token at the front, every time. A voice that
+        //  never varies its opening is a template, not a voice.
+        //
+        //  v3 describes the STANCE instead of mandating a token: a thought
+        //  nobody else can hear. Where "I" lands, or whether it appears at
+        //  all, is left alone -- "That was closer than it should have been"
+        //  is first person without the word in it.
         aside: z.string().describe(
-            "A COMPLETE SENTENCE of inner thought, in the first person, present tense. "
-            + "It must contain the word \"I\". One or two sentences, no more. "
-            + "NOT a fragment: \"Attacking\" and \"Need heal\" are wrong -- they are log "
-            + "lines, not thoughts. \"I do not like the look of this one\" is right. "
-            + "This is not a plan and not a summary; you have other fields for those. "
-            + "What do you MAKE of what is in front of you? In a battle: what do you "
-            + "think of the daemon opposite, of your own, of how this is going? In the "
-            + "world: what strikes you about this place, this person, this line of "
-            + "dialogue? Write it the way a thought arrives, not the way a report is "
-            + "filed. If nothing strikes you, say so plainly in a full sentence -- that "
-            + "is honest, and it is also character."),
+            "One or two COMPLETE SENTENCES of inner thought, present tense: what you "
+            + "are actually thinking, as though nobody can hear it. "
+            + "\n\nDO NOT START EVERY ONE WITH \"I\". That is the most common failure "
+            + "here and it turns this into a template. A run that reads \"I am annoyed "
+            + "by...\", \"I am hopeful that...\", \"I am curious what...\" line after line "
+            + "is wrong even though every sentence is fine on its own. VARY THE OPENING. "
+            + "The word \"I\" does not have to appear at all -- \"That was closer than it "
+            + "should have been\" is a thought from inside your own head without it. "
+            + "\n\nGood, and note how differently they open: \"This one looks fierce; "
+            + "better to be careful.\" / \"That was a close encounter.\" / \"Something "
+            + "about this room is wrong.\" / \"Still no sign of the way north.\" / \"He "
+            + "said that like it mattered.\" / \"I do not like the look of this one.\" "
+            + "\n\nWrong: \"Attacking\" or \"Need heal\" -- fragments, not thoughts. Also "
+            + "wrong: anything in second or third person. This is not narration and not "
+            + "a status line; it is the voice in your own head. "
+            + "\n\nIt is not a plan and not a summary -- you have other fields for both. "
+            + "What do you MAKE of what is in front of you? In a battle: the daemon "
+            + "opposite, your own, how this is going. In the world: this place, this "
+            + "person, this line of dialogue. Write it the way a thought arrives, not "
+            + "the way a report is filed."),
     };
     const tools = actionVariants.map((variant) => {
         //  the literal `type` becomes the tool NAME, so it is dropped from the
