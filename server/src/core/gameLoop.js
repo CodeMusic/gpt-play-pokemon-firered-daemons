@@ -281,6 +281,9 @@ async function gameLoop() {
                     steps: state.counters.currentStep,
                     last_summary: lastSummaryText, // Use the variable derived from the state.summaries array
                     last_criticism: lastCriticism,
+                    //  So a refreshed dashboard gets the inner voice back.
+                    //  Newest last here; the page reverses it for display.
+                    asides: Array.isArray(state.asides) ? state.asides.slice(-60) : [],
                     isThinking: state.isThinking,
                     safari_zone_counter: gameDataJson.safari_zone_counter,
                     safari_zone_active: gameDataJson.safari_zone_active,

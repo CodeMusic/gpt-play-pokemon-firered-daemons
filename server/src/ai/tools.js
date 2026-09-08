@@ -881,6 +881,18 @@ function toolOutput(text) {
             avatar_emotion: args.avatar_emotion,
             actions: args.actions,
         };
+        //  Keep it, not just broadcast it. A broadcast reaches whoever happens
+        //  to be connected AT THAT MOMENT -- refresh the dashboard and the
+        //  whole inner voice was gone, because it had only ever existed in
+        //  that one page's memory.
+        if (typeof args.aside === "string" && args.aside.trim()) {
+            if (!Array.isArray(state.asides)) state.asides = [];
+            state.asides.push({ text: args.aside.trim(), at: Date.now(), step: state.counters?.currentStep ?? null });
+            const ASIDE_KEEP = 200;
+            if (state.asides.length > ASIDE_KEEP) {
+                state.asides.splice(0, state.asides.length - ASIDE_KEEP);
+            }
+        }
         broadcast({ type: 'action_start', payload: batchActionStartPayload });
         console.log(`---> Batch Action Start (ID: ${call_id}) - ${args.actions.length} actions`);
 

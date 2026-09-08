@@ -13,6 +13,9 @@ const state = {
   markers: {},
   counters: { currentStep: 0, lastCriticismStep: 0, lastSummaryStep: 0 },
   summaries: [],
+  //  Bounded here for the same reason the dashboard bounds its copy: nobody
+  //  scrolls back through the inner voice, you read the last few and move on.
+  asides: [],
   allSummaries: [],
   badgeHistory: {},
   previousBadgesState: {},
@@ -213,6 +216,16 @@ async function loadPersistentState() {
   }
 
   try {
+    const asidesData = await fs.readFile(config.paths.asidesSaveFile, "utf-8");
+    const parsed = JSON.parse(asidesData);
+    if (Array.isArray(parsed)) state.asides = parsed;
+    console.log("Loaded asides:", state.asides.length);
+  } catch (error) {
+    if (error.code !== "ENOENT") console.error("Error loading asides:", error);
+    state.asides = [];
+  }
+
+  try {
     const summariesData = await fs.readFile(config.paths.summariesSaveFile, "utf-8");
     state.summaries = JSON.parse(summariesData);
     if (!Array.isArray(state.summaries)) {
@@ -345,6 +358,7 @@ async function savePersistentState() {
     await fs.writeFile(config.paths.badgesSaveFile, JSON.stringify(state.badgeHistory, null, 2));
     await fs.writeFile(config.paths.mapVisitsSaveFile, JSON.stringify(state.mapVisitHistory, null, 2));
     await fs.writeFile(config.paths.summariesSaveFile, JSON.stringify(state.summaries, null, 2));
+    await fs.writeFile(config.paths.asidesSaveFile, JSON.stringify(state.asides, null, 2));
     await fs.writeFile(config.paths.allSummariesSaveFile, JSON.stringify(state.allSummaries, null, 2));
     await fs.writeFile(config.paths.progressStepsFile, JSON.stringify(state.progressSteps, null, 2));
     await fs.writeFile(config.paths.lastVisitedMapsFile, JSON.stringify(state.lastVisitedMaps, null, 2));

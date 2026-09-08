@@ -119,6 +119,13 @@ const config = {
     get allSummariesSaveFile() {
       return path.join(ROOT_DIR, config.dataDir, "all_summaries.json");
     },
+    //  The inner voice, kept with the run rather than in the browser. Living
+    //  in the run's own data dir means --fresh clears it along with everything
+    //  else it archives -- no separate rule, and no stale thoughts from a
+    //  previous run reappearing under a new one.
+    get asidesSaveFile() {
+      return path.join(ROOT_DIR, config.dataDir, "asides.json");
+    },
     get progressStepsFile() {
       return path.join(ROOT_DIR, config.dataDir, "progress_steps.json");
     },

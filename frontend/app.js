@@ -1164,6 +1164,20 @@
     if (payload.markers && typeof payload.markers === "object") {
       state.game.markers = payload.markers;
     }
+    //  Seed the inner voice from the server on connect. `pushAside` unshifts
+    //  newest-first; the server keeps them oldest-first, hence the reverse.
+    //
+    //  Only when the panel is EMPTY: full_state arrives on every step, and
+    //  re-seeding each time would fight the live pushes and clobber the cache
+    //  keys the play buttons are keyed on.
+    if (Array.isArray(payload.asides) && (!state.asides || !state.asides.length)) {
+      state.asides = payload.asides
+        .slice(-ASIDE_KEEP)
+        .map((a) => ({ text: String(a.text || ""), at: Number(a.at) || Date.now() }))
+        .filter((a) => a.text)
+        .reverse();
+      renderAsides();
+    }
     if (!state.streams.summaryInProgress && typeof payload.last_summary === "string") {
       state.streams.summaryText = payload.last_summary;
     }
