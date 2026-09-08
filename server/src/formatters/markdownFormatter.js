@@ -342,6 +342,29 @@ function bearing(fromX, fromY, x, y) {
     return ` -- ${parts.join(" and ")} from you`;
 }
 
+//  A warp carpet beside a staircase belongs to the staircase.
+//
+//  On 2F the carpet at (10, 2) sits next to the stairs at (9, 2) and takes you
+//  DOWN A FLOOR. Listed under "to LEAVE this building" it produced the
+//  objective "use the exit carpet at (10, 2) to reach the town", so the agent
+//  warped downstairs expecting Blanche Town. The real house exit is on 1F --
+//  carpet (4, 8) beside door (4, 9) -- and has no stairs next to it.
+//
+//  Adjacency is read from the grid rather than asserted, and it agrees with
+//  both observed floors. Where a warp actually goes is still not knowable from
+//  a tile, so the headings say "probably" and stop claiming certainty -- this
+//  line has now been wrong four times, every one of them me stating what an
+//  exit IS rather than what the grid SAYS.
+const FLOOR_ID = new Set([27, 28, 30]);   // ladder, escalator, stairs
+
+function besideFloorChange(grid, x, y) {
+    for (const [dx, dy] of [[0, -1], [0, 1], [-1, 0], [1, 0]]) {
+        const row = grid[y + dy];
+        if (row && FLOOR_ID.has(row[x + dx])) return true;
+    }
+    return false;
+}
+
 function exitsLine(grid, playerX, playerY) {
     if (!Array.isArray(grid) || !Array.isArray(grid[0])) return null;
     const out = [], floors = [];
@@ -350,7 +373,9 @@ function exitsLine(grid, playerX, playerY) {
             const kind = EXIT_TILES[grid[y][x]];
             if (!kind) continue;
             const entry = `${kind} at (${x}, ${y})${bearing(playerX, playerY, x, y)}`;
-            (FLOOR_CHANGE.has(kind) ? floors : out).push(entry);
+            const isFloor = FLOOR_CHANGE.has(kind)
+                || (kind === "exit carpet" && besideFloorChange(grid, x, y));
+            (isFloor ? floors : out).push(entry);
         }
     }
     out.push(...edgeExits(grid));
@@ -359,13 +384,19 @@ function exitsLine(grid, playerX, playerY) {
     }
     const parts = [];
     if (out.length) {
-        parts.push(`**To LEAVE this building/area:** ${out.join(", ")}.`);
+        parts.push(`**Probably leads OUT of this building/area:** ${out.join(", ")}.`);
     }
     if (floors.length) {
-        parts.push(`**Other floors of the same building (NOT the way out):** ${floors.join(", ")}.`);
+        parts.push(`**Goes to another FLOOR of this same building, not outside:** ${floors.join(", ")}.`);
     }
     if (!out.length) {
-        parts.push("No way out discovered yet -- explore toward the ❓ tiles.");
+        //  "No way out" is wrong when there is a staircase: on 2F the exit is
+        //  real, it is just one floor down. Saying "explore the ❓ tiles" there
+        //  would send it hunting a door that does not exist on this floor.
+        parts.push(floors.length
+            ? "There is NO exit to the outside on this floor -- take one of the above to"
+              + " another floor first, then look for a door or carpet there."
+            : "No way out discovered yet -- explore toward the ❓ tiles.");
     }
     return parts.join(" ");
 }
