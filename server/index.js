@@ -126,6 +126,63 @@ async function start() {
     });
   });
 
+  //  DAEMONS: speak one line of inner voice.
+  //
+  //  This proxies rather than letting the page call n8n directly, for two
+  //  reasons and the second is the real one. The page would need CORS on the
+  //  relay -- annoying. The page would also need `x-dex-secret` IN ITS
+  //  JAVASCRIPT, where anyone with the dashboard open can read it. A shared
+  //  secret that ships to the browser is not a shared secret. It stays here.
+  //
+  //  DAEMONS_VOICE_URL points at either tier: the public relay when the
+  //  dashboard is being watched from away, the internal workflow when it is
+  //  on the same network. Unset means the button reports the feature as off
+  //  rather than failing at a connection.
+  app.post("/speak", express.json({ limit: "64kb" }), async (req, res) => {
+    const url = process.env.DAEMONS_VOICE_URL;
+    if (!url) {
+      res.status(503).json({ audioBase64: null, error: "voice_not_configured" });
+      return;
+    }
+    const text = String((req.body && req.body.text) || "").trim();
+    if (!text) {
+      res.status(400).json({ audioBase64: null, error: "missing_text" });
+      return;
+    }
+    try {
+      //  90s at the TTS server, so give up here a little after it does --
+      //  a request that outlives its own backend is a hung play button.
+      const ctl = new AbortController();
+      const timer = setTimeout(() => ctl.abort(), 100000);
+      const upstream = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-dex-secret": process.env.DEX_SHARED_SECRET || "",
+        },
+        body: JSON.stringify({
+          text,
+          voice: (req.body && req.body.voice) || process.env.DAEMONS_VOICE || "index",
+        }),
+        signal: ctl.signal,
+      });
+      clearTimeout(timer);
+      const payload = await upstream.json().catch(() => null);
+      if (!payload || !payload.audioBase64) {
+        res.status(502).json({
+          audioBase64: null,
+          error: (payload && payload.error) || `tts_http_${upstream.status}`,
+        });
+        return;
+      }
+      res.json(payload);
+    } catch (err) {
+      const reason = err?.name === "AbortError" ? "tts_timeout" : "tts_unreachable";
+      console.warn(`/speak failed: ${reason} (${err?.message || err})`);
+      res.status(502).json({ audioBase64: null, error: reason });
+    }
+  });
+
   app.get("/getMinimap", async (req, res) => {
     const minimapData = await getMinimapData();
     res.json(minimapData);

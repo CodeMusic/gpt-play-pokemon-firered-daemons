@@ -772,10 +772,12 @@ input:focus-visible {
   padding-left: 0.55rem;
 }
 
-/* The newest one is the live thought; the rest have already been had. */
+/* The newest one is the live thought; the rest have already been had.
+   These used to name a --teal that no theme defines, so the line was
+   hardcoded to its own fallback and did not follow light/dark at all. */
 .aside-line.latest {
   opacity: 1;
-  border-left-color: var(--teal, #4dd0c7);
+  border-left-color: var(--accent);
 }
 
 .aside-time {
@@ -783,6 +785,59 @@ input:focus-visible {
   font-size: 0.72rem;
   opacity: 0.55;
   font-style: normal;
+}
+
+/* The speak button. Quiet until you go near it -- the thought is the content
+   and the button is a way to hear it, not a second thing competing for the
+   eye. It only holds its colour while it is actually speaking. */
+.aside-speak {
+  flex: 0 0 auto;
+  width: 1.4rem;
+  height: 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 0.62rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+  border: 1px solid var(--border, #2f3a44);
+  background: transparent;
+  color: inherit;
+  /* Resting at 0.4 the button was invisible until you happened to hover the
+     row -- and a feature nobody can see is not a feature. Quiet, not hidden. */
+  opacity: 0.6;
+  transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.aside-line:hover .aside-speak,
+.aside-speak:focus-visible {
+  opacity: 1;
+}
+
+.aside-speak.on {
+  opacity: 1;
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.aside-speak.failed {
+  opacity: 1;
+  color: var(--warn);
+  border-color: var(--warn);
+}
+
+.aside-speak:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+/* A line being spoken reads as present tense, so it gets the same treatment
+   as the newest one even when it is scrollback. */
+.aside-line.speaking {
+  opacity: 1;
+  border-left-color: var(--accent);
 }
 
 .aside-text {
@@ -897,11 +952,11 @@ input:focus-visible {
 
 .tabbar .tab[aria-selected="true"] {
   color: var(--text, #e8e6e0);
-  border-bottom-color: var(--teal, #4dd0c7);
+  border-bottom-color: var(--accent);
 }
 
 .tabbar .tab:focus-visible {
-  outline: 2px solid var(--teal, #4dd0c7);
+  outline: 2px solid var(--accent);
   outline-offset: -2px;
 }
 

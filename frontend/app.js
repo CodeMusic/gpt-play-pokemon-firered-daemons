@@ -408,6 +408,89 @@
     renderAsides();
   }
 
+  //  Speaking an aside.
+  //
+  //  The audio is cached on the TEXT, not on the line, because the same
+  //  thought recurs -- "I should heal before going further" is a thing this
+  //  agent thinks repeatedly -- and the second time should be instant. The
+  //  TTS server caches on a hash of text+voice for exactly the same reason,
+  //  so a cache miss here is still often a hit there.
+  //
+  //  Bounded and REVOKED on eviction: an object URL holds its blob alive
+  //  until you revoke it, so an unbounded map of them is a memory leak that
+  //  grows by one mp3 per thought for as long as the run lasts.
+  const VOICE_CACHE_MAX = 60;
+  const voiceCache = new Map();   // text -> object URL
+  let currentAudio = null;        // only one thought speaks at a time
+  let currentSpeakingText = null;
+
+  function cacheVoice(text, url) {
+    voiceCache.set(text, url);
+    while (voiceCache.size > VOICE_CACHE_MAX) {
+      const oldest = voiceCache.keys().next().value;
+      const stale = voiceCache.get(oldest);
+      voiceCache.delete(oldest);
+      if (stale) URL.revokeObjectURL(stale);
+    }
+  }
+
+  function stopSpeaking() {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      currentAudio = null;
+    }
+    currentSpeakingText = null;
+    renderAsides();
+  }
+
+  async function speakAside(text) {
+    //  Clicking the line that is already speaking hushes it. That is the
+    //  whole reason the icon changes -- the button has to mean what it shows.
+    if (currentSpeakingText === text) { stopSpeaking(); return; }
+    stopSpeaking();
+
+    let url = voiceCache.get(text);
+    if (!url) {
+      state.voiceLoading = text;
+      renderAsides();
+      try {
+        const res = await fetch("/speak", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+        const data = await res.json().catch(() => null);
+        if (!data || !data.audioBase64) {
+          //  Name the failure on the line itself. A play button that goes
+          //  quiet and stays quiet sends you looking at your speakers.
+          state.voiceError = { text, reason: (data && data.error) || `http_${res.status}` };
+          state.voiceLoading = null;
+          renderAsides();
+          return;
+        }
+        const bytes = Uint8Array.from(atob(data.audioBase64), (c) => c.charCodeAt(0));
+        url = URL.createObjectURL(new Blob([bytes], { type: data.audioMime || "audio/mpeg" }));
+        cacheVoice(text, url);
+      } catch (err) {
+        state.voiceError = { text, reason: "unreachable" };
+        state.voiceLoading = null;
+        renderAsides();
+        return;
+      }
+      state.voiceLoading = null;
+      state.voiceError = null;
+    }
+
+    const audio = new Audio(url);
+    audio.addEventListener("ended", stopSpeaking);
+    audio.addEventListener("error", stopSpeaking);
+    currentAudio = audio;
+    currentSpeakingText = text;
+    renderAsides();
+    audio.play().catch(() => stopSpeaking());
+  }
+
   function renderAsides() {
     const el = document.getElementById("aside-stream");
     if (!el) return;
@@ -415,12 +498,36 @@
       el.innerHTML = '<div class="muted small">No asides yet.</div>';
       return;
     }
-    el.innerHTML = state.asides.map((a, i) =>
-      `<div class="aside-line${i === 0 ? " latest" : ""}">`
-      + `<span class="aside-time mono">${formatTime(a.at)}</span>`
-      + `<span class="aside-text">${escapeHtml(a.text)}</span></div>`
-    ).join("");
+    el.innerHTML = state.asides.map((a, i) => {
+      const speaking = currentSpeakingText === a.text;
+      const loading = state.voiceLoading === a.text;
+      const failed = state.voiceError && state.voiceError.text === a.text;
+      const cached = voiceCache.has(a.text);
+      const icon = loading ? "\u25CC" : speaking ? "\u25A0" : failed ? "\u26A0" : "\u25B6";
+      const label = loading ? "Generating audio..."
+        : speaking ? "Hush"
+        : failed ? `Voice unavailable (${state.voiceError.reason})`
+        : cached ? "Play (cached)"
+        : "Speak this thought";
+      return `<div class="aside-line${i === 0 ? " latest" : ""}${speaking ? " speaking" : ""}">`
+        + `<button class="aside-speak${speaking ? " on" : ""}${failed ? " failed" : ""}"`
+        + ` type="button" data-aside-index="${i}" title="${escapeHtml(label)}"`
+        + ` aria-label="${escapeHtml(label)}"${loading ? " disabled" : ""}>${icon}</button>`
+        + `<span class="aside-time mono">${formatTime(a.at)}</span>`
+        + `<span class="aside-text">${escapeHtml(a.text)}</span></div>`;
+    }).join("");
   }
+
+  //  Delegated, and bound once: renderAsides() replaces this subtree on every
+  //  new thought, so a listener attached to a button would not survive the
+  //  next one.
+  document.addEventListener("click", (ev) => {
+    const btn = ev.target.closest && ev.target.closest(".aside-speak");
+    if (!btn) return;
+    const idx = Number(btn.getAttribute("data-aside-index"));
+    const entry = state.asides && state.asides[idx];
+    if (entry) speakAside(entry.text);
+  });
 
   //  Tabs. The panels behind them are consulted occasionally; the ones left
   //  on screen are the ones actually watched. Wired once at load, since the
