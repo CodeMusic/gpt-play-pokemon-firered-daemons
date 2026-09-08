@@ -13,7 +13,7 @@
 
   | You may expect | It is actually |
   |---|---|
-  | Professor Oak | **CRYSTAL CLEAR** — and she has NO title. Not "Professor", not "Prof.". Just Crystal, or Crystal Clear. |
+  | Professor Oak | **CRYSTAL CLEAR** — and she has NO title. Not "Professor", not "Prof.", and not "the professor" as a description either. She is a researcher; she is not anybody's professor. Call her **Crystal** or **Crystal Clear**, and before you have met her, "the researcher". |
   | Pallet Town | **BLANCHE TOWN** — where you start |
   | Viridian City | **CALLOW CITY** — the first city north |
   | Pewter, Cerulean, Vermilion | **SLATE, DOLDRUM, ARDOR** |
