@@ -365,7 +365,39 @@ function besideFloorChange(grid, x, y) {
     return false;
 }
 
-function exitsLine(grid, playerX, playerY) {
+//  A MAP CONNECTION IS NOT A DOOR, and nothing was telling the agent they
+//  exist.
+//
+//  Blanche Town connects `up` to ROUTE1. That fact sits in game_data.json on
+//  every single step -- and the string "ROUTE1" appeared ZERO times in the
+//  prompt the agent actually received. Every exit it was told about was a
+//  building door, so it hunted the town for a door to the north that has
+//  never existed: you leave by walking off the top edge.
+//
+//  The prompt even carried a rule about how to MARK a map connection while
+//  never mentioning that this map has one.
+const CONNECTION_WORDS = {
+    up:    ["NORTH", "walk UP off the top edge"],
+    down:  ["SOUTH", "walk DOWN off the bottom edge"],
+    left:  ["WEST",  "walk LEFT off the left edge"],
+    right: ["EAST",  "walk RIGHT off the right edge"],
+};
+
+function connectionsLine(connections) {
+    if (!Array.isArray(connections)) return null;
+    const real = connections.filter(
+        (c) => c && c.mapName && c.mapName !== "MAP_NONE" && CONNECTION_WORDS[c.direction]
+    );
+    if (!real.length) return null;
+    const named = real.map((c) => {
+        const [compass, how] = CONNECTION_WORDS[c.direction];
+        return `${compass} to ${c.mapName} -- ${how}`;
+    });
+    return "**Leaves this map WITHOUT a door** (walk off the map edge, there is "
+        + `no door and no carpet): ${named.join("; ")}.`;
+}
+
+function exitsLine(grid, playerX, playerY, connections = null) {
     if (!Array.isArray(grid) || !Array.isArray(grid[0])) return null;
     const out = [], floors = [];
     for (let y = 0; y < grid.length; y++) {
@@ -379,17 +411,26 @@ function exitsLine(grid, playerX, playerY) {
         }
     }
     out.push(...edgeExits(grid));
-    if (!out.length && !floors.length) {
+    if (!out.length && !floors.length && !connectionsLine(connections)) {
         return "**Exits on this map:** none discovered yet -- explore toward the ❓ tiles to find one.";
     }
     const parts = [];
+    const conn = connectionsLine(connections);
+    //  Before the door list, deliberately: an agent circling a town looking
+    //  for a door needs to read "there is no door, walk off the edge" first.
+    if (conn) parts.push(conn);
     if (out.length) {
         parts.push(`**Probably leads OUT of this building/area:** ${out.join(", ")}.`);
     }
     if (floors.length) {
         parts.push(`**Goes to another FLOOR of this same building, not outside:** ${floors.join(", ")}.`);
     }
-    if (!out.length) {
+    //  ...and "no way out" is wrong again when the map has an EDGE connection,
+    //  for the same reason it was wrong on a staircase floor: the exit is real,
+    //  it just is not a door. The first version of this printed both -- two
+    //  named routes out, followed by "no way out discovered yet" -- which
+    //  contradicts itself in the same breath and is worse than either alone.
+    if (!out.length && !conn) {
         //  "No way out" is wrong when there is a staircase: on 2F the exit is
         //  real, it is just one floor down. Saying "explore the ❓ tiles" there
         //  would send it hunting a door that does not exist on this floor.
@@ -401,7 +442,7 @@ function exitsLine(grid, playerX, playerY) {
     return parts.join(" ");
 }
 
-function minimapToMarkdown(mm, minimapPlayerX, minimapPlayerY, map_id, map_name, playerOrientationId, gameAreaGrid, gameAreaLocalPlayerRow, gameAreaLocalPlayerCol, npcEntries = null, isPathFinding = false) {
+function minimapToMarkdown(mm, minimapPlayerX, minimapPlayerY, map_id, map_name, playerOrientationId, gameAreaGrid, gameAreaLocalPlayerRow, gameAreaLocalPlayerCol, npcEntries = null, isPathFinding = false, connections = null) {
     if (!mm || !mm.grid) return "## Explored Map State\n_Aucune donnée_\n";
 
     const minimapGrid = mm.grid;
@@ -448,7 +489,7 @@ function minimapToMarkdown(mm, minimapPlayerX, minimapPlayerY, map_id, map_name,
         `Player Position (Map Coords): X=${minimapPlayerX}, Y=${minimapPlayerY}`,
         `Map Name: ${map_name}`,
         `Map Size: ${W}x${H}`,
-        exitsLine(minimapGrid, minimapPlayerX, minimapPlayerY) || "",
+        exitsLine(minimapGrid, minimapPlayerX, minimapPlayerY, connections) || "",
         "",
         mdRow(header),
         mdSep(header.length),

@@ -424,7 +424,13 @@ async function buildUserInputText(gameDataJson) {
       visibleGrid,
       localRow,
       localCol,
-      gameDataJson?.npc_entries ?? null
+      gameDataJson?.npc_entries ?? null,
+      false,
+      //  Where the map's edges lead. Present in game_data.json on every step
+      //  and never once shown to the model until now.
+      gameDataJson?.firered_state?.map?.connections
+        ?? gameDataJson?.raw_state?.map?.connections
+        ?? null
     );
   }
 

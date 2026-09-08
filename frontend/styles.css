@@ -872,13 +872,21 @@ input:focus-visible {
 }
 
 /* ---------- Responsive ---------- */
+/* Every card that gets an explicit span above MUST appear in both of these,
+   or it keeps its desktop span while its neighbours go full width. That is
+   what happened to the inner voice on a phone: everything else stretched to
+   twelve columns and it stayed at three, a sliver one word wide with the
+   thoughts wrapping down it. Adding a `grid-column: span N` above is only
+   half the change. */
 @media (max-width: 1280px) {
   .runtime,
   .trainer,
   .streams,
   .team,
   .inventory,
-  .objectives {
+  .objectives,
+  .aside-card,
+  .frame-card {
     grid-column: span 6;
   }
 
@@ -913,7 +921,9 @@ input:focus-visible {
   .progress,
   .memory,
   .minimap,
-  .logs {
+  .logs,
+  .aside-card,
+  .frame-card {
     grid-column: span 12;
   }
 
