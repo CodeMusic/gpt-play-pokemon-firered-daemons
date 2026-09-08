@@ -115,6 +115,21 @@ function formatObjectives(objectives, currentMapId, currentMapName) {
   const lines = ["<objectives>"];
   //  Written elsewhere? Say so. Coordinates in an objective mean nothing on a
   //  different map, and a confidently wrong destination is worse than none.
+  //  No stamp at all means the objective predates the stamping, so we cannot
+  //  tell which map it was written for -- and "cannot tell" has to be said,
+  //  not skipped. This is the case that actually bit: a primary carried down
+  //  the stairs still reading "stairs at (9, 2)", an upstairs coordinate,
+  //  while the exits line named a door at (4, 9). Two instructions, no way to
+  //  know the older one was stale. It self-heals: the next update_objectives
+  //  stamps the map and this note stops.
+  if (!nothingSet && !objectives.map_id && currentMapId) {
+    lines.push(
+      "  <!-- NOTE: these objectives carry no map stamp, so they may have been"
+      + " written on a different map. Any coordinates below could refer to"
+      + " somewhere else. Trust the exits listed above the grid instead, and"
+      + " call update_objectives to restate the goal for this map. -->"
+    );
+  }
   if (!nothingSet && objectives.map_id && currentMapId && objectives.map_id !== currentMapId) {
     lines.push(
       `  <!-- NOTE: these objectives were written on map ${objectives.map_id}`
