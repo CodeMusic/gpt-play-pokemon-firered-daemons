@@ -92,7 +92,7 @@ Notes:
 \n`;
 }
 
-function formatObjectives(objectives) {
+function formatObjectives(objectives, currentMapId, currentMapName) {
   if (!objectives || typeof objectives !== "object") return "<objectives />\n";
 
   const safe = (o) => (o && typeof o === "object" ? o : { short_description: "", description: "" });
@@ -113,6 +113,17 @@ function formatObjectives(objectives) {
                        || third.short_description || others.length);
 
   const lines = ["<objectives>"];
+  //  Written elsewhere? Say so. Coordinates in an objective mean nothing on a
+  //  different map, and a confidently wrong destination is worse than none.
+  if (!nothingSet && objectives.map_id && currentMapId && objectives.map_id !== currentMapId) {
+    lines.push(
+      `  <!-- NOTE: these objectives were written on map ${objectives.map_id}`
+      + `${objectives.map_name ? " (" + objectives.map_name + ")" : ""} and you are now on `
+      + `${currentMapId}${currentMapName ? " (" + currentMapName + ")" : ""}. Any coordinates below`
+      + " refer to the OTHER map. Re-read the exits listed above and call update_objectives"
+      + " before acting on them. -->"
+    );
+  }
   if (nothingSet) {
     lines.push(
       "  <!-- EMPTY. You have no objectives yet. Call update_objectives NOW,"
@@ -453,7 +464,7 @@ async function buildUserInputText(gameDataJson) {
 ${formatBattleState(gameDataJson?.battle_data)}
 
 <objectives_section>
-${formatObjectives(state.objectives)}
+${formatObjectives(state.objectives, gameDataJson?.current_trainer_data?.position?.map_id, gameDataJson?.current_trainer_data?.position?.map_name)}
 </objectives_section>
 
 ${formatMemoryStructured(state.memory)}

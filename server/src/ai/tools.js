@@ -1028,6 +1028,22 @@ function toolOutput(text) {
                         }
                         break;
                     case "update_objectives":
+                        //  DAEMONS: stamp the map an objective was written on.
+                        //
+                        //  Objectives go stale silently. "Leave this map by
+                        //  using the stairs at (9, 2)" was right in the bedroom
+                        //  and actively harmful one floor down, where it sent
+                        //  the agent back up the stairs it had just come down.
+                        //  The empty-objectives nudge cannot catch that -- the
+                        //  block is full, just wrong.
+                        //
+                        //  A map id is not a judgement about the objective, so
+                        //  recording it cannot be wrong the way my exits line
+                        //  kept being wrong. The prompt can then say the
+                        //  objective was written somewhere else and leave the
+                        //  model to decide.
+                        state.objectives.map_id = gameDataJson?.current_trainer_data?.position?.map_id || null;
+                        state.objectives.map_name = gameDataJson?.current_trainer_data?.position?.map_name || null;
                         let updates = [];
                         let errorOccurred = false;
                         if (individualAction.hasOwnProperty('primary')) {
