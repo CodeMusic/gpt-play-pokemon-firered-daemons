@@ -319,14 +319,38 @@ function edgeExits(grid) {
     return out;
 }
 
-function exitsLine(grid) {
+//  Say which WAY, not just where.
+//
+//  The prompt states "Y increases ↓" and never says which key changes it.
+//  Knowing the axis points down and knowing that `up` decreases y are two
+//  different facts, and only the first was ever written down. From (11, 8),
+//  aiming at stairs at (9, 2), it pressed DOWN into the bottom wall for
+//  twenty-two turns.
+//
+//  So the bearing is computed rather than left as arithmetic. The direction
+//  words come from the same mapping the BFS uses -- up is -y, down is +y --
+//  so this cannot disagree with the pathfinder that has to execute it.
+function bearing(fromX, fromY, x, y) {
+    if (!Number.isFinite(fromX) || !Number.isFinite(fromY)) return "";
+    const dx = x - fromX, dy = y - fromY;
+    const parts = [];
+    if (dy < 0) parts.push(`${-dy} UP`);
+    if (dy > 0) parts.push(`${dy} DOWN`);
+    if (dx < 0) parts.push(`${-dx} LEFT`);
+    if (dx > 0) parts.push(`${dx} RIGHT`);
+    if (!parts.length) return " -- you are standing on it";
+    return ` -- ${parts.join(" and ")} from you`;
+}
+
+function exitsLine(grid, playerX, playerY) {
     if (!Array.isArray(grid) || !Array.isArray(grid[0])) return null;
     const out = [], floors = [];
     for (let y = 0; y < grid.length; y++) {
         for (let x = 0; x < grid[y].length; x++) {
             const kind = EXIT_TILES[grid[y][x]];
             if (!kind) continue;
-            (FLOOR_CHANGE.has(kind) ? floors : out).push(`${kind} at (${x}, ${y})`);
+            const entry = `${kind} at (${x}, ${y})${bearing(playerX, playerY, x, y)}`;
+            (FLOOR_CHANGE.has(kind) ? floors : out).push(entry);
         }
     }
     out.push(...edgeExits(grid));
@@ -393,7 +417,7 @@ function minimapToMarkdown(mm, minimapPlayerX, minimapPlayerY, map_id, map_name,
         `Player Position (Map Coords): X=${minimapPlayerX}, Y=${minimapPlayerY}`,
         `Map Name: ${map_name}`,
         `Map Size: ${W}x${H}`,
-        exitsLine(minimapGrid) || "",
+        exitsLine(minimapGrid, minimapPlayerX, minimapPlayerY) || "",
         "",
         mdRow(header),
         mdSep(header.length),
