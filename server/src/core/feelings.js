@@ -23,13 +23,34 @@
 //  makes. If anyone ever proposes moving it into the game, that is the reason
 //  not to.
 
+//  ONLY ONE OF THESE IS GENUINELY TWO-SIDED, and pretending otherwise was a
+//  design error worth recording.
+//
+//  The first version gave all four a signed range and invented a negative pole
+//  for each: FLAT, EVEN, LIFTED. None of them is a feeling anyone has. Worse,
+//  CHOLERIC's true opposite is *calm* -- which is PHLEGMATIC's positive -- and
+//  that collision is the tell: classically the humors are TWO OPPOSED PAIRS,
+//  not four independent axes. Sanguine opposes Melancholic (hot+wet against
+//  cold+dry); Choleric opposes Phlegmatic (hot+dry against cold+wet).
+//
+//  And the data already said so. Reading what readEvents can emit: SANGUINE
+//  and CHOLERIC never receive a negative delta at all, MELANCHOLIC only once,
+//  and PHLEGMATIC has four sources of it. Three bars could never leave the
+//  right half, so a centred track was advertising a left side that would stay
+//  empty forever.
+//
+//  So: three unsigned intensities, and one real axis with a word at each end.
 const AXES = {
-    //  humor          +pole      -pole      Board  type identity (6)
-    SANGUINE:    { hi: "GLAD",  lo: "FLAT",   member: "I",   type: "VECTOR" },
-    CHOLERIC:    { hi: "MAD",   lo: "EVEN",   member: "II",  type: "ENTROPY" },
-    MELANCHOLIC: { hi: "SAD",   lo: "LIFTED", member: "III", type: "LATENT" },
+    //  humor          rises to    falls to    Board  type identity (6)
+    SANGUINE:    { hi: "GLAD",  lo: null,     member: "I",   type: "VECTOR" },
+    CHOLERIC:    { hi: "MAD",   lo: null,     member: "II",  type: "ENTROPY" },
+    MELANCHOLIC: { hi: "SAD",   lo: null,     member: "III", type: "LATENT" },
     PHLEGMATIC:  { hi: "CALM",  lo: "AFRAID", member: "IV",  type: "FROZEN" },
 };
+
+//  An axis with no lower pole cannot go below nothing: you can be un-sad, but
+//  there is no feeling on the far side of it.
+const SIGNED = new Set(Object.entries(AXES).filter(([, a]) => a.lo).map(([k]) => k));
 
 const LIMIT = 100;
 
@@ -42,8 +63,9 @@ function zero() {
     return { SANGUINE: 0, CHOLERIC: 0, MELANCHOLIC: 0, PHLEGMATIC: 0 };
 }
 
-function clamp(n) {
-    return Math.max(-LIMIT, Math.min(LIMIT, Math.round(n * 10) / 10));
+function clamp(n, axis) {
+    const floor = axis && !SIGNED.has(axis) ? 0 : -LIMIT;
+    return Math.max(floor, Math.min(LIMIT, Math.round(n * 10) / 10));
 }
 
 //  What happened, read off the two snapshots and the turn's own facts.
@@ -102,7 +124,7 @@ function readEvents(prev, now, turn = {}) {
 function step(current, deltas) {
     const out = zero();
     for (const k of Object.keys(out)) {
-        out[k] = clamp((Number(current?.[k]) || 0) * DECAY + (Number(deltas?.[k]) || 0));
+        out[k] = clamp((Number(current?.[k]) || 0) * DECAY + (Number(deltas?.[k]) || 0), k);
     }
     return out;
 }
@@ -117,9 +139,9 @@ function step(current, deltas) {
 //  like something.
 function checkpoint(current) {
     const out = { ...zero(), ...current };
-    out.CHOLERIC = clamp(out.CHOLERIC * 0.15);
-    out.PHLEGMATIC = clamp(Math.max(out.PHLEGMATIC * 0.15, 0) + 22);
-    out.MELANCHOLIC = clamp(out.MELANCHOLIC * 0.6);
+    out.CHOLERIC = clamp(out.CHOLERIC * 0.15, "CHOLERIC");
+    out.PHLEGMATIC = clamp(Math.max(out.PHLEGMATIC * 0.15, 0) + 22, "PHLEGMATIC");
+    out.MELANCHOLIC = clamp(out.MELANCHOLIC * 0.6, "MELANCHOLIC");
     return out;
 }
 
@@ -131,7 +153,7 @@ function describe(f) {
     for (const [axis, spec] of Object.entries(AXES)) {
         const v = Number(f?.[axis]) || 0;
         if (Math.abs(v) < 8) continue;
-        const name = v > 0 ? spec.hi : spec.lo;
+        const name = v > 0 ? spec.hi : (spec.lo || spec.hi);
         const mag = Math.abs(v);
         const word = mag >= 55 ? "very " : mag >= 25 ? "" : "a little ";
         live.push({ axis, name, value: v, phrase: `${word}${name}`.trim() });

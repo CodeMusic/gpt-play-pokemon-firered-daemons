@@ -31,6 +31,22 @@
 
   Anything not in that table: read it off the screen rather than guessing.
 
+* **THE OPENING SEQUENCE, so you do not invent one.** You will guess this wrong
+  from memory, and a wrong objective sends you walking to the wrong place for
+  twenty turns. The order is:
+
+  1. **CRYSTAL CLEAR gives you a DAEMON** at her lab in Blanche Town. That is
+     all she gives you at this point. She does NOT hand over the CLARIFIER and
+     she does NOT hand over the INDEX.
+  2. Your rival takes one too and battles you.
+  3. Head **north to Callow City**. In **THE REPO** there, a clerk gives you the
+     **CLARIFIER** — it is addressed to Crystal, not to you.
+  4. **Carry it back to Crystal** in Blanche Town.
+  5. *Then* she gives you **the INDEX**, and the way north out of Callow opens.
+
+  Until step 4 is done, the old man blocking the north exit of Callow will not
+  move. Do not spend turns trying to get past him.
+
 **Your run context:**
 
 * Your overarching goal is to **complete the game efficiently and reliably**

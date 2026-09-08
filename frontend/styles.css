@@ -959,6 +959,17 @@ input:focus-visible {
   overflow: hidden;
 }
 
+/* A right-hand label only where there is a second pole to name. It keeps its
+   width on every row so the tracks stay aligned down the column. */
+.feel-name-right {
+  flex: 0 0 3.6rem;
+  text-align: left;
+}
+
+/* The centre line belongs only on the axis that HAS two sides. On a bar that
+   fills from the left edge it would mark nothing. */
+.feel-row:not(.two-sided) .feel-track::before { display: none; }
+
 /* The centre line is the zero every feeling decays back to. */
 .feel-track::before {
   content: "";
@@ -1141,13 +1152,32 @@ input:focus-visible {
 /* Two frames and a slice of the third. Four full frames made this column
    taller than everything beside it; capping it at roughly two and a half says
    "there is more here" in the way a scrollbar is supposed to. */
+/* THE FRAMES SET THE HEIGHT OF THE TOP ROW.
+   Runtime, Inner life and User all grow to whatever they hold, so the row was
+   as tall as its longest card and the frames -- which scroll anyway -- were
+   dragged along with it. Capping the strip and letting the other three scroll
+   inside the same height makes the row one consistent band. */
 .frame-strip {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 34rem;
+  max-height: 26rem;
   overflow-y: auto;
   padding-right: 4px;
+}
+
+/* Every card in the top row agrees on one height and scrolls its own overflow,
+   rather than each one stretching the row to fit. */
+.runtime,
+.aside-card,
+.trainer,
+.frame-card {
+  max-height: 30rem;
+}
+
+.runtime,
+.trainer {
+  overflow-y: auto;
 }
 
 .frame-item {

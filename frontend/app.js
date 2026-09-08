@@ -554,10 +554,12 @@
   //  The four humor axes, above the voice they colour. Shown as signed bars
   //  rather than numbers: which way it leans and how far is the whole content,
   //  and "CHOLERIC: 43" says less than a bar that is clearly over halfway.
+  //  Three intensities and one axis. Only PHLEGMATIC has a word at each end;
+  //  the others rise from nothing, which is what the data actually does.
   const FEEL_AXES = {
-    SANGUINE:    { hi: "GLAD", lo: "FLAT" },
-    CHOLERIC:    { hi: "MAD",  lo: "EVEN" },
-    MELANCHOLIC: { hi: "SAD",  lo: "LIFTED" },
+    SANGUINE:    { hi: "GLAD", lo: null },
+    CHOLERIC:    { hi: "MAD",  lo: null },
+    MELANCHOLIC: { hi: "SAD",  lo: null },
     PHLEGMATIC:  { hi: "CALM", lo: "AFRAID" },
   };
   function renderFeelings() {
@@ -568,20 +570,21 @@
     const why = (state.game.feeling_events || []).map((e) => e.why).join(", ");
     const rows = Object.entries(FEEL_AXES).map(([axis, spec]) => {
       const v = Math.max(-100, Math.min(100, Number(f[axis]) || 0));
-      //  The row keeps its name at rest. Showing an em dash at exactly zero
-      //  meant the one axis that happened to be settled lost its label, so
-      //  the panel read "GLAD / MAD / — / AFRAID" and you could not tell what
-      //  the third row even was. A quiet axis is still that axis; dim it
-      //  rather than erasing it. Below 8 is the same threshold the prompt
-      //  uses to decide a feeling is not worth mentioning.
-      const name = v < 0 ? spec.lo : spec.hi;
+      //  A quiet axis keeps its name and dims -- below 8, the same threshold
+      //  the prompt uses to decide a feeling is not worth mentioning.
       const quiet = Math.abs(v) < 8;
-      const pct = Math.abs(v) / 2;                        // half-width max
-      const side = v >= 0 ? "left:50%" : `right:50%`;
-      return `<div class="feel-row${quiet ? " quiet" : ""}" title="${escapeHtml(axis)} ${v}">`
-        + `<span class="feel-name mono">${escapeHtml(name)}</span>`
+      const two = Boolean(spec.lo);
+      //  Two-sided: fills out from the centre, a word at each end, so the
+      //  direction is legible without a legend. One-sided: fills from the
+      //  left edge across the whole track, because there is no other side.
+      const pct = two ? Math.abs(v) / 2 : Math.max(0, v);
+      const side = two ? (v >= 0 ? "left:50%" : "right:50%") : "left:0";
+      return `<div class="feel-row${quiet ? " quiet" : ""}${two ? " two-sided" : ""}"`
+        + ` title="${escapeHtml(axis)} ${v}">`
+        + `<span class="feel-name mono">${escapeHtml(two ? spec.lo : spec.hi)}</span>`
         + `<span class="feel-track"><i class="feel-fill${v < 0 ? " neg" : ""}"`
-        + ` style="${side};width:${pct}%"></i></span></div>`;
+        + ` style="${side};width:${pct}%"></i></span>`
+        + `<span class="feel-name feel-name-right mono">${two ? escapeHtml(spec.hi) : ""}</span></div>`;
     }).join("");
     el.innerHTML = rows + (why
       ? `<div class="feel-why muted small">${escapeHtml(why)}</div>` : "");
