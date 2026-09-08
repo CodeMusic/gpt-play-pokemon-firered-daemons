@@ -8,3 +8,7 @@ server/.env
 .env
 server/backup
 backup_saves
+
+# --fresh archives the previous run beside the live one. A days testing made
+# 25 of these totalling ~8 GB; they are local scratch, never shared state.
+server/gpt_data_*
