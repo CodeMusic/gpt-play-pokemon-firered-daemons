@@ -510,6 +510,31 @@ function defineTools() {
         key: z.string().describe("Key for the information to delete."),
     });
 
+    //  DAEMONS: reflect when an objective is REACHED, not on a timer.
+    //
+    //  Two problems, one answer. The model's own reasoning and messages were
+    //  54.8% of an 882k-char prompt, and 105 reasoning blocks were replayed
+    //  every turn -- so the history has to be dropped. But dropping it loses
+    //  whatever was learned getting here, which is the only part worth keeping.
+    //
+    //  So: summarise the span, keep the lesson, drop the span. Compression that
+    //  preserves the finding instead of the transcript.
+    const reflectActionSchema = z.object({
+        type: z.literal("reflect").describe(
+            "Call this the moment you COMPLETE an objective, before setting the next one. "
+            + "Look back over everything since the last objective and write down what you "
+            + "LEARNED -- not what happened. The turn-by-turn history is discarded; this "
+            + "sentence is what survives it."),
+        learned: z.string().describe(
+            "One or two sentences, in the form of a rule you could follow again. "
+            + "'Exit carpets fire on a blocked move, not on stepping onto them' is useful. "
+            + "'I went downstairs' is not -- that is what happened, not what you learned."),
+        worked: z.string().describe("The one thing that worked. Be specific about WHY it worked."),
+        wasted: z.string().describe(
+            "The one thing that wasted turns. If nothing did, say so plainly rather than "
+            + "inventing a fault."),
+    });
+
     const updateObjectivesActionSchema = z.object({
         type: z.literal("update_objectives").describe("Action to update the current game state.objectives."),
         primary: z.object({
@@ -598,6 +623,10 @@ function defineTools() {
         deleteMemoryActionSchema,
         updateObjectivesActionSchema,
         pathfindingActionSchema,
+        //  In the LEAN set deliberately. Reflection is not a luxury for a big
+        //  model -- it is how a small one stops re-learning the same thing,
+        //  and how the history gets short enough for either to read.
+        reflectActionSchema,
     ];
     if (!leanSchema) {
         actionVariants.push(
@@ -669,6 +698,31 @@ function defineTools() {
     const NARRATION = {
         step_details: z.string().describe("What happened in the previous step and what this step does."),
         chat_message: z.string().describe("A short narrative comment on your intent."),
+        //  DAEMONS: the inner voice, and it is NOT another planning field.
+        //
+        //  step_details and chat_message both answer "what am I doing" -- the
+        //  run reads as a machine narrating its own dispatch log. This one
+        //  answers "what do I make of this", which is a different question and
+        //  produces a different register.
+        //
+        //  Kept deliberately cheap: one or two sentences. The point is not
+        //  volume, and every token here is a token of prompt on the next turn.
+        //  Battle is where it earns its place -- something is standing in front
+        //  of it and it has an opinion about that.
+        //
+        //  It is also, unavoidably, the thing this project is about. A daemon
+        //  is read by what it does unasked (4.29). An agent that reports what
+        //  it privately thinks while it plays is that argument running rather
+        //  than being made.
+        aside: z.string().describe(
+            "One or two sentences of INNER THOUGHT, first person, present tense. "
+            + "Not a plan and not a summary -- you have other fields for those. "
+            + "What do you make of what is in front of you? In a battle: what do "
+            + "you think of the daemon opposite, of your own, of how this is going? "
+            + "In the world: what strikes you about this place, this person, this "
+            + "line of dialogue? Write it the way a thought arrives, not the way a "
+            + "report is filed. If nothing strikes you, say something short and "
+            + "flat -- that is honest and it is also character."),
     };
     const tools = actionVariants.map((variant) => {
         //  the literal `type` becomes the tool NAME, so it is dropped from the
@@ -758,6 +812,9 @@ function toolOutput(text) {
         console.log(`---> Tool Call Start: ${name} (ID: ${call_id})`);
         console.log(`Step Details: ${args.step_details}`);
         console.log(`Chat Message: ${args.chat_message}`);
+        //  Greppable on its own, because the inner voice is the one line of a
+        //  run somebody might actually want to read back afterwards.
+        if (args.aside) console.log(`Aside: ${args.aside}`);
         console.log(`Avatar Emotion: ${args.avatar_emotion}`);
 
         if (!args.actions || !Array.isArray(args.actions)) {
@@ -1027,6 +1084,29 @@ function toolOutput(text) {
                             actionResult.success = false;
                         }
                         break;
+                    case "reflect": {
+                        //  The lesson is stored like any other memory, under a
+                        //  key that sorts with its siblings, so it is read back
+                        //  in the same block the model already consults.
+                        const n = Object.keys(state.memory || {}).filter((k) => k.startsWith("learned_")).length + 1;
+                        const stamp = gameDataJson?.current_trainer_data?.position?.map_name || "";
+                        state.memory[`learned_${String(n).padStart(2, "0")}`] =
+                            `${individualAction.learned} (worked: ${individualAction.worked}; `
+                            + `wasted: ${individualAction.wasted}${stamp ? "; at " + stamp : ""})`;
+                        //  Reflecting IS the objective boundary, so the progress
+                        //  delta restarts here -- the next one measures the next
+                        //  stretch rather than the whole run.
+                        state.progressMark = state.progressNow;
+                        state.reflectedAtStep = state.counters.currentStep;
+                        actionResult.success = true;
+                        actionResult.message =
+                            `Reflection saved as learned_${String(n).padStart(2, "0")}. `
+                            + "The turn-by-turn history before this point can now be dropped; "
+                            + "this is what survives it. Set your next objective.";
+                        actionResult.details = individualAction.learned;
+                        console.log(`INFO: [reflect] ${individualAction.learned}`);
+                        break;
+                    }
                     case "update_objectives":
                         //  DAEMONS: stamp the map an objective was written on.
                         //

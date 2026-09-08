@@ -670,6 +670,16 @@ input:focus-visible {
   border-left-color: var(--purple);
 }
 
+/* The aside is the inner voice. It is set apart from chat deliberately --
+   italic and dimmer, so it reads as a thought rather than a third status
+   line. Everything else in this log is the agent reporting; this is the
+   agent thinking. */
+.log-entry.aside {
+  border-left-color: var(--teal, #4dd0c7);
+  font-style: italic;
+  opacity: 0.92;
+}
+
 /* ---------- Utility Classes ---------- */
 .muted {
   color: var(--muted);

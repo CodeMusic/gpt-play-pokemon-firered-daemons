@@ -797,7 +797,9 @@
     const html = state.logs
       .map((entry) => {
         const typeClass =
-          entry.type === "chat"
+          entry.type === "aside"
+            ? "aside"
+            : entry.type === "chat"
             ? "chat"
             : entry.type === "reasoning"
               ? "reasoning"
@@ -829,7 +831,7 @@
                 : ""
             }
           `;
-        } else if (entry.type === "chat") {
+        } else if (entry.type === "aside" || entry.type === "chat") {
           const emotion = entry.data?.avatar_emotion ? ` <span class="badge">${escapeHtml(entry.data.avatar_emotion)}</span>` : "";
           body = `<div class="text-block">${escapeHtml(entry.message)}${emotion}</div>`;
         } else {
@@ -907,6 +909,14 @@
 
     if (typeof payload.chat_message === "string" && payload.chat_message.trim()) {
       addLog("chat", payload.chat_message.trim(), {
+        data: { avatar_emotion: payload.avatar_emotion || null },
+      });
+    }
+
+    // DAEMONS: the aside is the inner voice, not another plan. It gets its own
+    // row so it reads as a thought rather than a third status line.
+    if (typeof payload.aside === "string" && payload.aside.trim()) {
+      addLog("aside", payload.aside.trim(), {
         data: { avatar_emotion: payload.avatar_emotion || null },
       });
     }

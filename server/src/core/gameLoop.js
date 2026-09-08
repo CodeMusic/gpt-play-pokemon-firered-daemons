@@ -11,6 +11,7 @@ const { buildUserInputText, buildDeveloperPrompt } = require('../ai/promptBuilde
 const { processHistoryForAPI } = require('../ai/historyProcessor');
 const { defineTools, handleToolCall } = require('../ai/tools');
 const { salvageToolCalls } = require('../ai/salvageToolCall.js');
+const progress = require('./progress.js');
 const { updateProgressSteps, updateLastVisitedMaps } = require('./progressTracker');
 const { openai } = require('./openaiClient');
 const { startLoop, recordLoopUsage, flush, getCumulativeTotals } = require('../utils/tokenUsageTracker');
@@ -116,6 +117,13 @@ async function gameLoop() {
             }
             // 1. Get the current game state
             const gameDataJson = await fetchGameData();
+            //  DAEMONS: score the run every turn. This is for JUDGING runs --
+            //  yesterday every model comparison was "seems better", and the one
+            //  time it was measured the conclusion reversed twice. The model
+            //  never sees this number; it sees the delta in words.
+            state.progressNow = progress.snapshot(gameDataJson, state);
+            if (!state.progressMark) state.progressMark = state.progressNow;
+            state.progressScore = progress.score(state.progressNow);
             state.gameDataJsonRef = gameDataJson; // <<< Store latest game data
             if (!gameDataJson) {
                 console.error("Could not retrieve game data. Pausing and retrying...");
@@ -1297,7 +1305,12 @@ async function gameLoop() {
             }
 
             state.counters.currentStep++;
+            //  One greppable line per turn. `grep PROGRESS` on two runs is the
+            //  comparison we did not have yesterday.
             console.log(`Step counter incremented to: ${state.counters.currentStep}`);
+            console.log(`PROGRESS step=${state.counters.currentStep} score=${state.progressScore} `
+                + `badges=${state.progressNow.badges} maps=${state.progressNow.maps} `
+                + `levels=${state.progressNow.partyLevels} caught=${state.progressNow.caught}`);
             if (state.selfCritiqueReminderAcknowledged) {
                 state.selfCritiqueReminderPending = false; // Reminder satisfied after completing an action step
             }

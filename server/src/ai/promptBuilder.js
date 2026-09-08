@@ -355,6 +355,16 @@ function formatBattleState(battleData) {
 
 async function buildUserInputText(gameDataJson) {
   const { counters } = state;
+  //  DAEMONS: what has actually changed since the current objective was set.
+  //  A score would be a fact about the past; a next action cannot answer it.
+  //  "2 new maps, nothing else" can be answered, and when it says NOTHING has
+  //  changed that is the strongest signal in the prompt that the current plan
+  //  is not working.
+  let progressLine = "";
+  try {
+    const progress = require("../core/progress.js");
+    progressLine = progress.delta(state.progressNow, state.progressMark) || "";
+  } catch (e) { /* never let a status line break a turn */ }
 
   const trainer = gameDataJson?.current_trainer_data || null;
   const pos = trainer?.position || { map_name: "Unknown", map_id: "0-0", x: 0, y: 0, elevation: 0 };
@@ -480,6 +490,7 @@ ${formatBattleState(gameDataJson?.battle_data)}
 
 <objectives_section>
 ${formatObjectives(state.objectives, gameDataJson?.current_trainer_data?.position?.map_id, gameDataJson?.current_trainer_data?.position?.map_name)}
+${progressLine ? "<progress>\n" + progressLine + "\n</progress>\n" : ""}
 </objectives_section>
 
 ${formatMemoryStructured(state.memory)}
