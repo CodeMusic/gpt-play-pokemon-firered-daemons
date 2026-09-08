@@ -466,18 +466,57 @@
     });
   }
 
-  //  The last frame the agent saw. Cache-busted because the file keeps its
-  //  name and the browser would otherwise show the first one forever.
+  //  The last four frames, newest first. Cache-busted because the files keep
+  //  their names as they rotate, and the browser would otherwise show the
+  //  first one it ever saw.
+  //
+  //  Loaded through a probe Image so a frame that does not exist yet -- early
+  //  in a run, before the history has filled -- simply does not appear,
+  //  instead of rendering as a broken image.
+  const FRAMES = ["latest-frame.png", "frame-1.png", "frame-2.png", "frame-3.png"];
   function refreshFrame() {
-    const img = document.getElementById("latest-frame");
-    if (!img) return;
-    const probe = new Image();
-    probe.onload = () => {
-      img.src = probe.src;
-      const age = document.getElementById("frame-age");
-      if (age) age.textContent = "· " + formatTime(Date.now());
-    };
-    probe.src = "latest-frame.png?t=" + Date.now();
+    const strip = document.getElementById("frame-strip");
+    if (!strip) return;
+    const stamp = Date.now();
+    FRAMES.forEach((name, i) => {
+      const src = name + "?t=" + stamp;
+      const probe = new Image();
+      probe.onload = () => {
+        let fig = strip.querySelector(`[data-frame="${i}"]`);
+        if (!fig) {
+          fig = document.createElement("figure");
+          fig.className = "frame-item";
+          fig.dataset.frame = String(i);
+          fig.innerHTML = '<img alt="" /><figcaption class="muted small"></figcaption>';
+          //  Insert in order, so a late-arriving older frame does not jump the queue.
+          const after = Array.from(strip.children).find((c) => Number(c.dataset.frame) > i);
+          strip.insertBefore(fig, after || null);
+        }
+        fig.querySelector("img").src = src;
+        fig.querySelector("figcaption").textContent = i === 0 ? "latest" : `${i} turn${i > 1 ? "s" : ""} ago`;
+        if (i === 0) {
+          const age = document.getElementById("frame-age");
+          if (age) age.textContent = "· " + formatTime(stamp);
+        }
+      };
+      probe.src = src;
+    });
+  }
+
+  //  Click any frame to see it full size.
+  function initFrameView() {
+    const strip = document.getElementById("frame-strip");
+    const dlg = document.getElementById("frame-view");
+    if (!strip || !dlg) return;
+    strip.addEventListener("click", (e) => {
+      const fig = e.target.closest(".frame-item");
+      if (!fig) return;
+      document.getElementById("frame-view-img").src = fig.querySelector("img").src;
+      document.getElementById("frame-view-cap").textContent = fig.querySelector("figcaption").textContent;
+      dlg.showModal();
+    });
+    //  Click the backdrop to dismiss. Escape is handled by <dialog> itself.
+    dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
   }
 
   function renderRuntime() {
@@ -1436,6 +1475,7 @@
     wireControls();
     initTheme();
     initTabs();
+    initFrameView();
     renderAllPanels();
     renderAsides();
     connectWebSocket();

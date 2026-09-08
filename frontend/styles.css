@@ -891,12 +891,71 @@ input:focus-visible {
   outline-offset: -2px;
 }
 
-/* ---------- Last frame ----------
-   What the agent was looking at. Pixel art, so it must not be smoothed. */
-.frame-card img {
+/* ---------- Frames ----------
+   What the agent was looking at, newest first. Four of them, because one
+   frame says where it is and four say whether it is going anywhere.
+   Pixel art throughout, so nothing here may be smoothed. */
+.frame-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.frame-item {
+  margin: 0;
+  cursor: zoom-in;
+  opacity: 0.55;
+  transition: opacity 0.12s ease;
+}
+
+/* The latest is the one being looked at; the rest are context. */
+.frame-item[data-frame="0"] {
+  opacity: 1;
+}
+
+.frame-item:hover {
+  opacity: 1;
+}
+
+.frame-item img {
   display: block;
   width: 100%;
   height: auto;
   image-rendering: pixelated;
   border-radius: 2px;
+  border: 1px solid var(--border);
+}
+
+.frame-item[data-frame="0"] img {
+  border-color: var(--accent);
+}
+
+.frame-item figcaption {
+  margin-top: 3px;
+}
+
+/* The enlarged view. A <dialog>, so Escape and focus handling come free. */
+#frame-view {
+  border: 1px solid var(--border-light);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius, 8px);
+  padding: 12px;
+  max-width: min(92vw, 1100px);
+}
+
+#frame-view::backdrop {
+  background: rgba(12, 20, 32, 0.72);
+}
+
+#frame-view img {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  border-radius: 2px;
+}
+
+#frame-view p {
+  margin: 8px 0 0;
 }

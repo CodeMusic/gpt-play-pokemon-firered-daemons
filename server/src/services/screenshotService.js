@@ -177,8 +177,24 @@ async function buildVisionPayload(gameDataJson) {
   //
   //  A file rather than a websocket payload on purpose: this is ~100KB every
   //  turn, and the socket carries state that has to arrive.
+  //  Keep a short history, newest first. One frame tells you where the agent
+  //  is; four tell you whether it is going anywhere -- which is the actual
+  //  question when you glance at this from another room.
+  //
+  //  Four because that is what the model itself sees:
+  //  keepLastNUserMessagesWithImages is 2 MESSAGES, and each carries the screen
+  //  plus the coordinate-grid overlay. Showing the same window the agent has
+  //  means the dashboard is not a different account of the run.
   try {
-    await fs.writeFile(path.join(__dirname, "../../../frontend/latest-frame.png"), upscaled);
+    const dir = path.join(__dirname, "../../../frontend");
+    //  Rotate from the oldest end, so nothing is overwritten before it moves.
+    for (let i = 3; i >= 1; i--) {
+      try { await fs.rename(path.join(dir, `frame-${i}.png`), path.join(dir, `frame-${i + 1}.png`)); }
+      catch { /* not there yet: the run is younger than the history */ }
+    }
+    try { await fs.rename(path.join(dir, "latest-frame.png"), path.join(dir, "frame-1.png")); }
+    catch { /* first frame of the run */ }
+    await fs.writeFile(path.join(dir, "latest-frame.png"), upscaled);
   } catch {
     // Non-fatal: the dashboard simply shows the previous frame, or none.
   }

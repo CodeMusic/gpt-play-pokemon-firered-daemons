@@ -81,8 +81,8 @@
            to arrive. This is the panel you want when you are away from the
            machine: the log says what it did, this says what it was looking at. -->
       <section class="card frame-card">
-        <h2>Last frame <span id="frame-age" class="muted small"></span></h2>
-        <img id="latest-frame" alt="the frame the agent last saw" />
+        <h2>Frames <span id="frame-age" class="muted small"></span></h2>
+        <div id="frame-strip" class="frame-strip"></div>
       </section>
 
       <!-- The dashboard grew past what fits on one screen. The panels that
@@ -158,5 +158,12 @@
     </main>
 
     <script src="./app.js"></script>
+  <!-- Enlarged frame. A dialog rather than a div: it gets focus handling,
+       Escape-to-close and inertness of the page behind it for free, and those
+       are the parts hand-rolled overlays usually get wrong. -->
+  <dialog id="frame-view">
+    <img id="frame-view-img" alt="enlarged frame" />
+    <p id="frame-view-cap" class="muted small"></p>
+  </dialog>
   </body>
 </html>
