@@ -144,6 +144,9 @@ const config = {
     get selfModelSaveFile() {
       return path.join(ROOT_DIR, config.dataDir, "self_model.json");
     },
+    get dreamsSaveFile() {
+      return path.join(ROOT_DIR, config.dataDir, "dreams.json");
+    },
     get progressStepsFile() {
       return path.join(ROOT_DIR, config.dataDir, "progress_steps.json");
     },
@@ -196,6 +199,12 @@ const config = {
     //  it was broken but because nothing had ever reached the trigger. It is
     //  worth being able to lower it to watch the thing work.
     limitAssistantMessagesForSelfCriticism: Number(process.env.DAEMONS_CRITIQUE_EVERY || 40),
+    //  ONE definition. This expression existed in four places and two of them
+    //  kept the old default when the other two were flipped, so self-critique
+    //  ran while the dashboard reported it disabled -- and the panel said so
+    //  in a paragraph explaining why it had been turned off. Nobody can debug
+    //  a feature the UI insists is not running.
+    selfCritique: (process.env.DAEMONS_SELF_CRITIQUE || "1") === "1",
     limitAssistantMessagesForSummary: Number(process.env.DAEMONS_SUMMARY_EVERY || 120),
   },
 

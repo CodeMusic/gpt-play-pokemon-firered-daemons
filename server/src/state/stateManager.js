@@ -19,6 +19,9 @@ const state = {
   //  Who it has turned out to be. Written by `reflect`, read back into every
   //  prompt so the inner voice has a speaker to be consistent with.
   selfModel: [],
+  //  What the fold left behind. Written when a summary succeeds, from the
+  //  history that is about to be thrown away.
+  dreams: [],
   allSummaries: [],
   badgeHistory: {},
   previousBadgesState: {},
@@ -219,6 +222,16 @@ async function loadPersistentState() {
   }
 
   try {
+    const dreamData = await fs.readFile(config.paths.dreamsSaveFile, "utf-8");
+    const parsedDreams = JSON.parse(dreamData);
+    if (Array.isArray(parsedDreams)) state.dreams = parsedDreams;
+    console.log("Loaded dreams:", state.dreams.length);
+  } catch (error) {
+    if (error.code !== "ENOENT") console.error("Error loading dreams:", error);
+    state.dreams = [];
+  }
+
+  try {
     const selfData = await fs.readFile(config.paths.selfModelSaveFile, "utf-8");
     const parsedSelf = JSON.parse(selfData);
     if (Array.isArray(parsedSelf)) state.selfModel = parsedSelf;
@@ -373,6 +386,7 @@ async function savePersistentState() {
     await fs.writeFile(config.paths.summariesSaveFile, JSON.stringify(state.summaries, null, 2));
     await fs.writeFile(config.paths.asidesSaveFile, JSON.stringify(state.asides, null, 2));
     await fs.writeFile(config.paths.selfModelSaveFile, JSON.stringify(state.selfModel, null, 2));
+    await fs.writeFile(config.paths.dreamsSaveFile, JSON.stringify(state.dreams, null, 2));
     await fs.writeFile(config.paths.allSummariesSaveFile, JSON.stringify(state.allSummaries, null, 2));
     await fs.writeFile(config.paths.progressStepsFile, JSON.stringify(state.progressSteps, null, 2));
     await fs.writeFile(config.paths.lastVisitedMapsFile, JSON.stringify(state.lastVisitedMaps, null, 2));

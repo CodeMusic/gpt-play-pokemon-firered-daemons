@@ -757,8 +757,23 @@ input:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
-  max-height: 30rem;
+  /* A fixed 30rem cap made this scroll while the card below it sat empty --
+     the panel is as tall as its row, so the list should use that height and
+     only scroll when it genuinely overflows. */
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
+}
+
+/* The card has to be a column for the stream's flex:1 to have anything to
+   fill, or min-height:0 collapses it to nothing. */
+.aside-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.aside-card .aside-stream {
+  max-height: none;
 }
 
 .aside-line {
@@ -863,6 +878,47 @@ input:focus-visible {
 .aside-text {
   flex: 1 1 auto;
 }
+
+/* The self-model, styled like the inner voice because it is the same voice --
+   these are the observations the asides are supposed to sound like. */
+.self-line {
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+  font-style: italic;
+  line-height: 1.45;
+  padding-left: 0.55rem;
+  border-left: 2px solid var(--accent);
+}
+
+.self-step {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  opacity: 0.55;
+  font-style: normal;
+}
+
+.self-text { flex: 1 1 auto; }
+
+/* A dream is not a log line, so it does not get a log line's treatment: no
+   left rule, more air, and the newest one at full strength. */
+.dream-line {
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+  font-style: italic;
+  line-height: 1.6;
+  opacity: 0.7;
+  padding: 0.5rem 0 0.5rem 0.55rem;
+  border-left: 2px solid transparent;
+}
+
+.dream-line.latest {
+  opacity: 1;
+  border-left-color: var(--purple, var(--accent));
+}
+
+.dream-text { flex: 1 1 auto; }
 
 /* The score carries its arithmetic in a title attribute, so it reads as
    something you can interrogate rather than a verdict. */
@@ -994,10 +1050,16 @@ input:focus-visible {
    What the agent was looking at, newest first. Four of them, because one
    frame says where it is and four say whether it is going anywhere.
    Pixel art throughout, so nothing here may be smoothed. */
+/* Two frames and a slice of the third. Four full frames made this column
+   taller than everything beside it; capping it at roughly two and a half says
+   "there is more here" in the way a scrollbar is supposed to. */
 .frame-strip {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-height: 34rem;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .frame-item {
@@ -1034,13 +1096,22 @@ input:focus-visible {
 }
 
 /* The enlarged view. A <dialog>, so Escape and focus handling come free. */
+/* Centred, and as large as the viewport allows.
+   A <dialog> opened with showModal() is centred by the UA only if it has no
+   conflicting margin -- the default is `margin: auto`, but `max-width` alone
+   left it sized to the image's natural width, which for a 240x160 GBA frame is
+   tiny and pinned top-left. Sizing the IMAGE rather than the dialog is what
+   makes it fill the screen. */
 #frame-view {
   border: 1px solid var(--border-light);
   background: var(--surface);
   color: var(--text);
   border-radius: var(--radius, 8px);
   padding: 12px;
-  max-width: min(92vw, 1100px);
+  margin: auto;
+  width: max-content;
+  max-width: 96vw;
+  max-height: 96vh;
 }
 
 #frame-view::backdrop {
@@ -1049,8 +1120,12 @@ input:focus-visible {
 
 #frame-view img {
   display: block;
-  width: 100%;
+  /* Fill the screen rather than the image's own 240x160. Both caps are needed:
+     width alone overflows a short window, height alone overflows a narrow one. */
+  width: auto;
   height: auto;
+  max-width: calc(96vw - 24px);
+  max-height: calc(96vh - 56px);
   image-rendering: pixelated;
   border-radius: 2px;
 }

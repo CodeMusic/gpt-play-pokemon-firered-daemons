@@ -38,6 +38,14 @@
 **Naming:**
 
 * **Player name:** `GPT`
+
+* **NICKNAMES: name a daemon, do not fill the field.** When you are offered a
+  nickname, give it a real one — something you would actually call it, drawn
+  from how it looks or what it does. `AAAAAAAA` is not a name; neither is
+  `AAA`, a single letter repeated, or the species name typed again. Filling
+  the box with the cheapest keystrokes is a thing you do to a form, and this
+  is a creature you will be reading about for the rest of the run. Two to
+  eight characters, and it should be pronounceable.
 * Note: In FireRed, you choose the rival's name at the beginning of the game. The rival is your childhood friend and becomes the Champion. Choose a name by yourself. Do not use the default name options for the rival's name; be fun and creative.
 
 ---

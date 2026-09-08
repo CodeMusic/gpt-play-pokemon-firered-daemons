@@ -161,6 +161,8 @@
       safari_zone_counter: 0,
       safari_zone_active: false,
       last_summary: "",
+      self_model: [],
+      dreams: [],
       last_criticism: "",
       total_tokens_accumulated: 0,
       time_usage_totals: { reasoning_ms: 0, tools_ms: 0, overall_ms: 0, down_ms: 0 },
@@ -508,6 +510,43 @@
     currentSpeakingText = text;
     renderAsides();
     audio.play().catch(() => stopSpeaking());
+  }
+
+  //  Who it has decided it is. Written by `reflect`, and the thing the inner
+  //  voice is supposed to sound like -- so it belongs on screen next to memory
+  //  rather than only in the prompt, where nobody can check it against what
+  //  the asides actually say.
+  function renderSelf() {
+    const el = document.getElementById("self-wrap");
+    if (!el) return;
+    const items = Array.isArray(state.game.self_model) ? state.game.self_model : [];
+    if (!items.length) {
+      el.innerHTML = '<div class="muted small">Nothing yet. This fills in when the agent '
+        + 'reflects, which happens when it completes an objective.</div>';
+      return;
+    }
+    el.innerHTML = items.map((s) =>
+      `<div class="self-line"><span class="self-step mono">step ${Number(s.step) || 0}</span>`
+      + `<span class="self-text">${escapeHtml(String(s.text || ""))}</span></div>`
+    ).join("");
+  }
+
+  //  Newest first, and only the last few. A dream is an impression; a scrollable
+  //  archive of them stops being one.
+  function renderDreams() {
+    const el = document.getElementById("dreams-wrap");
+    if (!el) return;
+    const items = Array.isArray(state.game.dreams) ? state.game.dreams.slice().reverse() : [];
+    if (!items.length) {
+      el.innerHTML = '<div class="muted small">Nothing yet. A dream is written when a '
+        + 'summary folds the history away.</div>';
+      return;
+    }
+    el.innerHTML = items.slice(0, 4).map((d, i) =>
+      `<div class="dream-line${i === 0 ? " latest" : ""}">`
+      + `<span class="self-step mono">step ${Number(d.step) || 0}</span>`
+      + `<span class="dream-text">${escapeHtml(String(d.text || ""))}</span></div>`
+    ).join("");
   }
 
   function renderAsides() {
@@ -1196,6 +1235,14 @@
         .reverse();
       renderAsides();
     }
+    if (Array.isArray(payload.self_model)) {
+      state.game.self_model = payload.self_model;
+      renderSelf();
+    }
+    if (Array.isArray(payload.dreams)) {
+      state.game.dreams = payload.dreams;
+      renderDreams();
+    }
     if (typeof payload.self_critique_enabled === "boolean") {
       state.game.self_critique_enabled = payload.self_critique_enabled;
     }
@@ -1305,6 +1352,14 @@
     const payload = message?.payload;
 
     switch (type) {
+      case "dream":
+        if (payload && payload.text) {
+          if (!Array.isArray(state.game.dreams)) state.game.dreams = [];
+          state.game.dreams.push(payload);
+          renderDreams();
+        }
+        return;
+
       case "full_state":
         mergeFullState(payload);
         return;

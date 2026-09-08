@@ -246,7 +246,7 @@ async function gameLoop() {
             //  file outlives the setting, and the stale critique on disk is
             //  the one asserting "No loops detected" mid-loop -- injecting
             //  that into every prompt is the harm, not generating it.
-            const lastCriticism = (process.env.DAEMONS_SELF_CRITIQUE || "1") === "1"
+            const lastCriticism = config.history.selfCritique
                 && fsSync.existsSync(config.paths.lastCriticismSaveFile)
                 ? fsSync.readFileSync(config.paths.lastCriticismSaveFile, "utf8")
                 : "";
@@ -284,7 +284,10 @@ async function gameLoop() {
                     //  Why the Criticism panel is empty, said out loud. It has been
                     //  blank for days and looked broken every time, because nothing
                     //  on screen distinguished "turned off" from "not working".
-                    self_critique_enabled: (process.env.DAEMONS_SELF_CRITIQUE || "0") === "1",
+                    self_critique_enabled: config.history.selfCritique,
+                    //  Both builders, not the one I happened to open first.
+                    self_model: Array.isArray(state.selfModel) ? state.selfModel : [],
+                    dreams: Array.isArray(state.dreams) ? state.dreams.slice(-8) : [],
                     //  So a refreshed dashboard gets the inner voice back.
                     //  Newest last here; the page reverses it for display.
                     asides: Array.isArray(state.asides) ? state.asides.slice(-60) : [],
@@ -848,6 +851,35 @@ async function gameLoop() {
                 });
                 state.skipNextUserMessage = true;
 
+                //  THE DREAM. Same boundary as the fold, because it is made of
+                //  what the fold discards -- one short call, no tools, and a
+                //  failure here must never cost the summary that just worked.
+                try {
+                    const dream = require("./dream.js");
+                    const dreamRes = await openai.responses.create({
+                        model: config.openai.model,
+                        input: [{ role: "user", content: [{ type: "input_text",
+                            text: dream.buildDreamPrompt(newSummaryText, state.selfModel, state.asides) }] }],
+                        text: { format: { type: "text" } },
+                        reasoning: { effort: "low", summary: config.openai.reasoningSummary },
+                        max_output_tokens: 2000,
+                        store: config.openai.store,
+                        stream: false,
+                    });
+                    const item = (dreamRes?.output || []).find((o) => o.type === "message");
+                    const text = item?.content?.find((c) => c.type === "output_text")?.text
+                        || dreamRes?.output_text || "";
+                    const entry = dream.record(state, text);
+                    if (entry) {
+                        console.log(`\n=== Dream ===\n${entry.text}\n`);
+                        broadcast({ type: 'dream', payload: entry });
+                    } else {
+                        console.warn("Dream call returned nothing usable; skipping.");
+                    }
+                } catch (e) {
+                    console.warn(`Dream failed (${e?.message || e}); the summary stands.`);
+                }
+
                 state.counters.lastSummaryStep = state.counters.currentStep; // Update last summary step
                 // Update also the lastCriticismStep
                 state.counters.lastCriticismStep = state.counters.currentStep;
@@ -990,7 +1022,7 @@ async function gameLoop() {
             //  it gets a measured trajectory (trajectory.js), and its output
             //  is framed to the agent as a hypothesis rather than a finding.
             //  DAEMONS_SELF_CRITIQUE=0 turns it off again.
-            const critiqueEnabled = (process.env.DAEMONS_SELF_CRITIQUE || "1") === "1";
+            const critiqueEnabled = config.history.selfCritique;
             const shouldCriticize = critiqueEnabled
                 && stepsSinceLastCriticism >= config.history.limitAssistantMessagesForSelfCriticism;
             if (shouldCriticize) { // Use the pre-calculated flag and remove assistantHistoryLength check

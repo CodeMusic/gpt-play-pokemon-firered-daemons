@@ -276,7 +276,10 @@ async function start() {
         //  Why the Criticism panel is empty, said out loud. It has been
         //  blank for days and looked broken every time, because nothing
         //  on screen distinguished "turned off" from "not working".
-        self_critique_enabled: (process.env.DAEMONS_SELF_CRITIQUE || "0") === "1",
+        self_critique_enabled: config.history.selfCritique,
+        //  Both builders, not the one I happened to open first.
+        self_model: Array.isArray(state.selfModel) ? state.selfModel : [],
+        dreams: Array.isArray(state.dreams) ? state.dreams.slice(-8) : [],
         //  THIS is the full_state a refreshed page receives -- the one sent on
         //  connect, before the loop's next periodic broadcast. Putting asides
         //  only in the loop's copy fixed the case nobody had ("the page has
