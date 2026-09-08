@@ -958,8 +958,26 @@
 
     const summaryFallback = state.game.last_summary || "";
     const criticismFallback = state.game.last_criticism || "";
-    els.summaryStream.textContent = state.streams.summaryText || summaryFallback || "";
-    els.criticismStream.textContent = state.streams.criticismText || criticismFallback || "";
+    //  An empty panel is not information. These two have read as broken for
+    //  days -- one because the first summary had not happened yet, the other
+    //  because self-critique is off by default -- and nothing on screen told
+    //  the difference between "off", "not yet" and "failing". Say which.
+    const g = state.game || {};
+    els.summaryStream.textContent =
+      state.streams.summaryText || summaryFallback
+      || (Number.isFinite(g.remaining_until_summary) && g.remaining_until_summary > 0
+            ? `Nothing summarised yet. The first one runs in ${g.remaining_until_summary} step${g.remaining_until_summary === 1 ? "" : "s"}.`
+            : "Nothing summarised yet.");
+    els.criticismStream.textContent =
+      state.streams.criticismText || criticismFallback
+      || (g.self_critique_enabled === false
+            ? "Self-critique is OFF. It produced confidently wrong readings on local "
+              + "models -- \"no loops detected\" during an hour of walking into the same "
+              + "wall -- and its output is injected into every prompt until the next "
+              + "one. Set DAEMONS_SELF_CRITIQUE=1 to turn it back on."
+            : Number.isFinite(g.remaining_until_criticism) && g.remaining_until_criticism > 0
+              ? `No critique yet. The next one runs in ${g.remaining_until_criticism} step${g.remaining_until_criticism === 1 ? "" : "s"}.`
+              : "No critique yet.");
   }
 
   function renderMinimap() {
@@ -1177,6 +1195,9 @@
         .filter((a) => a.text)
         .reverse();
       renderAsides();
+    }
+    if (typeof payload.self_critique_enabled === "boolean") {
+      state.game.self_critique_enabled = payload.self_critique_enabled;
     }
     if (!state.streams.summaryInProgress && typeof payload.last_summary === "string") {
       state.streams.summaryText = payload.last_summary;

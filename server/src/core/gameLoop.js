@@ -281,6 +281,10 @@ async function gameLoop() {
                     steps: state.counters.currentStep,
                     last_summary: lastSummaryText, // Use the variable derived from the state.summaries array
                     last_criticism: lastCriticism,
+                    //  Why the Criticism panel is empty, said out loud. It has been
+                    //  blank for days and looked broken every time, because nothing
+                    //  on screen distinguished "turned off" from "not working".
+                    self_critique_enabled: (process.env.DAEMONS_SELF_CRITIQUE || "0") === "1",
                     //  So a refreshed dashboard gets the inner voice back.
                     //  Newest last here; the page reverses it for display.
                     asides: Array.isArray(state.asides) ? state.asides.slice(-60) : [],
