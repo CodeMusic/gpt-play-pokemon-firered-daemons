@@ -1022,6 +1022,10 @@ function toolOutput(text) {
                             const movementIntended = !inDialog
                                 && individualAction.keys.length > 0
                                 && individualAction.keys.every((k) => DIRECTIONAL.has(k));
+                            //  feelings.js needs this exact judgement and was
+                            //  making a worse one of its own -- see the note in
+                            //  gameLoop where the streak is counted.
+                            state.lastMovementIntended = movementIntended;
                             const keySig = JSON.stringify(individualAction.keys);
                             const herePos = gameDataJson?.current_trainer_data?.position || null;
                             const samePlace = Boolean(

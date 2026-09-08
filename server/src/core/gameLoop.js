@@ -148,11 +148,28 @@ async function gameLoop() {
 
                 //  A blocked move is only frustrating when it REPEATS, so the
                 //  streak is the signal and a single bump is not.
+                //
+                //  BUT STANDING STILL IS NOT BEING BLOCKED. The first version
+                //  compared positions and nothing else, so ten turns of opening
+                //  menus -- where the position cannot change and is not meant
+                //  to -- read as ten blocked moves and drove CHOLERIC to 92
+                //  before the agent had left the lab. It was furious about
+                //  setting the text speed.
+                //
+                //  tools.js already draws this distinction correctly for the
+                //  movement feedback it gives the model: a walk is purely
+                //  directional keys outside dialogue, and anything with a
+                //  confirm in it is menu navigation. Use that judgement rather
+                //  than inventing a second, worse one.
                 const here = `${gameDataJson?.current_trainer_data?.position?.map_id}:`
                     + `${gameDataJson?.current_trainer_data?.position?.x},`
                     + `${gameDataJson?.current_trainer_data?.position?.y}`;
-                if (state.lastFeelPos === here) state.blockedStreak = (state.blockedStreak || 0) + 1;
-                else state.blockedStreak = 0;
+                const triedToMove = Boolean(state.lastMovementIntended);
+                if (triedToMove && state.lastFeelPos === here) {
+                    state.blockedStreak = (state.blockedStreak || 0) + 1;
+                } else {
+                    state.blockedStreak = 0;
+                }
                 state.lastFeelPos = here;
 
                 const { deltas, events } = feelings.readEvents(progressPrev, state.progressNow, {
