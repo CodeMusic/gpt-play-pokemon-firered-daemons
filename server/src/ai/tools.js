@@ -1216,6 +1216,23 @@ function toolOutput(text) {
                             }
                         }
 
+                        //  DAEMONS: an empty path is not a failed path when you
+                        //  are already standing on the target. planPath returns
+                        //  zero keys for that, and the check below reads zero
+                        //  keys as "No path found or path was empty" -- so
+                        //  arriving reported as an error, which is both wrong
+                        //  and the sort of thing that teaches the model its
+                        //  correct move failed.
+                        if (path && Array.isArray(path.keys) && path.keys.length === 0) {
+                            pathfindingExecutedThisTurn = true;
+                            actionResult.success = true;
+                            actionResult.message =
+                                `You are ALREADY standing on (${path_x}, ${path_y}) -- no movement needed.`
+                                + " If this was meant to be an exit, use it now: on a carpet or warp,"
+                                + " press toward the adjacent wall; on a door or stairs, step into it.";
+                            actionResult.details = path.explanation || "";
+                            break;
+                        }
                         if (path && path.keys && path.keys.length > 0) {
                             pathfindingExecutedThisTurn = true;
                             
