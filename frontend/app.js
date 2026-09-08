@@ -425,6 +425,32 @@
   //  Tabs. The panels behind them are consulted occasionally; the ones left
   //  on screen are the ones actually watched. Wired once at load, since the
   //  panes exist in the document from the start and only visibility changes.
+  //  Three states, not two: auto follows the OS, light and dark pin it. A
+  //  two-state toggle cannot express "whatever the machine is doing", which is
+  //  what most people want most of the time and what the CSS already does when
+  //  nothing is stamped on the root.
+  const THEMES = ["auto", "light", "dark"];
+  function applyTheme(name) {
+    const root = document.documentElement;
+    if (name === "auto") root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", name);
+    const btn = document.getElementById("theme-btn");
+    if (btn) btn.textContent = "Theme: " + name;
+    try { localStorage.setItem("daemons.theme", name); } catch (e) { /* private window */ }
+  }
+
+  function initTheme() {
+    let saved = "auto";
+    try { saved = localStorage.getItem("daemons.theme") || "auto"; } catch (e) { /* ignore */ }
+    if (!THEMES.includes(saved)) saved = "auto";
+    applyTheme(saved);
+    const btn = document.getElementById("theme-btn");
+    if (btn) btn.addEventListener("click", () => {
+      const cur = document.getElementById("theme-btn").textContent.replace("Theme: ", "");
+      applyTheme(THEMES[(THEMES.indexOf(cur) + 1) % THEMES.length]);
+    });
+  }
+
   function initTabs() {
     const bar = document.querySelector(".tabbar");
     if (!bar) return;
@@ -1408,6 +1434,7 @@
   function bootstrap() {
     setInputDefaults();
     wireControls();
+    initTheme();
     initTabs();
     renderAllPanels();
     renderAsides();

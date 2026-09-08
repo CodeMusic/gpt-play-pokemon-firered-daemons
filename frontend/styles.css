@@ -3,20 +3,38 @@
    ========================================================================== */
 
 /* ---------- Custom Properties ---------- */
+/* ---------- Theme ----------
+   Taken from Dexter's `daemons` palette (src/theme/dex.ts), so the dashboard
+   and the device read as the same object rather than two tools that happen to
+   be about one game. Its names are physical -- bezel, case, screen, ink, lens
+   -- and they map cleanly onto a dashboard:
+
+     bezel      #0c1420   the ground the whole thing sits on
+     case       #1c2530   panels: the shell around the screen
+     caseEdge   #3c4a5c   borders: where one part meets another
+     lcdGreen   #b9c6d4   text: what the screen shows (pale slate, not green)
+     lcdInkSoft #455a72   muted: ink that has faded back
+     lensBlue   #3f9fd0   accent: the one lit thing on the device
+
+   Dark is the default because that is what the device looks like, and because
+   this is a monitor that runs for hours. Light follows the same palette read
+   the other way up: the screen becomes the ground and the ink becomes the
+   text. The status colours (ok/warn/err) stay universal, exactly as dex.ts
+   keeps its LEDs universal across both themes. */
 :root {
-  --bg: #0b0d13;
-  --bg-subtle: #0f1119;
-  --surface: #14161e;
-  --surface-raised: #1a1d28;
-  --surface-hover: #1f2230;
-  --text: #e2e4eb;
-  --text-secondary: #9599ad;
-  --muted: #6c7089;
-  --border: #232738;
-  --border-light: #2b2f42;
-  --accent: #14b8a6;
-  --accent-dim: rgba(20, 184, 166, 0.12);
-  --accent-hover: #0d9488;
+  --bg: #0c1420;
+  --bg-subtle: #101a28;
+  --surface: #1c2530;
+  --surface-raised: #232e3c;
+  --surface-hover: #2b3542;
+  --text: #b9c6d4;
+  --text-secondary: #8fa0b4;
+  --muted: #6b7d94;
+  --border: #263140;
+  --border-light: #3c4a5c;
+  --accent: #3f9fd0;
+  --accent-dim: rgba(63, 159, 208, 0.14);
+  --accent-hover: #5bb2de;
   --ok: #22c55e;
   --ok-dim: rgba(34, 197, 94, 0.12);
   --warn: #f59e0b;
@@ -24,8 +42,8 @@
   --err: #ef4444;
   --err-dim: rgba(239, 68, 68, 0.10);
   --info: #3b82f6;
-  --purple: #a855f7;
-  --focus: #14b8a6;
+  --purple: #8ea9c9;
+  --focus: #3f9fd0;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
   --shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.45);
@@ -38,6 +56,53 @@
 }
 
 /* ---------- Reset ---------- */
+
+/* The same palette the other way up: the pale screen becomes the ground, the
+   deep navy ink becomes the text. Follows the OS unless data-theme says
+   otherwise, so an explicit choice wins in both directions. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #d5dde5;
+    --bg-subtle: #c8d3dd;
+    --surface: #e7edf2;
+    --surface-raised: #f2f6f9;
+    --surface-hover: #dbe4ec;
+    --text: #16202e;
+    --text-secondary: #33455c;
+    --muted: #607790;
+    --border: #b3c1cf;
+    --border-light: #9dafc0;
+    --accent: #2b7ba8;
+    --accent-dim: rgba(43, 123, 168, 0.13);
+    --accent-hover: #22658b;
+    --focus: #2b7ba8;
+    --purple: #4b6382;
+    --shadow-sm: 0 1px 3px rgba(22, 32, 46, 0.10);
+    --shadow: 0 4px 16px rgba(22, 32, 46, 0.14);
+    --shadow-lg: 0 8px 32px rgba(22, 32, 46, 0.18);
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #d5dde5;
+  --bg-subtle: #c8d3dd;
+  --surface: #e7edf2;
+  --surface-raised: #f2f6f9;
+  --surface-hover: #dbe4ec;
+  --text: #16202e;
+  --text-secondary: #33455c;
+  --muted: #607790;
+  --border: #b3c1cf;
+  --border-light: #9dafc0;
+  --accent: #2b7ba8;
+  --accent-dim: rgba(43, 123, 168, 0.13);
+  --accent-hover: #22658b;
+  --focus: #2b7ba8;
+  --purple: #4b6382;
+  --shadow-sm: 0 1px 3px rgba(22, 32, 46, 0.10);
+  --shadow: 0 4px 16px rgba(22, 32, 46, 0.14);
+  --shadow-lg: 0 8px 32px rgba(22, 32, 46, 0.18);
+}
 *,
 *::before,
 *::after {
