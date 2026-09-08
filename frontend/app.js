@@ -395,6 +395,33 @@
       .replace(/\b\w/g, (m) => m.toUpperCase());
   }
 
+  //  DAEMONS: the inner voice, newest first, bounded.
+  //
+  //  Bounded because it is the one thing here nobody scrolls back through --
+  //  you read the last few and move on. An unbounded list of them would be a
+  //  memory leak in exchange for text nobody reads.
+  const ASIDE_KEEP = 40;
+  function pushAside(text) {
+    if (!state.asides) state.asides = [];
+    state.asides.unshift({ text, at: Date.now() });
+    if (state.asides.length > ASIDE_KEEP) state.asides.length = ASIDE_KEEP;
+    renderAsides();
+  }
+
+  function renderAsides() {
+    const el = document.getElementById("aside-stream");
+    if (!el) return;
+    if (!state.asides || !state.asides.length) {
+      el.innerHTML = '<div class="muted small">No asides yet.</div>';
+      return;
+    }
+    el.innerHTML = state.asides.map((a, i) =>
+      `<div class="aside-line${i === 0 ? " latest" : ""}">`
+      + `<span class="aside-time mono">${formatTime(a.at)}</span>`
+      + `<span class="aside-text">${escapeHtml(a.text)}</span></div>`
+    ).join("");
+  }
+
   function renderRuntime() {
     const tokenTotals = state.tokenTotals || {};
     const timeTotals = state.timeTotals || state.game.time_usage_totals || {};
@@ -406,8 +433,38 @@
       ? `<span class="badge warn">Thinking</span>`
       : `<span class="badge">Idle</span>`;
 
+    //  DAEMONS: the run's score, with its arithmetic in the title attribute.
+    //  A bare number nobody can check is a number nobody trusts -- and this one
+    //  is a guess at what "doing well" means, so it will need tweaking. Showing
+    //  the working is how it gets tweaked from evidence instead of from taste.
+    const p = state.game.progress;
+    let scoreCell = '<span class="muted">--</span>';
+    if (p && p.parts) {
+      const w = p.weights || {};
+      const q = p.parts;
+      const rows = [
+        ["badges", q.badges, w.badge],
+        ["maps seen", q.maps, w.map],
+        ["party levels", q.partyLevels, w.partyLevel],
+        ["caught", q.caught, w.caught],
+        ["seen", q.seen, w.seen],
+        ["money", q.money, w.money],
+      ];
+      const tip = "score = sum of each count x its weight\n\n"
+        + rows.map(([n, c, wt]) =>
+            `${String(n).padEnd(13)} ${String(c ?? 0).padStart(6)} x ${wt} = ${Math.round((c || 0) * wt)}`
+          ).join("\n")
+        + `\n${"".padEnd(13)} ${"".padStart(6)}     total ${p.score}`
+        + "\n\nBadges dominate on purpose: eight of them IS the game."
+        + "\nMoney is deliberately weak -- 1000 currency is 2 points."
+        + "\nThe model never sees this number, only the delta in words.";
+      scoreCell = `<span class="score" title="${escapeHtml(tip)}">${formatNumber(p.score)}</span>`
+        + (p.delta ? ` <span class="muted small">${escapeHtml(p.delta)}</span>` : "");
+    }
+
     const lines = [
       ["Connection", `${connBadge} ${thinkingBadge}`],
+      ["Progress score", scoreCell],
       ["WS URL", `<span class="mono">${escapeHtml(buildWsUrl())}</span>`],
       ["Last WS message", formatTime(state.lastWsAt)],
       ["Step", formatNumber(g.steps)],
@@ -797,9 +854,7 @@
     const html = state.logs
       .map((entry) => {
         const typeClass =
-          entry.type === "aside"
-            ? "aside"
-            : entry.type === "chat"
+          entry.type === "chat"
             ? "chat"
             : entry.type === "reasoning"
               ? "reasoning"
@@ -831,7 +886,7 @@
                 : ""
             }
           `;
-        } else if (entry.type === "aside" || entry.type === "chat") {
+        } else if (entry.type === "chat") {
           const emotion = entry.data?.avatar_emotion ? ` <span class="badge">${escapeHtml(entry.data.avatar_emotion)}</span>` : "";
           body = `<div class="text-block">${escapeHtml(entry.message)}${emotion}</div>`;
         } else {
@@ -913,12 +968,11 @@
       });
     }
 
-    // DAEMONS: the aside is the inner voice, not another plan. It gets its own
-    // row so it reads as a thought rather than a third status line.
+    // DAEMONS: the aside is the inner voice and it does NOT belong in the log.
+    // The log is a record of what the agent did; this is what it thought while
+    // doing it, and mixing them makes both harder to read. Its own panel.
     if (typeof payload.aside === "string" && payload.aside.trim()) {
-      addLog("aside", payload.aside.trim(), {
-        data: { avatar_emotion: payload.avatar_emotion || null },
-      });
+      pushAside(payload.aside.trim());
     }
 
     const actions = Array.isArray(payload.actions) ? payload.actions : [];

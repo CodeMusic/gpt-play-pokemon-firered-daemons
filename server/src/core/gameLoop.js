@@ -258,6 +258,15 @@ async function gameLoop() {
                     visibility_window_height_tiles: gameDataJson.visibility_window_height_tiles,
                     memory: state.memory,
                     markers: state.markers,
+                    //  DAEMONS: the run's score, and the parts it is made of,
+                    //  so the dashboard can show the working rather than a
+                    //  bare number nobody can sanity-check.
+                    progress: state.progressNow ? {
+                        score: state.progressScore,
+                        parts: state.progressNow,
+                        weights: require("./progress.js").WEIGHTS,
+                        delta: require("./progress.js").delta(state.progressNow, state.progressMark),
+                    } : null,
                     progressSteps: state.progressSteps,
                     // Use new counter logic for remaining steps
                     remaining_until_criticism: Math.max(0, config.history.limitAssistantMessagesForSelfCriticism - (state.counters.currentStep - state.counters.lastCriticismStep)),

@@ -670,14 +670,56 @@ input:focus-visible {
   border-left-color: var(--purple);
 }
 
-/* The aside is the inner voice. It is set apart from chat deliberately --
-   italic and dimmer, so it reads as a thought rather than a third status
-   line. Everything else in this log is the agent reporting; this is the
-   agent thinking. */
-.log-entry.aside {
-  border-left-color: var(--teal, #4dd0c7);
+/* ---------- Inner voice ----------
+   Its own card rather than a log row. The log records what the agent DID;
+   this is what it thought while doing it. Newest first, because the current
+   thought is the one worth reading and the rest is scrollback. */
+.aside-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  max-height: 22rem;
+  overflow-y: auto;
+}
+
+.aside-line {
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
   font-style: italic;
-  opacity: 0.92;
+  line-height: 1.45;
+  opacity: 0.75;
+  border-left: 2px solid transparent;
+  padding-left: 0.55rem;
+}
+
+/* The newest one is the live thought; the rest have already been had. */
+.aside-line.latest {
+  opacity: 1;
+  border-left-color: var(--teal, #4dd0c7);
+}
+
+.aside-time {
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  opacity: 0.55;
+  font-style: normal;
+}
+
+.aside-text {
+  flex: 1 1 auto;
+}
+
+/* The score carries its arithmetic in a title attribute, so it reads as
+   something you can interrogate rather than a verdict. */
+.score {
+  font-weight: 600;
+  cursor: help;
+  border-bottom: 1px dotted currentColor;
+}
+
+.small {
+  font-size: 0.78rem;
 }
 
 /* ---------- Utility Classes ---------- */
