@@ -956,8 +956,13 @@ input:focus-visible {
   height: 6px;
   border-radius: 3px;
   background: var(--bg-subtle);
-  overflow: hidden;
 }
+
+/* Only the one-sided rows clip: their fill starts at the left edge and the
+   rounded corner should hold it. The two-sided row must NOT clip, or the
+   centre tick is cut back to the track's own height and disappears again. */
+.feel-row:not(.two-sided) .feel-track { overflow: hidden; }
+.feel-row.two-sided .feel-fill { border-radius: 2px; }
 
 /* A right-hand label only where there is a second pole to name. It keeps its
    width on every row so the tracks stay aligned down the column. */
@@ -970,15 +975,23 @@ input:focus-visible {
    fills from the left edge it would mark nothing. */
 .feel-row:not(.two-sided) .feel-track::before { display: none; }
 
-/* The centre line is the zero every feeling decays back to. */
+/* The centre line is the zero this feeling decays back to -- and the ONLY
+   visual cue that row four is a different kind of scale from the three above
+   it. At 1px inside the track it was invisible under the fill, so the row
+   looked like the others and the reading grammar silently changed.
+   Taller than the track, so it survives being filled over. */
 .feel-track::before {
   content: "";
   position: absolute;
   left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--border-light);
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--muted);
+  opacity: 0.85;
+  border-radius: 1px;
+  z-index: 1;
 }
 
 .feel-fill {
