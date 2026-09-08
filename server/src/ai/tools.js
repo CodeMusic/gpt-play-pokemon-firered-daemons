@@ -759,10 +759,20 @@ async function handleToolCall(toolCall, gameDataJson) {
     if (name !== "execute_action") {
         try {
             const a = JSON.parse(argsString || "{}");
-            const { step_details, chat_message, ...rest } = a;
+            //  `aside` has to be lifted with the other two. It is NARRATION on
+            //  the envelope, not a parameter of the action -- leave it in
+            //  `rest` and it ends up inside actions[0], where nothing reads it.
+            //
+            //  That is why the Inner voice panel stayed empty through 84 tool
+            //  calls: the model WAS emitting it (the schema requires it), the
+            //  broadcast carried args.aside, and args.aside was undefined
+            //  because this line had put it somewhere else. Every end wired,
+            //  one silent hop in the middle.
+            const { step_details, chat_message, aside, ...rest } = a;
             argsString = JSON.stringify({
                 step_details: step_details || ("Performing " + name + "."),
                 chat_message: chat_message || "",
+                aside: aside || "",
                 actions: [{ type: name, ...rest }],
             });
             name = "execute_action";
