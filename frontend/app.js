@@ -568,10 +568,17 @@
     const why = (state.game.feeling_events || []).map((e) => e.why).join(", ");
     const rows = Object.entries(FEEL_AXES).map(([axis, spec]) => {
       const v = Math.max(-100, Math.min(100, Number(f[axis]) || 0));
-      const name = v === 0 ? "\u2014" : v > 0 ? spec.hi : spec.lo;
+      //  The row keeps its name at rest. Showing an em dash at exactly zero
+      //  meant the one axis that happened to be settled lost its label, so
+      //  the panel read "GLAD / MAD / — / AFRAID" and you could not tell what
+      //  the third row even was. A quiet axis is still that axis; dim it
+      //  rather than erasing it. Below 8 is the same threshold the prompt
+      //  uses to decide a feeling is not worth mentioning.
+      const name = v < 0 ? spec.lo : spec.hi;
+      const quiet = Math.abs(v) < 8;
       const pct = Math.abs(v) / 2;                        // half-width max
       const side = v >= 0 ? "left:50%" : `right:50%`;
-      return `<div class="feel-row" title="${escapeHtml(axis)} ${v}">`
+      return `<div class="feel-row${quiet ? " quiet" : ""}" title="${escapeHtml(axis)} ${v}">`
         + `<span class="feel-name mono">${escapeHtml(name)}</span>`
         + `<span class="feel-track"><i class="feel-fill${v < 0 ? " neg" : ""}"`
         + ` style="${side};width:${pct}%"></i></span></div>`;

@@ -917,6 +917,10 @@ input:focus-visible {
   gap: 0.5rem;
 }
 
+/* Settled: still legible, plainly not active. */
+.feel-row.quiet .feel-name { opacity: 0.35; }
+.feel-row.quiet .feel-fill { opacity: 0.5; }
+
 .feel-name {
   flex: 0 0 4.2rem;
   font-size: 0.66rem;
