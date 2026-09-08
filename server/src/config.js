@@ -23,6 +23,20 @@ const config = {
     //  2048 is generous against the observed maximum and caps a runaway at
     //  ~30s instead of ~7.5 minutes. Raise it for a model that earns it.
     maxOutputTokens: Number(process.env.DAEMONS_MAX_OUTPUT_TOKENS || 32000),
+    //  `store` asks the provider to retain the response for later retrieval.
+    //  Upstream hardcodes true at four call sites, commented "Important to get
+    //  call details in the final response" -- but the harness reads the final
+    //  response out of the STREAM, not by fetching it back, so nothing here
+    //  depends on retention.
+    //
+    //  OpenRouter rejects the request outright if it is true:
+    //    invalid_value, path ["store"], "Invalid input: expected false"
+    //
+    //  and drop_params cannot save us, because `store` is a legitimate
+    //  Responses parameter rather than an unsupported one -- it is passed
+    //  through and refused. Default unchanged; bindDaemons turns it off for
+    //  the providers that will not take it.
+    store: (process.env.DAEMONS_STORE || "1") !== "0",
     reasoningEffort: process.env.OPENAI_REASONING_EFFORT || "high",
     reasoningEffortBattle: process.env.OPENAI_REASONING_EFFORT_BATTLE || "high",
     reasoningEffortDialog: process.env.OPENAI_REASONING_EFFORT_DIALOG || "high",

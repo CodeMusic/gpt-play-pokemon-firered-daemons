@@ -355,7 +355,7 @@ async function gameLoop() {
 	                        summary: config.openai.reasoningSummary,
                     },
                     max_output_tokens: config.openai.maxOutputTokens,
-                    store: true, // Important to get call details in the final response
+                    store: config.openai.store,
 
                     // store: false, // Important to get call details in the final response,
                     // include: ["reasoning.encrypted_content"],
@@ -518,7 +518,7 @@ async function gameLoop() {
                                 summary: config.openai.reasoningSummary,
                             },
                             max_output_tokens: 64000,
-                            store: true,
+                            store: config.openai.store,
                             stream: true,
                         });
                         let rollupResponseCompleted = false;
@@ -903,7 +903,7 @@ async function gameLoop() {
 	                        summary: config.openai.reasoningSummary,
                     },
                     max_output_tokens: config.openai.maxOutputTokens,
-                    store: true, // Important to get call details in the final response
+                    store: config.openai.store,
                     // store: false, // Important to get call details in the final response,
                     // include: ["reasoning.encrypted_content"],
                     stream: true,
@@ -1044,7 +1044,7 @@ async function gameLoop() {
                 tool_choice: "required",
                 parallel_tool_calls: false,
                 max_output_tokens: config.openai.maxOutputTokens,
-                store: true, // Important to get call details in the final response,
+                store: config.openai.store,,
                 // store: false, // Important to get call details in the final response,
                 // include: ["reasoning.encrypted_content"],
                 stream: true,
