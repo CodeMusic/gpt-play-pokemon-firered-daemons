@@ -518,8 +518,51 @@ async function gameLoop() {
                     //  retry is worse than a missing summary: it halts the game
                     //  as surely as a crash, while saying only "trying again".
                     if (summaryAttempts >= 3) {
-                        console.warn(`Summary failed ${summaryAttempts} times; skipping it and resuming play. Next attempt in ${config.history.limitAssistantMessagesForSummary} steps.`);
-                        broadcast({ type: 'summary_end', payload: 'Summary failed; resuming play.' });
+                        //  SKIPPING THE SUMMARY IS NOT ENOUGH, and the first
+                        //  version of this escape hatch got that wrong.
+                        //
+                        //  Summarising is the ONLY thing that folds the
+                        //  history -- a successful summary replaces the whole
+                        //  array. Skipping it resumed play while leaving the
+                        //  very condition that made the summary necessary, so
+                        //  the history kept growing: measured at 489 items and
+                        //  12.4 MB, ~124k tokens per call and climbing, until
+                        //  a call simply stopped coming back. That is slower
+                        //  and less honest than the infinite retry it replaced,
+                        //  which at least stalled visibly.
+                        //
+                        //  So if the model cannot fold it, fold it mechanically.
+                        //  Losing old context is a real cost; an unbounded
+                        //  prompt is a stalled run.
+                        const before = state.history.length;
+                        const KEEP = 40;
+                        if (before > KEEP) {
+                            const backupFolder = "backup";
+                            if (!fsSync.existsSync(backupFolder)) fsSync.mkdirSync(backupFolder, { recursive: true });
+                            fsSync.writeFileSync(
+                                path.join(backupFolder, `history_unfolded_${Date.now()}.json`),
+                                JSON.stringify(state.history, null, 2)
+                            );
+                            //  A function_call_output with no function_call
+                            //  above it is a 400 from the API, so the cut
+                            //  cannot land between a call and its result.
+                            //  Walk forward to the first item that can legally
+                            //  open a history.
+                            let cut = before - KEEP;
+                            while (cut < before && state.history[cut].type === "function_call_output") cut += 1;
+                            state.history = state.history.slice(cut);
+                            state.history.unshift({
+                                role: "user",
+                                content: [{ type: "input_text", text:
+                                    "<system>Earlier history was trimmed to keep the context workable. "
+                                    + "Your objectives and memory are intact and authoritative -- read them "
+                                    + "rather than relying on recall.</system>" }],
+                            });
+                            console.warn(`Summary failed ${summaryAttempts} times; TRIMMED history ${before} -> ${state.history.length} items mechanically. Old history saved to backup/.`);
+                        } else {
+                            console.warn(`Summary failed ${summaryAttempts} times; history is only ${before} items, leaving it alone.`);
+                        }
+                        broadcast({ type: 'summary_end', payload: `Summary failed; history trimmed ${before} -> ${state.history.length}.` });
                         summaryAttempts = 0;
                         state.counters.lastSummaryStep = state.counters.currentStep;
                         state.counters.lastCriticismStep = state.counters.currentStep;
