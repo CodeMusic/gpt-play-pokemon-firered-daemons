@@ -273,6 +273,13 @@ async function start() {
         steps: state.counters.currentStep,
         last_summary: lastSummaryText,
         last_criticism: lastCriticism,
+        //  THIS is the full_state a refreshed page receives -- the one sent on
+        //  connect, before the loop's next periodic broadcast. Putting asides
+        //  only in the loop's copy fixed the case nobody had ("the page has
+        //  been open a while") and missed the only case that was asked for
+        //  ("I just refreshed"). Two builders of the same message shape, and I
+        //  edited the one I happened to find first.
+        asides: Array.isArray(state.asides) ? state.asides.slice(-60) : [],
         isSummaryStep: loopStepState.isSummaryStep,
         isCriticismStep: loopStepState.isCriticismStep,
         safari_zone_counter: state.gameDataJsonRef?.safari_zone_counter ?? 0,
