@@ -525,12 +525,20 @@ function defineTools() {
             + "Look back over everything since the last objective and write down what you "
             + "LEARNED -- not what happened. The turn-by-turn history is discarded; this "
             + "sentence is what survives it."),
-        learned: z.string().describe(
+        //  MINIMUMS, because the model emitted this, verbatim:
+        //      {"learned":"","worked":"","wasted":"","about_self":"", ...}
+        //  Every field an empty string. `z.string()` is satisfied by "", so a
+        //  model with nothing prepared can call reflect and fill the required
+        //  fields with nothing -- which is what it did, leaving a memory entry
+        //  reading " (worked: ; wasted: ; at ROUTE1)" and a self-model that
+        //  stayed empty for the whole run. minLength survives zodToJsonSchema,
+        //  so the schema itself can refuse it.
+        learned: z.string().min(20).describe(
             "One or two sentences, in the form of a rule you could follow again. "
             + "'Exit carpets fire on a blocked move, not on stepping onto them' is useful. "
             + "'I went downstairs' is not -- that is what happened, not what you learned."),
-        worked: z.string().describe("The one thing that worked. Be specific about WHY it worked."),
-        wasted: z.string().describe(
+        worked: z.string().min(12).describe("The one thing that worked. Be specific about WHY it worked."),
+        wasted: z.string().min(12).describe(
             "The one thing that wasted turns. If nothing did, say so plainly rather than "
             + "inventing a fault."),
         //  The self-model, and the reason it exists.
@@ -543,7 +551,7 @@ function defineTools() {
         //  different degenerate voices -- fragments, then "I am..." on every
         //  line, then terse procedural notes -- because the problem was never
         //  the wording.
-        about_self: z.string().describe(
+        about_self: z.string().min(20).describe(
             "ONE SENTENCE about yourself, not about the game: what this stretch showed "
             + "you about how YOU play. A tendency, a habit, something you keep doing, a "
             + "way you tend to react. First person. "
@@ -1239,6 +1247,25 @@ function toolOutput(text) {
                         }
                         break;
                     case "reflect": {
+                        //  Belt as well as braces: a salvaged tool call
+                        //  bypasses schema validation entirely, so the
+                        //  minimums above cannot be the only guard. Refuse
+                        //  rather than writing an empty lesson into memory --
+                        //  and SAY SO, so the model gets a chance to do it
+                        //  properly instead of believing it already has.
+                        const filled = ["learned", "worked", "wasted", "about_self"]
+                            .filter((k) => String(individualAction[k] || "").trim().length >= 8);
+                        if (filled.length < 2) {
+                            actionResult.success = false;
+                            actionResult.message =
+                                "Reflection rejected: it was empty. `learned` is a rule you could "
+                                + "follow again, and `about_self` is one sentence about how YOU play. "
+                                + "Both need real content. Nothing was saved -- call reflect again "
+                                + "with the fields filled in, or carry on and reflect when you have "
+                                + "something to say.";
+                            console.warn(`INFO: [reflect] REJECTED -- empty fields (${filled.length}/4 filled)`);
+                            break;
+                        }
                         //  The lesson is stored like any other memory, under a
                         //  key that sorts with its siblings, so it is read back
                         //  in the same block the model already consults.
