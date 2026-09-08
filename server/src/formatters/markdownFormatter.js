@@ -829,8 +829,8 @@ function minimapToMarkdown(mm, minimapPlayerX, minimapPlayerY, map_id, map_name,
 ## Core Requirements
 
 **Mark Defeated Trainers:** 
-- Always add markers (💀) after trainer battles for progress tracking (Do not add a marker for the rival after you defeated him, because he is not stationary, when you defeat him he moving away from you).
-- The defeated trainer will always be the one in front of you (The one you face after the battle), place the marker on the tile where the trainer is standing.
+- Always add markers (💀) after USER battles for progress tracking (Do not add a marker for the rival after you defeated him, because he is not stationary, when you defeat him he moving away from you).
+- The defeated USER will always be the one in front of you (The one you face after the battle), place the marker on the tile where the trainer is standing.
 
 **🚨 CRITICAL - Entrance/Exit Protocol:**
 1. **Test First:** Attempt to use any door/exit/stairs

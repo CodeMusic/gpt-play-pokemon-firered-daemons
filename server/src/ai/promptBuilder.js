@@ -288,7 +288,7 @@ function formatPokemonTeam(team) {
   const lines = ["<daemon_team>"];
 
   if (mons.length === 0) {
-    lines.push("  <info>No Pokémon in party</info>");
+    lines.push("  <info>No daemons in the party</info>");
     lines.push("</daemon_team>");
     return lines.join("\n") + "\n";
   }
@@ -510,7 +510,7 @@ async function buildUserInputText(gameDataJson) {
 </current_situation>
 
 <player_stats>
-  <trainer name="${escapeXml(trainerName)}" money="${money}" badges="${badgeCount}/8" />
+  <user name="${escapeXml(trainerName)}" cache="${money}" marks="${badgeCount}/8" />
   ${formatPokemonTeam(gameDataJson?.current_pokemon_data)}
   ${formatInventory(gameDataJson?.inventory_data)}
   ${formatPcItems(gameDataJson?.pc_items)}
