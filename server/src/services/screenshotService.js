@@ -167,6 +167,22 @@ async function buildVisionPayload(gameDataJson) {
     // Non-fatal: vision can still proceed without debug files.
   }
 
+  //  DAEMONS: drop a copy where the dashboard can fetch it.
+  //
+  //  The frontend is a static server over engineAi/frontend, so it cannot
+  //  reach the debug directory. Writing the frame here means the dashboard can
+  //  show the last thing the agent SAW -- which is what you want when you are
+  //  away from the machine and the log alone will not tell you whether it is
+  //  stuck in a menu or standing in a field.
+  //
+  //  A file rather than a websocket payload on purpose: this is ~100KB every
+  //  turn, and the socket carries state that has to arrive.
+  try {
+    await fs.writeFile(path.join(__dirname, "../../../frontend/latest-frame.png"), upscaled);
+  } catch {
+    // Non-fatal: the dashboard simply shows the previous frame, or none.
+  }
+
   // Overworld: add overlay image2 (raw + coords/grid).
   if (!isOverworld(gameDataJson)) {
     return { image1Base64, image2Base64: null, error: null };

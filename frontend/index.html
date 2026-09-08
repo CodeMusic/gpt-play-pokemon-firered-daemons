@@ -67,7 +67,38 @@
         <div id="trainer-grid" class="kv-grid"></div>
       </section>
 
-      <section class="card streams">
+
+
+
+
+
+
+
+      <!-- DAEMONS: the last frame the agent actually saw. Written to disk by
+           screenshotService and fetched by the browser, not pushed over the
+           socket -- it is ~100KB a turn and the socket carries state that has
+           to arrive. This is the panel you want when you are away from the
+           machine: the log says what it did, this says what it was looking at. -->
+      <section class="card frame-card">
+        <h2>Last frame <span id="frame-age" class="muted small"></span></h2>
+        <img id="latest-frame" alt="the frame the agent last saw" />
+      </section>
+
+      <!-- The dashboard grew past what fits on one screen. The panels that
+           are consulted occasionally go behind tabs; RUNTIME, INNER VOICE,
+           USER, LAST FRAME and LOGS stay visible because they are what you
+           actually watch. -->
+      <section class="card tabbed">
+        <div class="tabbar" role="tablist">
+          <button class="tab" role="tab" data-tab="streams" aria-selected="true">Summary</button>
+          <button class="tab" role="tab" data-tab="team" aria-selected="false">Party</button>
+          <button class="tab" role="tab" data-tab="inventory" aria-selected="false">Inventory</button>
+          <button class="tab" role="tab" data-tab="objectives" aria-selected="false">Objectives</button>
+          <button class="tab" role="tab" data-tab="progress" aria-selected="false">Progress</button>
+          <button class="tab" role="tab" data-tab="memory" aria-selected="false">Memory</button>
+          <button class="tab" role="tab" data-tab="minimap" aria-selected="false">Map</button>
+        </div>
+      <div class="tabpane" data-pane="streams">
         <h2>Summary / Criticism</h2>
         <div class="stream-columns">
           <div>
@@ -79,34 +110,28 @@
             <pre id="criticism-stream" class="stream-box"></pre>
           </div>
         </div>
-      </section>
-
-      <section class="card team">
+      </div>
+      <div class="tabpane" data-pane="team" hidden>
         <h2>Party</h2>
         <div id="team-list" class="stack"></div>
-      </section>
-
-      <section class="card inventory">
+      </div>
+      <div class="tabpane" data-pane="inventory" hidden>
         <h2>Inventory</h2>
         <div id="inventory-wrap" class="stack"></div>
-      </section>
-
-      <section class="card objectives">
+      </div>
+      <div class="tabpane" data-pane="objectives" hidden>
         <h2>Objectives</h2>
         <div id="objectives-wrap" class="stack"></div>
-      </section>
-
-      <section class="card progress">
+      </div>
+      <div class="tabpane" data-pane="progress" hidden>
         <h2>Progress</h2>
         <div id="progress-wrap" class="stack"></div>
-      </section>
-
-      <section class="card memory">
+      </div>
+      <div class="tabpane" data-pane="memory" hidden>
         <h2>Memory</h2>
         <div id="memory-wrap" class="stack"></div>
-      </section>
-
-      <section class="card minimap">
+      </div>
+      <div class="tabpane" data-pane="minimap" hidden>
         <h2>Minimap</h2>
         <div id="minimap-meta" class="minimap-meta"></div>
         <div class="minimap-scroll">
@@ -122,6 +147,7 @@
             <div id="marker-list" class="legend-list"></div>
           </div>
         </div>
+      </div>
       </section>
 
       <section class="card logs">

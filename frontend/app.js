@@ -422,6 +422,38 @@
     ).join("");
   }
 
+  //  Tabs. The panels behind them are consulted occasionally; the ones left
+  //  on screen are the ones actually watched. Wired once at load, since the
+  //  panes exist in the document from the start and only visibility changes.
+  function initTabs() {
+    const bar = document.querySelector(".tabbar");
+    if (!bar) return;
+    bar.addEventListener("click", (e) => {
+      const btn = e.target.closest("button.tab");
+      if (!btn) return;
+      const want = btn.dataset.tab;
+      bar.querySelectorAll("button.tab").forEach((b) =>
+        b.setAttribute("aria-selected", String(b.dataset.tab === want)));
+      document.querySelectorAll(".tabpane").forEach((p) => {
+        p.hidden = p.dataset.pane !== want;
+      });
+    });
+  }
+
+  //  The last frame the agent saw. Cache-busted because the file keeps its
+  //  name and the browser would otherwise show the first one forever.
+  function refreshFrame() {
+    const img = document.getElementById("latest-frame");
+    if (!img) return;
+    const probe = new Image();
+    probe.onload = () => {
+      img.src = probe.src;
+      const age = document.getElementById("frame-age");
+      if (age) age.textContent = "· " + formatTime(Date.now());
+    };
+    probe.src = "latest-frame.png?t=" + Date.now();
+  }
+
   function renderRuntime() {
     const tokenTotals = state.tokenTotals || {};
     const timeTotals = state.timeTotals || state.game.time_usage_totals || {};
@@ -1376,9 +1408,16 @@
   function bootstrap() {
     setInputDefaults();
     wireControls();
+    initTabs();
     renderAllPanels();
+    renderAsides();
     connectWebSocket();
     startMinimapPolling();
+    //  Polled rather than pushed. The frame is a file on disk and a turn takes
+    //  tens of seconds, so 3s is far more often than it changes and still
+    //  costs nothing -- the browser 304s an unchanged image.
+    refreshFrame();
+    setInterval(refreshFrame, 3000);
   }
 
   bootstrap();

@@ -792,3 +792,46 @@ input:focus-visible {
     max-height: 400px;
   }
 }
+
+
+/* ---------- Tabs ----------
+   The dashboard outgrew one screen. What stays visible is what gets watched;
+   what goes behind a tab is what gets consulted. */
+.tabbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 0 0 14px;
+  border-bottom: 1px solid var(--rule, #2a2e35);
+}
+
+.tabbar .tab {
+  font: inherit;
+  font-size: 0.82rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted, #767c86);
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.tabbar .tab[aria-selected="true"] {
+  color: var(--text, #e8e6e0);
+  border-bottom-color: var(--teal, #4dd0c7);
+}
+
+.tabbar .tab:focus-visible {
+  outline: 2px solid var(--teal, #4dd0c7);
+  outline-offset: -2px;
+}
+
+/* ---------- Last frame ----------
+   What the agent was looking at. Pixel art, so it must not be smoothed. */
+.frame-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  border-radius: 2px;
+}

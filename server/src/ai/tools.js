@@ -846,6 +846,12 @@ function toolOutput(text) {
             call_id: call_id,
             step_details: args.step_details,
             chat_message: args.chat_message,
+            //  The inner voice was in the schema, in the log, and read by the
+            //  dashboard -- and never put in this payload, so the panel could
+            //  not have shown anything whatever the model wrote. Three of the
+            //  four ends wired, which is the shape of bug that looks like a
+            //  model problem.
+            aside: args.aside,
             avatar_emotion: args.avatar_emotion,
             actions: args.actions,
         };
