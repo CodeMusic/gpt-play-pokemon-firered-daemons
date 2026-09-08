@@ -252,6 +252,19 @@
     return `${scheme}://${state.settings.host}:${state.settings.port}/minimapSnapshot`;
   }
 
+  //  /speak lives on the HARNESS server, not on the page's own origin.
+  //
+  //  A relative "/speak" posts to whatever serves this file -- and that is
+  //  `python -m http.server` on 5173, which implements GET and HEAD and
+  //  nothing else. It answered POST with 501 Not Implemented, which the play
+  //  button dutifully reported as "Voice unavailable (http_501)": a truthful
+  //  message about the wrong server. Same host and port as the minimap, which
+  //  had this right all along.
+  function buildSpeakUrl() {
+    const scheme = window.location.protocol === "https:" ? "https" : "http";
+    return `${scheme}://${state.settings.host}:${state.settings.port}/speak`;
+  }
+
   function setInputDefaults() {
     els.hostInput.value = state.settings.host;
     els.portInput.value = state.settings.port;
@@ -455,7 +468,7 @@
       state.voiceLoading = text;
       renderAsides();
       try {
-        const res = await fetch("/speak", {
+        const res = await fetch(buildSpeakUrl(), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text }),
