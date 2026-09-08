@@ -554,7 +554,7 @@ async function buildDeveloperPrompt() {
   let gamePrompt = await fs.readFile(path.join(config.promptsDir, "game.txt"), "utf8");
   //  Only the full schema carries add_marker. Keyed off the same env var
   //  defineTools() reads, so the prompt and the tool list cannot disagree.
-  if ((process.env.DAEMONS_SCHEMA || "lean") !== "full") {
+  if ((process.env.DAEMONS_SCHEMA || "full") !== "full") {
     gamePrompt = stripMarkerGuidance(gamePrompt);
   }
   return {

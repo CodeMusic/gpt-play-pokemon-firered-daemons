@@ -595,8 +595,8 @@ function defineTools() {
 
     // Union of possible action schemas.
     //
-    // DAEMONS_SCHEMA=lean (the default) drops three variants. It is NOT a
-    // speed measure, and the first version of this comment said it was.
+    // DAEMONS_SCHEMA=lean drops three variants. It is NOT a speed measure,
+    // and the first version of this comment said it was.
     //
     // MEASURED, warmed and alternating so neither owned the cold call:
     //     lean(5)  median 3.7s     full(8)  median 3.8s
@@ -612,11 +612,17 @@ function defineTools() {
     // dashboard's minimap, restart_console is an escape hatch that should
     // almost never fire -- so lean costs nothing that plays the game.
     //
+    // FULL is the default now, and the reason is the word "only" above. The
+    // markers cost the AGENT nothing and they are most of what a watching
+    // human gets: without them the map is a grid of tiles with no doors and
+    // no stairs marked on it. "Costs nothing that plays the game" was true
+    // and still missed that somebody is also reading.
+    //
     // update_objectives stays despite being 35% of the schema: it is how the
     // agent carries a plan across the summarisation fold.
     //
-    // DAEMONS_SCHEMA=full restores all eight.
-    const leanSchema = (process.env.DAEMONS_SCHEMA || "lean") !== "full";
+    // DAEMONS_SCHEMA=lean drops back to five.
+    const leanSchema = (process.env.DAEMONS_SCHEMA || "full") !== "full";
     const actionVariants = [
         keyPressActionSchema,
         writeMemoryActionSchema,
@@ -714,15 +720,25 @@ function defineTools() {
         //  is read by what it does unasked (4.29). An agent that reports what
         //  it privately thinks while it plays is that argument running rather
         //  than being made.
+        //  The first version asked for "one or two sentences" and got
+        //  "Attacking", "Need heal", "Pick attack" -- telegraphic fragments,
+        //  which is a log line wearing an inner voice. It also produced "Faint
+        //  hurts", which is exactly the register wanted and still not a
+        //  sentence. So the rule is now explicit: a COMPLETE SENTENCE, and it
+        //  must contain "I". Showing the failure alongside the fix is what
+        //  makes the difference legible to a model.
         aside: z.string().describe(
-            "One or two sentences of INNER THOUGHT, first person, present tense. "
-            + "Not a plan and not a summary -- you have other fields for those. "
-            + "What do you make of what is in front of you? In a battle: what do "
-            + "you think of the daemon opposite, of your own, of how this is going? "
-            + "In the world: what strikes you about this place, this person, this "
-            + "line of dialogue? Write it the way a thought arrives, not the way a "
-            + "report is filed. If nothing strikes you, say something short and "
-            + "flat -- that is honest and it is also character."),
+            "A COMPLETE SENTENCE of inner thought, in the first person, present tense. "
+            + "It must contain the word \"I\". One or two sentences, no more. "
+            + "NOT a fragment: \"Attacking\" and \"Need heal\" are wrong -- they are log "
+            + "lines, not thoughts. \"I do not like the look of this one\" is right. "
+            + "This is not a plan and not a summary; you have other fields for those. "
+            + "What do you MAKE of what is in front of you? In a battle: what do you "
+            + "think of the daemon opposite, of your own, of how this is going? In the "
+            + "world: what strikes you about this place, this person, this line of "
+            + "dialogue? Write it the way a thought arrives, not the way a report is "
+            + "filed. If nothing strikes you, say so plainly in a full sentence -- that "
+            + "is honest, and it is also character."),
     };
     const tools = actionVariants.map((variant) => {
         //  the literal `type` becomes the tool NAME, so it is dropped from the

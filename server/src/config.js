@@ -166,8 +166,12 @@ const config = {
     keepLastNUserMessagesWithImages: Number(process.env.DAEMONS_KEEP_IMAGES || 2),
     keepLastNUserMessagesWithDetailedData: 4,
     keepLastNUserMessagesWithPokedex: 1,
-    limitAssistantMessagesForSelfCriticism: 55,
-    limitAssistantMessagesForSummary: 120,
+    //  DAEMONS: both were hardcoded, and 120 is further than most runs on a
+    //  local model have ever got -- so the Summary panel was empty not because
+    //  it was broken but because nothing had ever reached the trigger. It is
+    //  worth being able to lower it to watch the thing work.
+    limitAssistantMessagesForSelfCriticism: Number(process.env.DAEMONS_CRITIQUE_EVERY || 55),
+    limitAssistantMessagesForSummary: Number(process.env.DAEMONS_SUMMARY_EVERY || 120),
   },
 
   // --- Tool Configuration ---

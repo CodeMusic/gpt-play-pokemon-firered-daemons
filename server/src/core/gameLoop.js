@@ -67,6 +67,13 @@ function reconcileMarkersWithNpcEntries(gameDataJson) {
     return updated;
 }
 
+//  DAEMONS: how many times running the summary has come back unusable.
+//  The gate below used to `continue` on a bad summary WITHOUT advancing
+//  lastSummaryStep, so `shouldSummarize` was still true on the next pass and
+//  the run summarised forever, never playing another step. A run stopped dead
+//  at step 120 -- the threshold exactly -- with lastSummaryStep still 0.
+let summaryAttempts = 0;
+
 async function gameLoop() {
     while (true) {
         const loopStartTime = Date.now(); // track per-iteration timing across try/catch/finally
@@ -365,6 +372,9 @@ async function gameLoop() {
                 let finalResponse = null;
                 let summaryIsValid = false;
                 let newSummaryText = "";
+                //  The deltas are already broadcast to the dashboard one by
+                //  one; nothing was keeping them.
+                let streamedSummaryText = "";
                 try {
 
                     for await (const event of stream) {
@@ -392,6 +402,7 @@ async function gameLoop() {
                                 break;
                             case "response.output_text.delta":
                                 process.stdout.write(event.delta);
+                                streamedSummaryText += event.delta;
                                 broadcast({ type: 'summary_chunk', payload: event.delta }); // <<< Broadcast summary chunk
                                 break;
                             case "response.completed":
@@ -418,11 +429,23 @@ async function gameLoop() {
 	                                }
 	                                // console.log(JSON.stringify(event.response.output, null, 2)); // Less verbose
 	                                // Extract summary text (do not persist yet; we may roll it up before saving)
-	                                const summaryItem = event.response.output.find(item => item.type === "message");
-	                                newSummaryText = summaryItem?.content?.find(item => item.type === "output_text")?.text || "[Summary Error]";
-                                // If the summary doesn't contain <summary> tags, try again
-                                if (newSummaryText.includes("<summary>") && newSummaryText.includes("</summary>")) {
+                                const summaryItem = (event.response.output || []).find(item => item.type === "message");
+                                const structuredText = summaryItem?.content?.find(item => item.type === "output_text")?.text || "";
+                                //  `event.response.output` is the field that comes back EMPTY
+                                //  through LiteLLM's /responses bridge -- the same emptiness that
+                                //  once blinded the loop guard to 118 of 119 calls. The text we
+                                //  watched stream past is the fallback.
+                                newSummaryText = structuredText || streamedSummaryText;
+                                //  The <summary> tags are a formatting request, not the summary.
+                                //  Requiring them discarded good prose because a model closed with
+                                //  </Summary> or omitted the wrapper -- and the retry that followed
+                                //  could never fix it, since nothing about the next attempt was
+                                //  different. Strip the tags where they exist; judge what is left.
+                                newSummaryText = newSummaryText.replace(/<\/?summary>/gi, "").trim();
+                                if (newSummaryText.length >= 40) {
                                     summaryIsValid = true;
+                                } else {
+                                    console.warn(`Summary came back with ${newSummaryText.length} usable characters (structured item: ${structuredText ? "present" : "ABSENT"}, streamed: ${streamedSummaryText.length} chars).`);
                                 }
 
                                 broadcast({ type: 'summary_end', payload: 'History summary finished.' });
@@ -465,9 +488,24 @@ async function gameLoop() {
                 }
 
                 if (!summaryIsValid) {
-                    console.log("Summary is not valid, trying again...");
+                    summaryAttempts += 1;
+                    //  Three tries, then take the step regardless. An unbounded
+                    //  retry is worse than a missing summary: it halts the game
+                    //  as surely as a crash, while saying only "trying again".
+                    if (summaryAttempts >= 3) {
+                        console.warn(`Summary failed ${summaryAttempts} times; skipping it and resuming play. Next attempt in ${config.history.limitAssistantMessagesForSummary} steps.`);
+                        broadcast({ type: 'summary_end', payload: 'Summary failed; resuming play.' });
+                        summaryAttempts = 0;
+                        state.counters.lastSummaryStep = state.counters.currentStep;
+                        state.counters.lastCriticismStep = state.counters.currentStep;
+                        state.lastTotalTokens = 0;
+                        await savePersistentState();
+                    } else {
+                        console.log(`Summary is not valid (attempt ${summaryAttempts}/3), trying again...`);
+                    }
                     continue;
                 }
+                summaryAttempts = 0;
 
                 // Persist summary (and rollup if we reached the threshold) BEFORE saving summaries.json / rewriting history.json.
                 const summaryTimestamp = new Date().toISOString();

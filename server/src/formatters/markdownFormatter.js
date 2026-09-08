@@ -796,7 +796,7 @@ function minimapToMarkdown(mm, minimapPlayerX, minimapPlayerY, map_id, map_name,
 2. **Confirm Connection:** Verify it leads to another location  
 3. **🎯 MARK BOTH MAPS IMMEDIATELY:** Place clear markers on BOTH origin and destination - DO NOT SKIP THIS STEP
 4. **Validation Check:** Review action history and delete false markers if uncertain
-5. ${(process.env.DAEMONS_SCHEMA || "lean") === "full" ? "**VERY IMPORTANT:MARKER PLACEMENT RULE:** Place markers directly ON doors/stairs tile, NOT in front of them. Fix them if you placed them in front of them! Always do a check and a fix before any action. You can't place a door/stairs/ladder marker in a 'Free Ground' tile, you must place it on the door/stairs/ladder tile." : "**Leaving a map:** use one of the exits named above the grid -- a door, stairs, a warp, or an exit carpet. On an exit carpet, step onto it and then press toward the adjacent wall; the warp fires on the blocked move, not on arriving."}
+5. ${(process.env.DAEMONS_SCHEMA || "full") === "full" ? "**VERY IMPORTANT:MARKER PLACEMENT RULE:** Place markers directly ON doors/stairs tile, NOT in front of them. Fix them if you placed them in front of them! Always do a check and a fix before any action. You can't place a door/stairs/ladder marker in a 'Free Ground' tile, you must place it on the door/stairs/ladder tile." : "**Leaving a map:** use one of the exits named above the grid -- a door, stairs, a warp, or an exit carpet. On an exit carpet, step onto it and then press toward the adjacent wall; the warp fires on the blocked move, not on arriving."}
 
 ## Map Transition Discovery
 **Hidden Warps:** Many transitions are invisible until discovered:
