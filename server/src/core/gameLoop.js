@@ -375,9 +375,20 @@ async function gameLoop() {
                 //  The deltas are already broadcast to the dashboard one by
                 //  one; nothing was keeping them.
                 let streamedSummaryText = "";
+                //  What the stream ACTUALLY sent.
+                //
+                //  A summary failed three times against or-muse-glimmer and
+                //  logged nothing at all -- not the character counts below,
+                //  which means `response.completed` never arrived and the
+                //  `else` that reports the counts never ran. Three model calls
+                //  produced no evidence of what they returned. Recording the
+                //  event types costs one array and turns the next failure into
+                //  a fact instead of a guess.
+                const summaryEventTypes = [];
                 try {
 
                     for await (const event of stream) {
+                        summaryEventTypes.push(event.type);
                         switch (event.type) {
                             case "response.output_item.added":
                                 if (event.item.type === "reasoning") console.log("\n=== Reasoning ===");
@@ -488,6 +499,20 @@ async function gameLoop() {
                 }
 
                 if (!summaryIsValid) {
+                    //  Say what the stream sent. Counted, not listed: a summary
+                    //  stream is thousands of deltas and printing them all would
+                    //  bury the one line that matters.
+                    const seen = summaryEventTypes.reduce((acc, t) => {
+                        acc[t] = (acc[t] || 0) + 1;
+                        return acc;
+                    }, {});
+                    console.warn(
+                        `  summary stream sent ${summaryEventTypes.length} events: `
+                        + (Object.keys(seen).length
+                            ? Object.entries(seen).map(([t, n]) => `${t} x${n}`).join(", ")
+                            : "NONE -- the stream was empty")
+                        + `; response.completed ${seen["response.completed"] ? "arrived" : "NEVER ARRIVED"}`
+                    );
                     summaryAttempts += 1;
                     //  Three tries, then take the step regardless. An unbounded
                     //  retry is worse than a missing summary: it halts the game
