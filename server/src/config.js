@@ -41,7 +41,22 @@ const config = {
     reasoningEffortBattle: process.env.OPENAI_REASONING_EFFORT_BATTLE || "high",
     reasoningEffortDialog: process.env.OPENAI_REASONING_EFFORT_DIALOG || "high",
     reasoningEffortCriticism: process.env.OPENAI_REASONING_EFFORT_CRITICISM || "high",
-    reasoningEffortSummary: process.env.OPENAI_REASONING_EFFORT_SUMMARY || "xhigh",
+    //  "xhigh" was the highest setting in the file, on the one call that
+    //  needs reasoning LEAST. A summary is recall and compression -- read the
+    //  history, say what happened -- not a problem to be worked out.
+    //
+    //  MEASURED, from a failing summary at step 100:
+    //      578 stream events
+    //      570 x response.reasoning_text.delta
+    //        0 x response.output_text.delta
+    //      response.completed arrived
+    //  It thought at enormous length and never wrote a word of answer. The
+    //  gate then rejected the empty text and the whole thing retried at the
+    //  same setting, which is why it failed three times running earlier.
+    //
+    //  The decision loop -- which actually has to reason -- runs at "medium".
+    //  There was never a case for the summariser outranking it.
+    reasoningEffortSummary: process.env.OPENAI_REASONING_EFFORT_SUMMARY || "medium",
     modelPathFinding: process.env.OPENAI_MODEL_PATHFINDING || "gpt-5.2",
     reasoningEffortPathfinding: process.env.OPENAI_REASONING_EFFORT_PATHFINDING || "high",
     reasoningSummary: process.env.OPENAI_REASONING_SUMMARY || "auto",
