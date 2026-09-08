@@ -816,6 +816,26 @@ input:focus-visible {
   opacity: 1;
 }
 
+/* Heard already, and it will replay instantly. The quietest signal that
+   carries: the outline fills in. No new glyph -- the icon says what the
+   button DOES, and pressing it still plays. Reads at a glance down the
+   column as "these ones are ready" without asking to be read. */
+.aside-speak.cached {
+  opacity: 0.85;
+  /* Plain fallback first: color-mix is Safari 16.2+ / Chrome 111+, and it is
+     the only use of it in this file. A browser that cannot parse the second
+     pair simply drops those declarations and keeps these, so the cached state
+     still reads -- just as an outline rather than a fill. */
+  border-color: var(--accent);
+  background: transparent;
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.aside-line:hover .aside-speak.cached {
+  opacity: 1;
+}
+
 .aside-speak.on {
   opacity: 1;
   color: var(--accent);

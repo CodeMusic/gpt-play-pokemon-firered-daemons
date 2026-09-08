@@ -441,6 +441,12 @@
     voiceCache.set(text, url);
     while (voiceCache.size > VOICE_CACHE_MAX) {
       const oldest = voiceCache.keys().next().value;
+      //  Never revoke the clip that is SPEAKING. Revoking an object URL kills
+      //  the blob behind it, and <audio> reads from that blob as it plays --
+      //  so evicting the playing entry would cut it off mid-sentence. It can
+      //  only happen when the cache fills while something is playing, which is
+      //  exactly the long unattended run this is for.
+      if (oldest === currentSpeakingText) break;
       const stale = voiceCache.get(oldest);
       voiceCache.delete(oldest);
       if (stale) URL.revokeObjectURL(stale);
@@ -523,7 +529,11 @@
         : cached ? "Play (cached)"
         : "Speak this thought";
       return `<div class="aside-line${i === 0 ? " latest" : ""}${speaking ? " speaking" : ""}">`
-        + `<button class="aside-speak${speaking ? " on" : ""}${failed ? " failed" : ""}"`
+        //  `cached` is styling only -- it says this one has been heard and
+        //  will play instantly. Deliberately not a new glyph: the icon means
+        //  what the button DOES, and that has not changed.
+        + `<button class="aside-speak${speaking ? " on" : ""}${failed ? " failed" : ""}`
+        + `${cached && !speaking && !failed ? " cached" : ""}"`
         + ` type="button" data-aside-index="${i}" title="${escapeHtml(label)}"`
         + ` aria-label="${escapeHtml(label)}"${loading ? " disabled" : ""}>${icon}</button>`
         + `<span class="aside-time mono">${formatTime(a.at)}</span>`
