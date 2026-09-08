@@ -878,6 +878,31 @@ function toolOutput(text) {
                             overallSuccess = false;
                             console.warn(`WARN: Skipping key_press action ${i + 1} as one was already executed this turn.`);
                         } else if (individualAction.keys && Array.isArray(individualAction.keys) && individualAction.keys.length > 0) {
+                            //  DAEMONS: only DIRECTIONAL keys are about movement.
+                            //
+                            //  a, b, start and select drive menus and dialogue, where
+                            //  standing still is the correct outcome. Telling the model
+                            //  "YOU DID NOT MOVE -- something is blocking you in that
+                            //  direction" after it pressed START to open the options menu
+                            //  is not just noise, it is false: nothing blocked anything.
+                            //  And the repeat-refusal fired on `a` pressed twice, which is
+                            //  how every menu in the game is operated.
+                            //
+                            //  Watched it happen for five minutes of a run: the agent
+                            //  correctly opened OPTION, correctly moved to TEXT SPEED, and
+                            //  was told it had walked into a wall every single time.
+                            //  There is no menu flag in the game state, so this cannot be
+                            //  detected -- only inferred. A run of PURELY directional keys
+                            //  is a walk; the moment a confirm button is in the sequence it
+                            //  is almost certainly menu navigation, where the arrows move a
+                            //  cursor and the player is meant to stand still.
+                            const DIRECTIONAL = new Set(["up", "down", "left", "right",
+                                "face_up", "face_down", "face_left", "face_right"]);
+                            const inDialog = Boolean(gameDataJson?.is_talking_to_npc)
+                                || Boolean((gameDataJson?.open_dialog_text || "").trim());
+                            const movementIntended = !inDialog
+                                && individualAction.keys.length > 0
+                                && individualAction.keys.every((k) => DIRECTIONAL.has(k));
                             const keySig = JSON.stringify(individualAction.keys);
                             const herePos = gameDataJson?.current_trainer_data?.position || null;
                             const samePlace = Boolean(
@@ -891,7 +916,7 @@ function toolOutput(text) {
                             //  through. But re-probe every 5th, because a blocked tile is not
                             //  always blocked: an NPC steps aside, and a permanent ban would be
                             //  a worse bug than the loop it fixes.
-                            if (keySig === lastBlockedKeys && samePlace && (blockedRefusals % 5) !== 4) {
+                            if (movementIntended && keySig === lastBlockedKeys && samePlace && (blockedRefusals % 5) !== 4) {
                                 blockedRefusals++;
                                 actionResult.success = false;
                                 actionResult.message =
@@ -926,7 +951,7 @@ function toolOutput(text) {
                             const response = await sendCommandsToPythonServer(individualAction.keys);
                             actionResult.success = response.status;
                             let moveNote = "";
-                            if (response.status && beforePos) {
+                            if (movementIntended && response.status && beforePos) {
                                 try {
                                     const after = await fetchGameData();
                                     const a = after?.current_trainer_data?.position;
@@ -938,9 +963,15 @@ function toolOutput(text) {
                                                 : "";
                                             lastBlockedKeys = keySig;
                                             blockedAtPosition = { x: a.x, y: a.y, map_id: a.map_id };
-                                            moveNote = ` YOU DID NOT MOVE. Still at (${a.x}, ${a.y}) on ${a.map_name}`
-                                                + ` -- something is blocking you in that direction.${size}`
-                                                + " Do not repeat the same keys; try another direction, or use the stairs/door to leave.";
+                                            //  State the FACT and offer both readings. The old
+                                            //  wording asserted a wall, and told an agent
+                                            //  correctly operating the OPTIONS menu that it had
+                                            //  walked into one -- every turn, for five minutes.
+                                            moveNote = ` YOU DID NOT MOVE: still at (${a.x}, ${a.y}) on ${a.map_name}.`
+                                                + " Either something blocks you in that direction, or you are in a"
+                                                + " menu or dialogue where these keys move a cursor rather than the"
+                                                + ` player.${size}`
+                                                + " If you meant to walk, try a different direction or head for an exit.";
                                         } else {
                                             lastBlockedKeys = null;
                                             blockedAtPosition = null;
