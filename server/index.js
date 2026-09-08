@@ -280,6 +280,8 @@ async function start() {
         //  Both builders, not the one I happened to open first.
         self_model: Array.isArray(state.selfModel) ? state.selfModel : [],
         dreams: Array.isArray(state.dreams) ? state.dreams.slice(-8) : [],
+        feelings: state.feelings || null,
+        feeling_events: Array.isArray(state.feelingEvents) ? state.feelingEvents : [],
         //  THIS is the full_state a refreshed page receives -- the one sent on
         //  connect, before the loop's next periodic broadcast. Putting asides
         //  only in the loop's copy fixed the case nobody had ("the page has

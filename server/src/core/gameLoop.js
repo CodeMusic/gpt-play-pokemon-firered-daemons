@@ -128,9 +128,58 @@ async function gameLoop() {
             //  yesterday every model comparison was "seems better", and the one
             //  time it was measured the conclusion reversed twice. The model
             //  never sees this number; it sees the delta in words.
+            const progressPrev = state.progressNow;
             state.progressNow = progress.snapshot(gameDataJson, state);
             if (!state.progressMark) state.progressMark = state.progressNow;
             state.progressScore = progress.score(state.progressNow);
+
+            //  FEELINGS. Same snapshot, read for a different question: not
+            //  "how far has it got" but "what just happened to it". Derived
+            //  here rather than asked of the model, for the reason the whole
+            //  file keeps relearning -- read the game's data and you are right
+            //  the first time.
+            {
+                const feelings = require("./feelings.js");
+                const party = Array.isArray(gameDataJson?.current_pokemon_data)
+                    ? gameDataJson.current_pokemon_data : [];
+                const hpNow = party.reduce((a, p) => a + (Number(p?.current_hp) || 0), 0);
+                const hpMax = party.reduce((a, p) => a + (Number(p?.max_hp) || 0), 0);
+                const hpFraction = hpMax > 0 ? hpNow / hpMax : null;
+
+                //  A blocked move is only frustrating when it REPEATS, so the
+                //  streak is the signal and a single bump is not.
+                const here = `${gameDataJson?.current_trainer_data?.position?.map_id}:`
+                    + `${gameDataJson?.current_trainer_data?.position?.x},`
+                    + `${gameDataJson?.current_trainer_data?.position?.y}`;
+                if (state.lastFeelPos === here) state.blockedStreak = (state.blockedStreak || 0) + 1;
+                else state.blockedStreak = 0;
+                state.lastFeelPos = here;
+
+                const { deltas, events } = feelings.readEvents(progressPrev, state.progressNow, {
+                    hpFraction,
+                    prevHpFraction: state.lastHpFraction,
+                    blockedStreak: state.blockedStreak,
+                });
+                state.feelings = feelings.step(state.feelings || feelings.zero(), deltas);
+
+                //  A CHECKPOINT releases the survival axes. Detected off the
+                //  map name, which is now CHECKPOINT everywhere thanks to the
+                //  rename -- and only on ARRIVAL, not every turn spent inside.
+                const mapName = String(gameDataJson?.current_trainer_data?.position?.map_name || "");
+                const inCheckpoint = /CHECKPOINT/.test(mapName);
+                if (inCheckpoint && !state.wasInCheckpoint) {
+                    state.feelings = feelings.checkpoint(state.feelings);
+                    events.push({ axis: "PHLEGMATIC", n: 0, why: "reached a CHECKPOINT" });
+                }
+                state.wasInCheckpoint = inCheckpoint;
+                state.lastHpFraction = hpFraction;
+                state.feelingEvents = events;
+                if (events.length) {
+                    console.log(`  feelings: ${feelings.describe(state.feelings)
+                        .map((f) => f.phrase).join(", ") || "level"}`
+                        + `   (${events.map((e) => e.why).join(", ")})`);
+                }
+            }
             state.gameDataJsonRef = gameDataJson; // <<< Store latest game data
             if (!gameDataJson) {
                 console.error("Could not retrieve game data. Pausing and retrying...");
@@ -288,6 +337,8 @@ async function gameLoop() {
                     //  Both builders, not the one I happened to open first.
                     self_model: Array.isArray(state.selfModel) ? state.selfModel : [],
                     dreams: Array.isArray(state.dreams) ? state.dreams.slice(-8) : [],
+                    feelings: state.feelings || null,
+                    feeling_events: Array.isArray(state.feelingEvents) ? state.feelingEvents : [],
                     //  So a refreshed dashboard gets the inner voice back.
                     //  Newest last here; the page reverses it for display.
                     asides: Array.isArray(state.asides) ? state.asides.slice(-60) : [],

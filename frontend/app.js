@@ -163,6 +163,8 @@
       last_summary: "",
       self_model: [],
       dreams: [],
+      feelings: null,
+      feeling_events: [],
       last_criticism: "",
       total_tokens_accumulated: 0,
       time_usage_totals: { reasoning_ms: 0, tools_ms: 0, overall_ms: 0, down_ms: 0 },
@@ -547,6 +549,35 @@
       + `<span class="self-step mono">step ${Number(d.step) || 0}</span>`
       + `<span class="dream-text">${escapeHtml(String(d.text || ""))}</span></div>`
     ).join("");
+  }
+
+  //  The four humor axes, above the voice they colour. Shown as signed bars
+  //  rather than numbers: which way it leans and how far is the whole content,
+  //  and "CHOLERIC: 43" says less than a bar that is clearly over halfway.
+  const FEEL_AXES = {
+    SANGUINE:    { hi: "GLAD", lo: "FLAT" },
+    CHOLERIC:    { hi: "MAD",  lo: "EVEN" },
+    MELANCHOLIC: { hi: "SAD",  lo: "LIFTED" },
+    PHLEGMATIC:  { hi: "CALM", lo: "AFRAID" },
+  };
+  function renderFeelings() {
+    const el = document.getElementById("feelings-bar");
+    if (!el) return;
+    const f = state.game.feelings;
+    if (!f) { el.innerHTML = ""; return; }
+    const why = (state.game.feeling_events || []).map((e) => e.why).join(", ");
+    const rows = Object.entries(FEEL_AXES).map(([axis, spec]) => {
+      const v = Math.max(-100, Math.min(100, Number(f[axis]) || 0));
+      const name = v === 0 ? "\u2014" : v > 0 ? spec.hi : spec.lo;
+      const pct = Math.abs(v) / 2;                        // half-width max
+      const side = v >= 0 ? "left:50%" : `right:50%`;
+      return `<div class="feel-row" title="${escapeHtml(axis)} ${v}">`
+        + `<span class="feel-name mono">${escapeHtml(name)}</span>`
+        + `<span class="feel-track"><i class="feel-fill${v < 0 ? " neg" : ""}"`
+        + ` style="${side};width:${pct}%"></i></span></div>`;
+    }).join("");
+    el.innerHTML = rows + (why
+      ? `<div class="feel-why muted small">${escapeHtml(why)}</div>` : "");
   }
 
   function renderAsides() {
@@ -1238,6 +1269,11 @@
     if (Array.isArray(payload.self_model)) {
       state.game.self_model = payload.self_model;
       renderSelf();
+    }
+    if (payload.feelings && typeof payload.feelings === "object") {
+      state.game.feelings = payload.feelings;
+      state.game.feeling_events = payload.feeling_events || [];
+      renderFeelings();
     }
     if (Array.isArray(payload.dreams)) {
       state.game.dreams = payload.dreams;

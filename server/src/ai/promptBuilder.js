@@ -527,6 +527,7 @@ ${progressLine ? "<progress>\n" + progressLine + "\n</progress>\n" : ""}
 ${formatMemoryStructured(state.memory)}
 ${formatSelfModel(state.selfModel)}
 ${require("../core/dream.js").formatForPrompt(state.dreams)}
+${require("../core/feelings.js").formatForPrompt(state.feelings)}
 
 ${formatRecentMarkers(state.markers, state.lastVisitedMaps, isInDialog)}
 

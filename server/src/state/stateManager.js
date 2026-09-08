@@ -22,6 +22,10 @@ const state = {
   //  What the fold left behind. Written when a summary succeeds, from the
   //  history that is about to be thrown away.
   dreams: [],
+  //  The fast layer: four signed humor axes, derived every turn and decaying
+  //  toward nothing. See core/feelings.js.
+  feelings: null,
+  feelingEvents: [],
   allSummaries: [],
   badgeHistory: {},
   previousBadgesState: {},
@@ -222,6 +226,16 @@ async function loadPersistentState() {
   }
 
   try {
+    const feelData = await fs.readFile(config.paths.feelingsSaveFile, "utf-8");
+    const parsedFeel = JSON.parse(feelData);
+    if (parsedFeel && typeof parsedFeel === "object") state.feelings = parsedFeel;
+    console.log("Loaded feelings:", JSON.stringify(state.feelings));
+  } catch (error) {
+    if (error.code !== "ENOENT") console.error("Error loading feelings:", error);
+    state.feelings = null;
+  }
+
+  try {
     const dreamData = await fs.readFile(config.paths.dreamsSaveFile, "utf-8");
     const parsedDreams = JSON.parse(dreamData);
     if (Array.isArray(parsedDreams)) state.dreams = parsedDreams;
@@ -387,6 +401,7 @@ async function savePersistentState() {
     await fs.writeFile(config.paths.asidesSaveFile, JSON.stringify(state.asides, null, 2));
     await fs.writeFile(config.paths.selfModelSaveFile, JSON.stringify(state.selfModel, null, 2));
     await fs.writeFile(config.paths.dreamsSaveFile, JSON.stringify(state.dreams, null, 2));
+    await fs.writeFile(config.paths.feelingsSaveFile, JSON.stringify(state.feelings, null, 2));
     await fs.writeFile(config.paths.allSummariesSaveFile, JSON.stringify(state.allSummaries, null, 2));
     await fs.writeFile(config.paths.progressStepsFile, JSON.stringify(state.progressSteps, null, 2));
     await fs.writeFile(config.paths.lastVisitedMapsFile, JSON.stringify(state.lastVisitedMaps, null, 2));

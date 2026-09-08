@@ -900,6 +900,69 @@ input:focus-visible {
 
 .self-text { flex: 1 1 auto; }
 
+/* The four humor axes. Signed bars from a centre line, because which way it
+   leans is the content -- a number would need reading, a bar is seen. */
+.feelings-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0 0 0.85rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.feel-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.feel-name {
+  flex: 0 0 4.2rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+  text-align: right;
+}
+
+.feel-track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bg-subtle);
+  overflow: hidden;
+}
+
+/* The centre line is the zero every feeling decays back to. */
+.feel-track::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border-light);
+}
+
+.feel-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.35s ease;
+}
+
+/* Negative is the other pole, not a fault -- warn, not err. */
+.feel-fill.neg { background: var(--warn); }
+
+.feel-why {
+  margin-top: 0.35rem;
+  font-size: 0.7rem;
+  font-style: italic;
+}
+
 /* A dream is not a log line, so it does not get a log line's treatment: no
    left rule, more air, and the newest one at full strength. */
 .dream-line {

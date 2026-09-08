@@ -147,6 +147,9 @@ const config = {
     get dreamsSaveFile() {
       return path.join(ROOT_DIR, config.dataDir, "dreams.json");
     },
+    get feelingsSaveFile() {
+      return path.join(ROOT_DIR, config.dataDir, "feelings.json");
+    },
     get progressStepsFile() {
       return path.join(ROOT_DIR, config.dataDir, "progress_steps.json");
     },
