@@ -97,7 +97,6 @@
           <button class="tab" role="tab" data-tab="objectives" aria-selected="false">Objectives</button>
           <button class="tab" role="tab" data-tab="progress" aria-selected="false">Progress</button>
           <button class="tab" role="tab" data-tab="memory" aria-selected="false">Memory</button>
-          <button class="tab" role="tab" data-tab="minimap" aria-selected="false">Map</button>
         </div>
       <div class="tabpane" data-pane="streams">
         <h2>Summary / Criticism</h2>
@@ -132,28 +131,29 @@
         <h2>Memory</h2>
         <div id="memory-wrap" class="stack"></div>
       </div>
-      <div class="tabpane" data-pane="minimap" hidden>
-        <h2>Minimap</h2>
-        <div id="minimap-meta" class="minimap-meta"></div>
-        <div class="minimap-scroll">
-          <div id="minimap-grid" class="minimap-grid"></div>
-        </div>
-        <div class="legend-columns">
-          <div>
-            <h3>Legend (visible tiles)</h3>
-            <div id="minimap-legend" class="legend-list"></div>
-          </div>
-          <div>
-            <h3>Markers (current map)</h3>
-            <div id="marker-list" class="legend-list"></div>
-          </div>
-        </div>
-      </div>
       </section>
 
       <section class="card logs">
         <h2>Agent Log</h2>
         <div id="log-list" class="log-list"></div>
+      </section>
+
+      <section class="card minimap">
+          <h2>Minimap</h2>
+          <div id="minimap-meta" class="minimap-meta"></div>
+          <div class="minimap-scroll">
+            <div id="minimap-grid" class="minimap-grid"></div>
+          </div>
+          <div class="legend-columns">
+            <div>
+              <h3>Legend (visible tiles)</h3>
+              <div id="minimap-legend" class="legend-list"></div>
+            </div>
+            <div>
+              <h3>Markers (current map)</h3>
+              <div id="marker-list" class="legend-list"></div>
+            </div>
+          </div>
       </section>
     </main>
 

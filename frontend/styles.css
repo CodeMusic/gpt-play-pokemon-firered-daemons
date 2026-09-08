@@ -367,17 +367,31 @@ input:focus-visible {
   color: var(--muted);
 }
 
-/* ---------- Card Grid Placement ---------- */
-.runtime   { grid-column: span 4; }
-.trainer   { grid-column: span 4; }
-.streams   { grid-column: span 4; }
-.team      { grid-column: span 4; }
-.inventory { grid-column: span 4; }
-.objectives { grid-column: span 4; }
-.progress  { grid-column: span 6; }
-.memory    { grid-column: span 6; }
-.minimap   { grid-column: span 5; }
-.logs      { grid-column: span 7; }
+/* ---------- Card Grid Placement ----------
+   Three rows, and each one answers a different question.
+
+     row 1   what is happening now      runtime · inner voice · user · frames
+     row 2   the detail, behind tabs     FULL WIDTH -- a tabbed pane holding
+                                         seven panels cannot live in a quarter
+                                         column, which is what it did when it
+                                         had no placement at all and defaulted
+                                         to one of twelve
+     row 3   the two things watched      the log, and the map beside it
+
+   The map came back OUT of the tabs. It is not detail you consult, it is
+   where the agent IS -- the same reason the frames are on the main screen. */
+.runtime    { grid-column: span 3; }
+.aside-card { grid-column: span 3; }
+.trainer    { grid-column: span 3; }
+.frame-card { grid-column: span 3; }
+.tabbed     { grid-column: 1 / -1; }
+.logs       { grid-column: span 7; }
+.minimap    { grid-column: span 5; }
+
+/* Inside the tabbed pane the old placements are meaningless -- it is one card
+   now, not seven. The panes lay themselves out instead. */
+.tabpane { display: block; }
+.tabpane[hidden] { display: none; }
 
 /* ---------- Layout Helpers ---------- */
 .stack {
@@ -743,7 +757,7 @@ input:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
-  max-height: 22rem;
+  max-height: 30rem;
   overflow-y: auto;
 }
 
