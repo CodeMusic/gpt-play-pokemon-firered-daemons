@@ -246,7 +246,7 @@ async function gameLoop() {
             //  file outlives the setting, and the stale critique on disk is
             //  the one asserting "No loops detected" mid-loop -- injecting
             //  that into every prompt is the harm, not generating it.
-            const lastCriticism = (process.env.DAEMONS_SELF_CRITIQUE || "0") === "1"
+            const lastCriticism = (process.env.DAEMONS_SELF_CRITIQUE || "1") === "1"
                 && fsSync.existsSync(config.paths.lastCriticismSaveFile)
                 ? fsSync.readFileSync(config.paths.lastCriticismSaveFile, "utf8")
                 : "";
@@ -983,15 +983,37 @@ async function gameLoop() {
             //  run most needed to notice.
             //
             //  DAEMONS_SELF_CRITIQUE=1 restores it for a model that can do it.
-            const critiqueEnabled = (process.env.DAEMONS_SELF_CRITIQUE || "0") === "1";
+            //  BACK ON by default, 2026-09-08. It was turned off because it
+            //  wrote "no loops detected" during an hour of walking into the
+            //  same wall -- on ternary-bonsai-8b, and asked to spot a loop
+            //  while being shown a single screen. Both halves are now fixed:
+            //  it gets a measured trajectory (trajectory.js), and its output
+            //  is framed to the agent as a hypothesis rather than a finding.
+            //  DAEMONS_SELF_CRITIQUE=0 turns it off again.
+            const critiqueEnabled = (process.env.DAEMONS_SELF_CRITIQUE || "1") === "1";
             const shouldCriticize = critiqueEnabled
                 && stepsSinceLastCriticism >= config.history.limitAssistantMessagesForSelfCriticism;
             if (shouldCriticize) { // Use the pre-calculated flag and remove assistantHistoryLength check
                 const selfCriticismPrompt = await fs.readFile(path.join(config.promptsDir, "self_criticism.txt"), "utf8");
+                //  Hand it the trajectory. The framework asks it to detect
+                //  loops and, until now, gave it only the current state -- one
+                //  position, one screen. A loop is a property of a path, so it
+                //  was being asked to see something absent from its input, and
+                //  it answered "no loops detected" mid-loop. Counts, not a
+                //  verdict: the digest reports and the model decides.
+                const trajectory = require("./trajectory.js").digest(state.history, { limit: 40 });
+                if (trajectory) console.log(`  trajectory digest:\n${trajectory.split("\n").map(l => "    " + l).join("\n")}`);
                 const newUserMessage = {
                     "role": "user",
                     "content": [
-                        { "type": "input_text", "text": selfCriticismPrompt }
+                        { "type": "input_text", "text": selfCriticismPrompt
+                            + (trajectory
+                                ? "\n\n---\n\n# WHAT ACTUALLY HAPPENED\n\n"
+                                  + "Measured from your own history rather than recalled. Use it "
+                                  + "for the loop section especially -- you cannot detect a loop "
+                                  + "from a single screen, and this is the part you could not see.\n\n"
+                                  + trajectory
+                                : "") }
                     ]
                 };
                 // history.push(newUserMessage);

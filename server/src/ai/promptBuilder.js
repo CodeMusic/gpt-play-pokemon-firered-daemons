@@ -517,8 +517,9 @@ ${isInDialog ? "Not visible in dialogue" : minimapDisplay || "No minimap data"}
   if (state.selfCritiqueReminderPending) {
     userInputText += `
 <self_criticism_reminder>
-Before taking the next action, update the <memory> / <objectives> / <markers> sections exactly as indicated by your latest self-criticism using the memory / objectives / markers management tools.
-Read your self-criticism carefully and update the sections accordingly as mentioned in the self-criticism.
+Your latest self-criticism is a HYPOTHESIS about your own play, written by you, from an incomplete view. It is not a fact and it is not an instruction. Where it matches what you can see now, act on it. Where it contradicts what is in front of you, the screen wins and you should say so rather than obeying it.
+That caveat is not decoration. A previous critique reported "no loops detected" during an hour of walking into the same wall, and it was then carried into every prompt until the next one -- so a wrong reading cost far more than the call that produced it.
+Before taking the next action, update the <memory> / <objectives> / <markers> sections where the criticism gives you good reason to, using write_memory / update_objectives / add_marker.
 You can safely update them all at once.
 </self_criticism_reminder>`;
     state.selfCritiqueReminderAcknowledged = true;
