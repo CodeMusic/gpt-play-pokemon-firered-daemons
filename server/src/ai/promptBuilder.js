@@ -468,6 +468,48 @@ async function buildUserInputText(gameDataJson) {
   const trainerName = trainer?.name || "PLAYER";
   const money = trainer?.money ?? 0;
   const badgeCount = trainer?.badge_count ?? 0;
+
+  //  ARE YOU AT THE BEGINNING, OR DID YOU JUST GET HERE?
+  //
+  //  --fresh clears the AGENT and leaves the SAVE alone, so it can wake up
+  //  hundreds of steps into a run with no history at all. It then reads the
+  //  opening sequence in the system prompt -- correct, and about a game it is
+  //  no longer at the start of -- and writes "find Crystal Clear's lab" while
+  //  standing in the Undertone with a daemon already in its party.
+  //
+  //  The game itself answers this: a party, a MARK, or a map that is not
+  //  Blanche all mean the opening already happened. Derived rather than
+  //  tracked, so it survives exactly the wipe that causes the problem.
+  //
+  //  PLACED ABOVE THE OBJECTIVES, and that is the whole point. The first
+  //  version sat at the end of the prompt -- line 378 of 390 -- while the
+  //  stale objectives it exists to contradict were at line 61. It was read,
+  //  and it was read three hundred lines too late to matter. A correction
+  //  has to arrive before the thing it corrects.
+  let underwayBlock = "";
+  {
+    const partyN = Array.isArray(gameDataJson?.current_pokemon_data)
+      ? gameDataJson.current_pokemon_data.length : 0;
+    const mapNow = String(pos?.map_name || "");
+    const started = partyN > 0 || badgeCount > 0
+      || (mapNow && !/^BLANCHE_TOWN/.test(mapNow));
+    if (started) {
+      underwayBlock = `<already_underway>
+YOUR OBJECTIVES BELOW MAY BE STALE. Read this first.
+
+You are NOT at the beginning. Your notes were cleared; the game was not. Right
+now you have ${partyN} daemon${partyN === 1 ? "" : "s"}, ${badgeCount} MARK${badgeCount === 1 ? "" : "s"}, and you are in ${mapNow || "an unknown map"}.
+
+So: if you are holding a daemon, you have ALREADY met CRYSTAL CLEAR and been
+given it — do not go looking for her lab. If you are outside Blanche Town, you
+have already left it. Work out where you are from the state below, and if an
+objective describes something you have plainly done, replace it this turn.
+</already_underway>
+
+`;
+    }
+  }
+
   // DAEMONS: BEFORE A GAME IS RUNNING, THE RAM IS NOT STATE -- IT IS ZEROES.
   // On the title screen no save is loaded, so gSaveBlock1Ptr resolves to
   // nothing, map id 0-0 comes back as BATTLE_COLOSSEUM_2_P, the position reads
@@ -525,7 +567,7 @@ async function buildUserInputText(gameDataJson) {
 ${formatBattleState(gameDataJson?.battle_data)}
 
 <objectives_section>
-${formatObjectives(state.objectives, gameDataJson?.current_trainer_data?.position?.map_id, gameDataJson?.current_trainer_data?.position?.map_name)}
+${underwayBlock}${formatObjectives(state.objectives, gameDataJson?.current_trainer_data?.position?.map_id, gameDataJson?.current_trainer_data?.position?.map_name)}
 ${progressLine ? "<progress>\n" + progressLine + "\n</progress>\n" : ""}
 </objectives_section>
 
@@ -546,40 +588,6 @@ ${isInDialog ? "Not visible in dialogue" : minimapDisplay || "No minimap data"}
 
 </game_state>
   `.trim();
-
-  //  ARE YOU AT THE BEGINNING, OR DID YOU JUST GET HERE?
-  //
-  //  --fresh clears the AGENT and leaves the SAVE alone, so it can wake up
-  //  five hundred steps into a run with no history at all. It then reads the
-  //  opening sequence in the system prompt -- which is correct, and is about a
-  //  game it is no longer at the start of -- and writes "set the text speed"
-  //  as a primary objective while standing in the Undertone with a daemon in
-  //  its party.
-  //
-  //  The game itself answers this and never has to be told: a party, or money
-  //  spent, or a map that is not Blanche means the opening already happened.
-  //  Derived rather than tracked, so it survives a wipe of everything we store.
-  {
-    const partyN = Array.isArray(gameDataJson?.current_pokemon_data)
-      ? gameDataJson.current_pokemon_data.length : 0;
-    const mapNow = String(pos?.map_name || "");
-    const started = partyN > 0 || (badgeCount > 0)
-      || (mapNow && !/^BLANCHE_TOWN/.test(mapNow));
-    if (started) {
-      userInputText += `
-<already_underway>
-You are NOT at the beginning. This run is in progress and your notes were
-cleared, not the game — so anything you remember about the opening has already
-happened, whatever your objectives currently say.
-
-Right now: ${partyN} daemon${partyN === 1 ? "" : "s"} in the party, ${badgeCount} MARK${badgeCount === 1 ? "" : "s"}, in ${mapNow || "an unknown map"}.
-
-Read the state below and work out where you are from it. Do not set an
-objective you have plainly already completed — if you are holding a daemon you
-have met CRYSTAL CLEAR, and if you are outside Blanche you have left it.
-</already_underway>`;
-    }
-  }
 
   //  Delivered once, then never again. See core/backchannel.js.
   {
