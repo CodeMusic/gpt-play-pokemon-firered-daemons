@@ -823,6 +823,25 @@ input:focus-visible {
   letter-spacing: 0.04em;
 }
 
+/* Queued: sent, not yet put in front of it. Read: delivered, exactly once,
+   and it will never be shown again -- so this marker is the only record that
+   it ever arrived. */
+.bc-state {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  margin-top: 0.15rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  opacity: 0.75;
+}
+
+.bc-line.is-queued .bc-state { color: var(--warn); }
+.bc-line.is-read .bc-state { color: var(--ok); opacity: 0.55; }
+
+/* A queued line is still pending, so it keeps full weight; a read one has
+   done its job and recedes. */
+.bc-line.is-read { opacity: 0.7; }
+
 .bc-form { display: flex; gap: 0.4rem; }
 
 .bc-form input {

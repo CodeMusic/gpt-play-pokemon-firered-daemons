@@ -541,11 +541,19 @@
     el.innerHTML = log.slice(-24).map((e) => {
       const agent = e.from === "agent";
       const open = agent && !e.answered;
-      return `<div class="bc-line ${agent ? "from-agent" : "from-guide"}${open ? " open" : ""}"`
+      //  Whether it has actually landed. A message sits in this panel looking
+      //  identical before and after the agent has seen it, which makes the one
+      //  question you have of it -- did that get through? -- unanswerable.
+      //  Both states are named rather than one: absence of a marker is a
+      //  reading, and a reading is not a readout.
+      const state_ = agent ? "" : (e.read ? "read" : "queued");
+      return `<div class="bc-line ${agent ? "from-agent" : "from-guide"}${open ? " open" : ""}`
+        + `${state_ ? " is-" + state_ : ""}"`
         + `${agent ? ` data-qid="${escapeHtml(e.id)}"` : ""}>`
         + `<span class="bc-who mono">${agent ? "it asks" : "you"}</span>`
         + `<span class="bc-text">${escapeHtml(String(e.text || ""))}</span>`
         + (open ? '<span class="bc-open mono">unanswered</span>' : "")
+        + (state_ ? `<span class="bc-state mono">${state_}</span>` : "")
         + `</div>`;
     }).join("");
     el.scrollTop = el.scrollHeight;
