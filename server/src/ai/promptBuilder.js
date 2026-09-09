@@ -549,6 +549,21 @@ ${isInDialog ? "Not visible in dialogue" : minimapDisplay || "No minimap data"}
     if (unread.length) userInputText += "\n" + bc.formatForPrompt(unread);
   }
 
+  if (state.consultNudge) {
+    userInputText += `
+<stuck>
+You have been going nowhere for a while and it is getting to you. This is what
+\`consult\` is for: one question, to something that may or may not answer.
+
+Spend it on the thing you cannot work out by looking — why a route will not
+open, whether something has to happen first, what you have missed in a place
+you have already searched. Not on what another minute of exploring would tell
+you, and not on what to do next in general.
+
+Or do not, and keep going. An answer is not owed and may not come.
+</stuck>`;
+  }
+
   if (state.memoryNudge) {
     userInputText += `
 <worth_remembering>

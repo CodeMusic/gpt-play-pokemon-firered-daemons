@@ -128,13 +128,32 @@ function readEvents(prev, now, turn = {}) {
         }
     }
 
+    //  BEING ANSWERED IS AN EVENT. Until now the backchannel was write-only in
+    //  feeling terms: the agent could be told something and nothing about it
+    //  changed. An answer settles you -- it is the opposite of getting nowhere,
+    //  which is what CHOLERIC and BOREDOM are both counting.
+    //
+    //  Deliberately modest. If a reply wiped the board it would be a reset
+    //  button, and an agent that learns to ask whenever it feels bad is asking
+    //  for the feeling and not the answer.
+    if (turn.answered) {
+        bump("CHOLERIC", -22, "something answered");
+        bump("BOREDOM", -30, "something answered");
+        bump("PHLEGMATIC", 10, "something answered");
+    }
+
     //  Frustration is repetition, not failure. One blocked move is a mistake;
     //  the third in the same place is the feeling this axis is for.
     if (turn.blockedStreak >= 1) {
         bump("CHOLERIC", Math.min(18, turn.blockedStreak * 5),
              `blocked ${turn.blockedStreak}x in a row`);
     }
-    if (turn.blockedStreak >= 3) bump("PHLEGMATIC", -5, "getting nowhere");
+    //  "Getting nowhere" used to push PHLEGMATIC negative -- which reads as
+    //  AFRAID, and being stuck is not frightening, it is maddening. That was a
+    //  stretch when it was the only axis available for it. BOREDOM is the
+    //  right home for going nowhere and it exists now, so this comes out
+    //  rather than double-counting into fear.
+    if (turn.blockedStreak >= 3) bump("BOREDOM", 4, "getting nowhere");
 
     //  One event, however many axes it moved. The log said "HALTED, HALTED,
     //  HALTED" because a faint bumps three, and that reads as three faints.

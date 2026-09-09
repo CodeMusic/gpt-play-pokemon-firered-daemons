@@ -172,10 +172,18 @@ async function gameLoop() {
                 }
                 state.lastFeelPos = here;
 
+                //  Unread at THIS point, because the prompt has not been built
+                //  yet -- promptBuilder is what marks them read, later in the
+                //  same turn. Reading the flag here is reading it before it
+                //  flips, which is the only moment the answer is news.
+                const answered = Array.isArray(state.backchannel)
+                    && state.backchannel.some((e) => e.from === "guide" && !e.read);
+
                 const { deltas, events } = feelings.readEvents(progressPrev, state.progressNow, {
                     hpFraction,
                     prevHpFraction: state.lastHpFraction,
                     blockedStreak: state.blockedStreak,
+                    answered,
                 });
                 state.feelings = feelings.step(state.feelings || feelings.zero(), deltas);
 
@@ -191,6 +199,31 @@ async function gameLoop() {
                 state.wasInCheckpoint = inCheckpoint;
                 state.lastHpFraction = hpFraction;
                 state.feelingEvents = events;
+
+                //  A BATTLE ENDING IS A LESSON, and the objective boundary was
+                //  never going to catch it -- objectives change every fifty
+                //  steps and battles happen every few.
+                //
+                //  NOT every battle. A wild encounter in the grass teaches
+                //  nothing and reflecting on each one would flood memory and
+                //  cost a turn every time. A TRAINER battle is a prepared
+                //  opponent, and a LOSS is the most expensive thing that can
+                //  happen. Those two are worth a turn; the rest are not.
+                const inBattle = Boolean(gameDataJson?.is_in_battle
+                    ?? gameDataJson?.battle_data?.in_battle);
+                if (state.wasInBattle && !inBattle) {
+                    const lost = typeof hpFraction === "number" && hpFraction <= 0;
+                    if (lost || state.lastBattleWasTrainer) {
+                        state.reflectPending = {
+                            from: lost ? "a battle you lost" : "a trainer battle",
+                            to: "whatever you do next",
+                        };
+                    }
+                }
+                if (inBattle) {
+                    state.lastBattleWasTrainer = Boolean(gameDataJson?.battle_data?.is_trainer_battle);
+                }
+                state.wasInBattle = inBattle;
 
                 //  A MEMORY IS WORTH ASKING FOR AT THE MOMENT IT IS CHEAP.
                 //  write_memory went unused for 357 steps while sitting in
@@ -212,6 +245,27 @@ async function gameLoop() {
                     state.lastMemoryNudgeStep = state.counters.currentStep;
                 } else {
                     state.memoryNudge = null;
+                }
+
+                //  ASK WHEN IT IS ACTUALLY STUCK, which is what the feelings
+                //  are already measuring. `consult` has the same problem
+                //  `reflect` had -- named in the prompt and never the obvious
+                //  move -- and the same fix: notice the moment for it.
+                //
+                //  Frustration AND restlessness together, because either alone
+                //  is ordinary. Angry is a hard fight; bored is a long walk.
+                //  Both at once is the specific state where another twenty
+                //  turns of trying will not help, and it is the only state
+                //  worth spending the one question on.
+                const f = state.feelings || {};
+                const stuck = (Number(f.CHOLERIC) || 0) >= 40 && (Number(f.BOREDOM) || 0) >= 45;
+                const bcMod = require("./backchannel.js");
+                if (stuck && !bcMod.openQuestion(state)
+                    && (state.counters.currentStep - (state.lastConsultNudgeStep || -99)) >= 40) {
+                    state.consultNudge = true;
+                    state.lastConsultNudgeStep = state.counters.currentStep;
+                } else {
+                    state.consultNudge = null;
                 }
                 if (events.length) {
                     console.log(`  feelings: ${feelings.describe(state.feelings)
