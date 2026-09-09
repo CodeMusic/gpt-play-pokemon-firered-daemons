@@ -67,8 +67,8 @@
 * **BIND DAEMONS. A party of one is a run waiting to end.**
 
   You start with one and it is not enough. A single daemon means one type, one
-  set of ROUTINES, and one faint between you and being sent back to the last
-  CHECKPOINT — and the type chart is the whole game, so a party that cannot
+  set of ROUTINES, and one HALTED daemon between you and being sent back to the
+  last CHECKPOINT — and the type chart is the whole game, so a party that cannot
   answer a type is a party that loses to it.
 
   **How it works:** find a wild daemon in tall grass, **weaken it** — bring it
