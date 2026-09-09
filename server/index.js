@@ -138,9 +138,30 @@ async function start() {
   //  dashboard is being watched from away, the internal workflow when it is
   //  on the same network. Unset means the button reports the feature as off
   //  rather than failing at a connection.
+  //  DAEMONS: speak one line of inner voice.
+  //
+  //  This proxies rather than letting the page call n8n directly, for two
+  //  reasons and the second is the real one. The page would need CORS on the
+  //  relay -- annoying. The page would also need `x-dex-secret` IN ITS
+  //  JAVASCRIPT, where anyone with the dashboard open can read it. A shared
+  //  secret that ships to the browser is not a shared secret. It stays here.
+  //
+  //  TWO TIERS, CHOSEN PER REQUEST. bindDaemons probes once at launch and
+  //  pins DAEMONS_VOICE_URL, which is fine until the laptop moves: launched
+  //  downstairs on the tailnet, carried upstairs onto another network, and
+  //  the pinned tailnet URL stops resolving with no way to notice. A launch
+  //  time probe cannot answer a question that changes while the process runs.
+  //
+  //  So a transport failure here -- DNS, refused, timeout -- retries the
+  //  public relay, which needs only an internet connection. An HTTP error
+  //  from a reachable backend is NOT retried: that is the voice being broken
+  //  rather than unreachable, and trying a second host would only hide it.
+  const VOICE_RELAY = process.env.DAEMONS_VOICE_RELAY
+    || "https://n8n.codemusic.ca/webhook/daemon/voice";
+
   app.post("/speak", express.json({ limit: "64kb" }), async (req, res) => {
-    const url = process.env.DAEMONS_VOICE_URL;
-    if (!url) {
+    const primary = process.env.DAEMONS_VOICE_URL;
+    if (!primary) {
       res.status(503).json({ audioBase64: null, error: "voice_not_configured" });
       return;
     }
@@ -149,38 +170,55 @@ async function start() {
       res.status(400).json({ audioBase64: null, error: "missing_text" });
       return;
     }
-    try {
-      //  90s at the TTS server, so give up here a little after it does --
-      //  a request that outlives its own backend is a hung play button.
+    const voice = (req.body && req.body.voice) || process.env.DAEMONS_VOICE || "index";
+
+    //  Returns { payload, status } on a reachable backend, or throws when the
+    //  host could not be reached at all -- which is the only case worth a
+    //  second attempt elsewhere.
+    const attempt = async (url) => {
+      //  90s at the TTS server, so give up a little after it does -- a request
+      //  that outlives its own backend is a hung play button.
       const ctl = new AbortController();
       const timer = setTimeout(() => ctl.abort(), 100000);
-      const upstream = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-dex-secret": process.env.DEX_SHARED_SECRET || "",
-        },
-        body: JSON.stringify({
-          text,
-          voice: (req.body && req.body.voice) || process.env.DAEMONS_VOICE || "index",
-        }),
-        signal: ctl.signal,
-      });
-      clearTimeout(timer);
-      const payload = await upstream.json().catch(() => null);
-      if (!payload || !payload.audioBase64) {
+      try {
+        const upstream = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-dex-secret": process.env.DEX_SHARED_SECRET || "",
+          },
+          body: JSON.stringify({ text, voice }),
+          signal: ctl.signal,
+        });
+        const payload = await upstream.json().catch(() => null);
+        return { payload, status: upstream.status };
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
+    const tiers = primary === VOICE_RELAY ? [primary] : [primary, VOICE_RELAY];
+    let lastError = "tts_unreachable";
+    for (let i = 0; i < tiers.length; i++) {
+      try {
+        const { payload, status } = await attempt(tiers[i]);
+        if (payload && payload.audioBase64) {
+          if (i > 0) console.log(`/speak: ${tiers[0]} was unreachable; the relay answered.`);
+          res.json(payload);
+          return;
+        }
+        //  Reachable and unhappy. Report it rather than shopping around.
         res.status(502).json({
           audioBase64: null,
-          error: (payload && payload.error) || `tts_http_${upstream.status}`,
+          error: (payload && payload.error) || `tts_http_${status}`,
         });
         return;
+      } catch (err) {
+        lastError = err?.name === "AbortError" ? "tts_timeout" : "tts_unreachable";
+        console.warn(`/speak: ${tiers[i]} failed (${lastError}: ${err?.message || err})`);
       }
-      res.json(payload);
-    } catch (err) {
-      const reason = err?.name === "AbortError" ? "tts_timeout" : "tts_unreachable";
-      console.warn(`/speak failed: ${reason} (${err?.message || err})`);
-      res.status(502).json({ audioBase64: null, error: reason });
     }
+    res.status(502).json({ audioBase64: null, error: lastError });
   });
 
   app.get("/getMinimap", async (req, res) => {
