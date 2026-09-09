@@ -460,9 +460,30 @@
 
   //  Both panels can speak, so both have to redraw when playback moves --
   //  otherwise hushing a dream leaves the aside list showing a stale icon.
+  //  One button, three panels. Written out twice was a coincidence; a third
+  //  time is a function -- and it keeps the icon, the title and the four
+  //  states from drifting apart between the lists that share a cache.
+  function speakButton(text, attr, idx, restingLabel) {
+    const speaking = currentSpeakingText === text;
+    const loading = state.voiceLoading === text;
+    const failed = state.voiceError && state.voiceError.text === text;
+    const cached = voiceCache.has(text);
+    const icon = loading ? "\u25CC" : speaking ? "\u25A0" : failed ? "\u26A0" : "\u25B6";
+    const label = loading ? "Generating audio..."
+      : speaking ? "Hush"
+      : failed ? `Voice unavailable (${state.voiceError.reason})`
+      : cached ? "Play (cached)"
+      : restingLabel;
+    return `<button class="aside-speak${speaking ? " on" : ""}${failed ? " failed" : ""}`
+      + `${cached && !speaking && !failed ? " cached" : ""}"`
+      + ` type="button" ${attr}="${idx}" title="${escapeHtml(label)}"`
+      + ` aria-label="${escapeHtml(label)}"${loading ? " disabled" : ""}>${icon}</button>`;
+  }
+
   function renderSpeakables() {
     renderAsides();
     renderDreams();
+    renderSelf();
   }
 
   function stopSpeaking() {
@@ -608,10 +629,14 @@
         + 'reflects, which happens when it completes an objective.</div>';
       return;
     }
-    el.innerHTML = items.map((s) =>
-      `<div class="self-line"><span class="self-step mono">step ${Number(s.step) || 0}</span>`
-      + `<span class="self-text">${escapeHtml(String(s.text || ""))}</span></div>`
-    ).join("");
+    el.innerHTML = items.map((s, i) => {
+      const text = String(s.text || "");
+      const speaking = currentSpeakingText === text;
+      return `<div class="self-line${speaking ? " speaking" : ""}">`
+        + speakButton(text, "data-self-index", i, "Hear this")
+        + `<span class="self-step mono">step ${Number(s.step) || 0}</span>`
+        + `<span class="self-text">${escapeHtml(text)}</span></div>`;
+    }).join("");
   }
 
   //  Newest first, and only the last few. A dream is an impression; a scrollable
@@ -628,20 +653,8 @@
     el.innerHTML = items.slice(0, 4).map((d, i) => {
       const text = String(d.text || "");
       const speaking = currentSpeakingText === text;
-      const loading = state.voiceLoading === text;
-      const failed = state.voiceError && state.voiceError.text === text;
-      const cached = voiceCache.has(text);
-      const icon = loading ? "\u25CC" : speaking ? "\u25A0" : failed ? "\u26A0" : "\u25B6";
-      const label = loading ? "Generating audio..."
-        : speaking ? "Hush"
-        : failed ? `Voice unavailable (${state.voiceError.reason})`
-        : cached ? "Play (cached)"
-        : "Hear this dream";
       return `<div class="dream-line${i === 0 ? " latest" : ""}${speaking ? " speaking" : ""}">`
-        + `<button class="aside-speak${speaking ? " on" : ""}${failed ? " failed" : ""}`
-        + `${cached && !speaking && !failed ? " cached" : ""}"`
-        + ` type="button" data-dream-index="${i}" title="${escapeHtml(label)}"`
-        + ` aria-label="${escapeHtml(label)}"${loading ? " disabled" : ""}>${icon}</button>`
+        + speakButton(text, "data-dream-index", i, "Hear this dream")
         + `<span class="self-step mono">step ${Number(d.step) || 0}</span>`
         + `<span class="dream-text">${escapeHtml(text)}</span></div>`;
     }).join("");
@@ -711,23 +724,8 @@
     }
     el.innerHTML = state.asides.map((a, i) => {
       const speaking = currentSpeakingText === a.text;
-      const loading = state.voiceLoading === a.text;
-      const failed = state.voiceError && state.voiceError.text === a.text;
-      const cached = voiceCache.has(a.text);
-      const icon = loading ? "\u25CC" : speaking ? "\u25A0" : failed ? "\u26A0" : "\u25B6";
-      const label = loading ? "Generating audio..."
-        : speaking ? "Hush"
-        : failed ? `Voice unavailable (${state.voiceError.reason})`
-        : cached ? "Play (cached)"
-        : "Speak this thought";
       return `<div class="aside-line${i === 0 ? " latest" : ""}${speaking ? " speaking" : ""}">`
-        //  `cached` is styling only -- it says this one has been heard and
-        //  will play instantly. Deliberately not a new glyph: the icon means
-        //  what the button DOES, and that has not changed.
-        + `<button class="aside-speak${speaking ? " on" : ""}${failed ? " failed" : ""}`
-        + `${cached && !speaking && !failed ? " cached" : ""}"`
-        + ` type="button" data-aside-index="${i}" title="${escapeHtml(label)}"`
-        + ` aria-label="${escapeHtml(label)}"${loading ? " disabled" : ""}>${icon}</button>`
+        + speakButton(a.text, "data-aside-index", i, "Speak this thought")
         + `<span class="aside-time mono">${formatTime(a.at)}</span>`
         + `<span class="aside-text">${escapeHtml(a.text)}</span></div>`;
     }).join("");
@@ -741,6 +739,12 @@
     if (!btn) return;
     //  Two panels, one handler. Dreams are rendered newest-first and sliced,
     //  so the index is into that same reversed view rather than the raw array.
+    if (btn.hasAttribute("data-self-index")) {
+      const items = Array.isArray(state.game.self_model) ? state.game.self_model : [];
+      const e = items[Number(btn.getAttribute("data-self-index"))];
+      if (e && e.text) speakText(String(e.text));
+      return;
+    }
     if (btn.hasAttribute("data-dream-index")) {
       const dreams = Array.isArray(state.game.dreams) ? state.game.dreams.slice().reverse() : [];
       const d = dreams[Number(btn.getAttribute("data-dream-index"))];
