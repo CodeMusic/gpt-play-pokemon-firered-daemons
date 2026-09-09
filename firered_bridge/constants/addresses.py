@@ -130,10 +130,12 @@ HANDLE_START_MENU_INPUT_ADDR = sym_addr("StartCB_HandleInput")
 TASK_SHOW_START_MENU_ADDR = sym_addr("Task_StartMenuHandleInput")
 START_MENU_TASK_ADDR = sym_addr("Task_StartMenuHandleInput")
 
-# Start menu action IDs to names
+# Start menu action IDs to names. These are what the START MENU actually draws
+# in this build -- gText_MenuPokedex is "INDEX" and gText_MenuPokemon is
+# "DAEMONS" in engineGba/src/strings.c -- so the agent is told what it can see.
 START_MENU_ACTION_NAMES = {
-    0: "POKEDEX",
-    1: "POKEMON",
+    0: "INDEX",       # gText_MenuPokedex
+    1: "DAEMONS",     # gText_MenuPokemon
     2: "BAG",
     3: "PLAYER",
     4: "SAVE",
@@ -662,7 +664,7 @@ GTEXT_FERRY_ADDR = sym_addr("gText_Ferry")
 BAG_POCKET_NAMES = {
     0: "ITEMS",
     1: "KEY ITEMS",
-    2: "POKé BALLS",
+    2: "BOXES",       # gText_PokeBalls
     3: "TM CASE",
     4: "BERRY POUCH",
 }
@@ -835,37 +837,40 @@ SPECIES_SHEDINJA = 303
 #
 # NOTE: We keep both a stable ID (used by the server for logs/progress) and a human label.
 BADGES = [
-    ("BOULDER", "Boulder Badge", 0x820),
-    ("CASCADE", "Cascade Badge", 0x821),
-    ("THUNDER", "Thunder Badge", 0x822),
-    ("RAINBOW", "Rainbow Badge", 0x823),
-    ("SOUL", "Soul Badge", 0x824),
-    ("MARSH", "Marsh Badge", 0x825),
-    ("VOLCANO", "Volcano Badge", 0x826),
-    ("EARTH", "Earth Badge", 0x827),
+    ("SLATE",   "SLATE MARK",   0x820),   # was BOULDER
+    ("SLOPE",   "SLOPE MARK",   0x821),   # was CASCADE
+    ("SENSE",   "SENSE MARK",   0x822),   # was THUNDER
+    ("FIT",     "FIT MARK",     0x823),   # was RAINBOW
+    ("SKEW",    "SKEW MARK",    0x824),   # was SOUL
+    ("FRAME",   "FRAME MARK",   0x825),   # was MARSH
+    ("HEAT",    "HEAT MARK",    0x826),   # was VOLCANO
+    ("TRUE",    "TRUE MARK",    0x827),   # was EARTH
 ]
 
-# Types
+# Types -- OUR names, read out of engineGba/src/battle_main.c's gTypeNames.
+# This map is what the agent is TOLD its own party is. It was still vanilla, so the
+# model was handed a type chart in one vocabulary and its readings in another, and
+# could not use its own chart. check_agent_vocab compares the two now.
 POKEMON_TYPE_MAP = {
     255: "NONE",
-    0: "NORMAL",
-    1: "FIGHTING",
-    2: "FLYING",
-    3: "POISON",
-    4: "GROUND",
-    5: "ROCK",
-    6: "BUG",
-    7: "GHOST",
-    8: "STEEL",
-    9: "MYSTERY",
-    10: "FIRE",
-    11: "WATER",
-    12: "GRASS",
-    13: "ELECTRIC",
-    14: "PSYCHIC",
-    15: "ICE",
-    16: "DRAGON",
-    17: "DARK",
+    0  : "CONTENT",      # was NORMAL
+    1  : "LOGIC",        # was FIGHTING
+    2  : "VECTOR",       # was FLYING
+    3  : "CORRUPT",      # was POISON
+    4  : "STRATUM",      # was GROUND
+    5  : "LEGACY",       # was ROCK
+    6  : "SWARM",        # was BUG
+    7  : "LATENT",       # was GHOST
+    8  : "HARDENED",     # was STEEL
+    9  : "ORACLE",       # was MYSTERY
+    10 : "ENTROPY",      # was FIRE
+    11 : "FLOW",         # was WATER
+    12 : "GROWTH",       # was GRASS
+    13 : "SIGNAL",       # was ELECTRIC
+    14 : "CONTEXT",      # was PSYCHIC
+    15 : "FROZEN",       # was ICE
+    16 : "EMERGENT",     # was DRAGON
+    17 : "OPAQUE",       # was DARK
 }
 
 # Substructure order table (PID % 24)
