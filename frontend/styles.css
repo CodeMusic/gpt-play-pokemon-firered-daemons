@@ -406,8 +406,8 @@ input:focus-visible {
 .trainer    { grid-column: span 3; }
 .frame-card { grid-column: span 3; }
 .tabbed     { grid-column: 1 / -1; }
-.logs       { grid-column: span 7; }
-.minimap    { grid-column: span 5; }
+.logs       { grid-column: span 5; }
+.minimap    { grid-column: span 4; }
 
 /* Inside the tabbed pane the old placements are meaningless -- it is one card
    now, not seven. The panes lay themselves out instead. */
@@ -774,6 +774,10 @@ input:focus-visible {
    Its questions and mine, oldest first: this one is a conversation and reading
    it newest-first would be perverse. The unanswered question is the only thing
    here that wants acting on, so it is the only thing that shouts. */
+/* NOT on the top row. Five cards at span 3 is fifteen columns in a grid of
+   twelve, which wraps the frames onto their own line and breaks the shape the
+   dashboard is actually used in. It belongs with the log and the map anyway:
+   those three are the watching panels, and this is the one you type into. */
 .backchannel-card { grid-column: span 3; display: flex; flex-direction: column; }
 
 .bc-log {
