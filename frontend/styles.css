@@ -1006,6 +1006,23 @@ input:focus-visible {
 /* Negative is the other pole, not a fault -- warn, not err. */
 .feel-fill.neg { background: var(--warn); }
 
+/* The drive, kept off the humor block by a rule rather than by hoping the
+   label carries it. A different fill colour too: this one is not a feeling. */
+.feel-row.drive {
+  margin-top: 0.45rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--border);
+}
+
+.feel-fill.drive-fill { background: var(--purple, var(--accent)); }
+
+.feel-want {
+  margin-top: 0.25rem;
+  padding-left: 4.7rem;
+  font-size: 0.7rem;
+  font-style: italic;
+}
+
 .feel-why {
   margin-top: 0.35rem;
   font-size: 0.7rem;

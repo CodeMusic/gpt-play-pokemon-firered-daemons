@@ -608,7 +608,23 @@
         + ` style="${side};width:${pct}%"></i></span>`
         + `<span class="feel-name feel-name-right mono">${two ? escapeHtml(spec.hi) : ""}</span></div>`;
     }).join("");
-    el.innerHTML = rows + (why
+    //  BOREDOM sits apart, because it is not a humor. Four of these map onto
+    //  the Review Board and this one does not -- putting it in the same block
+    //  would quietly claim a fifth member. Its own row, under its own rule,
+    //  and it says what it makes you WANT rather than what it measures.
+    const b = Math.max(0, Math.min(100, Number(f.BOREDOM) || 0));
+    const bWant = b >= 70 ? "sick of this — anything is better than another turn of nothing"
+      : b >= 45 ? "going over the same ground too long"
+      : b >= 20 ? "nothing has happened for a while"
+      : "";
+    const bored =
+      `<div class="feel-row drive${b < 20 ? " quiet" : ""}" title="BOREDOM ${b}">`
+      + `<span class="feel-name mono">RESTLESS</span>`
+      + `<span class="feel-track"><i class="feel-fill drive-fill" style="left:0;width:${b}%"></i></span>`
+      + `<span class="feel-name feel-name-right mono"></span></div>`
+      + (bWant ? `<div class="feel-want muted small">${escapeHtml(bWant)}</div>` : "");
+
+    el.innerHTML = rows + bored + (why
       ? `<div class="feel-why muted small">${escapeHtml(why)}</div>` : "");
   }
 
