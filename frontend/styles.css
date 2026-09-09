@@ -770,6 +770,85 @@ input:focus-visible {
   border-left-color: var(--purple);
 }
 
+/* ---------- Backchannel ----------
+   Its questions and mine, oldest first: this one is a conversation and reading
+   it newest-first would be perverse. The unanswered question is the only thing
+   here that wants acting on, so it is the only thing that shouts. */
+.backchannel-card { grid-column: span 3; display: flex; flex-direction: column; }
+
+.bc-log {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.bc-line {
+  display: flex;
+  gap: 0.55rem;
+  align-items: baseline;
+  line-height: 1.45;
+  font-size: 0.86rem;
+}
+
+.bc-who {
+  flex: 0 0 3.6rem;
+  font-size: 0.66rem;
+  opacity: 0.5;
+  text-align: right;
+}
+
+.bc-text { flex: 1 1 auto; }
+
+.bc-line.from-agent .bc-text { font-style: italic; }
+
+/* Unanswered: the one actionable thing on the panel. Clicking it aims the box. */
+.bc-line.open {
+  cursor: pointer;
+  border-left: 2px solid var(--warn);
+  padding-left: 0.5rem;
+  margin-left: -0.5rem;
+}
+
+.bc-line.open .bc-open {
+  font-size: 0.62rem;
+  color: var(--warn);
+  letter-spacing: 0.04em;
+}
+
+.bc-form { display: flex; gap: 0.4rem; }
+
+.bc-form input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.4rem 0.55rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+}
+
+.bc-form input:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+.bc-send {
+  flex: 0 0 auto;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.bc-send:hover { border-color: var(--accent); }
+
 /* ---------- Inner voice ----------
    Its own card rather than a log row. The log records what the agent DID;
    this is what it thought while doing it. Newest first, because the current
@@ -1100,6 +1179,7 @@ input:focus-visible {
   .inventory,
   .objectives,
   .aside-card,
+  .backchannel-card,
   .frame-card {
     grid-column: span 6;
   }
@@ -1137,6 +1217,7 @@ input:focus-visible {
   .minimap,
   .logs,
   .aside-card,
+  .backchannel-card,
   .frame-card {
     grid-column: span 12;
   }

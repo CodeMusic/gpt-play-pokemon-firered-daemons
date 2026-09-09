@@ -150,6 +150,9 @@ const config = {
     get feelingsSaveFile() {
       return path.join(ROOT_DIR, config.dataDir, "feelings.json");
     },
+    get backchannelSaveFile() {
+      return path.join(ROOT_DIR, config.dataDir, "backchannel.json");
+    },
     get progressStepsFile() {
       return path.join(ROOT_DIR, config.dataDir, "progress_steps.json");
     },

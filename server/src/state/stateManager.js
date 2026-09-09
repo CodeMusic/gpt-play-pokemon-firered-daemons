@@ -26,6 +26,8 @@ const state = {
   //  toward nothing. See core/feelings.js.
   feelings: null,
   feelingEvents: [],
+  //  Questions out, answers and notes in. See core/backchannel.js.
+  backchannel: [],
   allSummaries: [],
   badgeHistory: {},
   previousBadgesState: {},
@@ -226,6 +228,16 @@ async function loadPersistentState() {
   }
 
   try {
+    const bcData = await fs.readFile(config.paths.backchannelSaveFile, "utf-8");
+    const parsedBc = JSON.parse(bcData);
+    if (Array.isArray(parsedBc)) state.backchannel = parsedBc;
+    console.log("Loaded backchannel:", state.backchannel.length);
+  } catch (error) {
+    if (error.code !== "ENOENT") console.error("Error loading backchannel:", error);
+    state.backchannel = [];
+  }
+
+  try {
     const feelData = await fs.readFile(config.paths.feelingsSaveFile, "utf-8");
     const parsedFeel = JSON.parse(feelData);
     if (parsedFeel && typeof parsedFeel === "object") state.feelings = parsedFeel;
@@ -402,6 +414,7 @@ async function savePersistentState() {
     await fs.writeFile(config.paths.selfModelSaveFile, JSON.stringify(state.selfModel, null, 2));
     await fs.writeFile(config.paths.dreamsSaveFile, JSON.stringify(state.dreams, null, 2));
     await fs.writeFile(config.paths.feelingsSaveFile, JSON.stringify(state.feelings, null, 2));
+    await fs.writeFile(config.paths.backchannelSaveFile, JSON.stringify(state.backchannel, null, 2));
     await fs.writeFile(config.paths.allSummariesSaveFile, JSON.stringify(state.allSummaries, null, 2));
     await fs.writeFile(config.paths.progressStepsFile, JSON.stringify(state.progressSteps, null, 2));
     await fs.writeFile(config.paths.lastVisitedMapsFile, JSON.stringify(state.lastVisitedMaps, null, 2));

@@ -159,6 +159,26 @@ async function start() {
   const VOICE_RELAY = process.env.DAEMONS_VOICE_RELAY
     || "https://n8n.codemusic.ca/webhook/daemon/voice";
 
+  //  The other half of the backchannel: what the watcher sends in. Kept on the
+  //  server for the same reason /speak is -- the page never needs a secret and
+  //  the log survives a refresh.
+  app.post("/backchannel", express.json({ limit: "16kb" }), async (req, res) => {
+    const bc = require("./src/core/backchannel.js");
+    const text = String((req.body && req.body.text) || "").trim();
+    if (!text) {
+      res.status(400).json({ ok: false, error: "empty" });
+      return;
+    }
+    const entry = bc.tell(state, text, (req.body && req.body.replyTo) || null);
+    if (!entry) {
+      res.status(400).json({ ok: false, error: "empty" });
+      return;
+    }
+    socketHub.broadcast({ type: "backchannel", payload: entry });
+    console.log(`INFO: [backchannel] ${entry.replyTo ? "reply" : "note"}: ${entry.text}`);
+    res.json({ ok: true, entry });
+  });
+
   app.post("/speak", express.json({ limit: "64kb" }), async (req, res) => {
     const primary = process.env.DAEMONS_VOICE_URL;
     if (!primary) {
@@ -318,6 +338,7 @@ async function start() {
         //  Both builders, not the one I happened to open first.
         self_model: Array.isArray(state.selfModel) ? state.selfModel : [],
         dreams: Array.isArray(state.dreams) ? state.dreams.slice(-8) : [],
+        backchannel: Array.isArray(state.backchannel) ? state.backchannel.slice(-40) : [],
         feelings: state.feelings || null,
         feeling_events: Array.isArray(state.feelingEvents) ? state.feelingEvents : [],
         //  THIS is the full_state a refreshed page receives -- the one sent on

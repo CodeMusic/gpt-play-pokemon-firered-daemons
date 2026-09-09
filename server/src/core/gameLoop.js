@@ -376,6 +376,7 @@ async function gameLoop() {
                     //  Both builders, not the one I happened to open first.
                     self_model: Array.isArray(state.selfModel) ? state.selfModel : [],
                     dreams: Array.isArray(state.dreams) ? state.dreams.slice(-8) : [],
+                    backchannel: Array.isArray(state.backchannel) ? state.backchannel.slice(-40) : [],
                     feelings: state.feelings || null,
                     feeling_events: Array.isArray(state.feelingEvents) ? state.feelingEvents : [],
                     //  So a refreshed dashboard gets the inner voice back.

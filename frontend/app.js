@@ -164,6 +164,7 @@
       self_model: [],
       dreams: [],
       feelings: null,
+      backchannel: [],
       feeling_events: [],
       last_criticism: "",
       total_tokens_accumulated: 0,
@@ -525,6 +526,71 @@
   //  voice is supposed to sound like -- so it belongs on screen next to memory
   //  rather than only in the prompt, where nobody can check it against what
   //  the asides actually say.
+  //  Its questions and my answers, oldest first -- this one is a conversation
+  //  and reading it backwards would be perverse. An unanswered question is the
+  //  thing to act on, so it is the one that stands out.
+  function renderBackchannel() {
+    const el = document.getElementById("bc-log");
+    if (!el) return;
+    const log = Array.isArray(state.game.backchannel) ? state.game.backchannel : [];
+    if (!log.length) {
+      el.innerHTML = '<div class="muted small">Nothing yet. It can ask you one '
+        + 'question at a time; you can say anything, any time.</div>';
+      return;
+    }
+    el.innerHTML = log.slice(-24).map((e) => {
+      const agent = e.from === "agent";
+      const open = agent && !e.answered;
+      return `<div class="bc-line ${agent ? "from-agent" : "from-guide"}${open ? " open" : ""}"`
+        + `${agent ? ` data-qid="${escapeHtml(e.id)}"` : ""}>`
+        + `<span class="bc-who mono">${agent ? "it asks" : "you"}</span>`
+        + `<span class="bc-text">${escapeHtml(String(e.text || ""))}</span>`
+        + (open ? '<span class="bc-open mono">unanswered</span>' : "")
+        + `</div>`;
+    }).join("");
+    el.scrollTop = el.scrollHeight;
+  }
+
+  //  Clicking an unanswered question aims the box at it, so a reply is
+  //  attached to what it asked rather than floating loose.
+  let bcReplyTo = null;
+  document.addEventListener("click", (ev) => {
+    const line = ev.target.closest && ev.target.closest(".bc-line.open");
+    if (!line) return;
+    bcReplyTo = line.getAttribute("data-qid");
+    const input = document.getElementById("bc-input");
+    if (input) { input.placeholder = "Answer its question\u2026"; input.focus(); }
+  });
+
+  function wireBackchannel() {
+    const form = document.getElementById("bc-form");
+    const input = document.getElementById("bc-input");
+    if (!form || !input) return;
+    form.addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = "";
+      input.disabled = true;
+      try {
+        const scheme = window.location.protocol === "https:" ? "https" : "http";
+        await fetch(`${scheme}://${state.settings.host}:${state.settings.port}/backchannel`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, replyTo: bcReplyTo }),
+        });
+        bcReplyTo = null;
+        input.placeholder = "Say something to it\u2026";
+      } catch (e) {
+        //  Put it back rather than losing what was typed.
+        input.value = text;
+      } finally {
+        input.disabled = false;
+        input.focus();
+      }
+    });
+  }
+
   function renderSelf() {
     const el = document.getElementById("self-wrap");
     if (!el) return;
@@ -1294,6 +1360,7 @@
     renderStreams();
     renderMinimap();
     renderLogs();
+    renderBackchannel();
   }
 
   function mergeFullState(payload) {
@@ -1325,6 +1392,10 @@
     if (Array.isArray(payload.self_model)) {
       state.game.self_model = payload.self_model;
       renderSelf();
+    }
+    if (Array.isArray(payload.backchannel)) {
+      state.game.backchannel = payload.backchannel;
+      renderBackchannel();
     }
     if (payload.feelings && typeof payload.feelings === "object") {
       state.game.feelings = payload.feelings;
@@ -1444,6 +1515,14 @@
     const payload = message?.payload;
 
     switch (type) {
+      case "backchannel":
+        if (payload && payload.text) {
+          if (!Array.isArray(state.game.backchannel)) state.game.backchannel = [];
+          state.game.backchannel.push(payload);
+          renderBackchannel();
+        }
+        return;
+
       case "dream":
         if (payload && payload.text) {
           if (!Array.isArray(state.game.dreams)) state.game.dreams = [];
@@ -1788,6 +1867,7 @@
     initTheme();
     initTabs();
     initFrameView();
+    wireBackchannel();
     renderAllPanels();
     renderAsides();
     connectWebSocket();

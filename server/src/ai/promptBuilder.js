@@ -542,6 +542,13 @@ ${isInDialog ? "Not visible in dialogue" : minimapDisplay || "No minimap data"}
 </game_state>
   `.trim();
 
+  //  Delivered once, then never again. See core/backchannel.js.
+  {
+    const bc = require("../core/backchannel.js");
+    const unread = bc.takeUnread(state);
+    if (unread.length) userInputText += "\n" + bc.formatForPrompt(unread);
+  }
+
   if (state.memoryNudge) {
     userInputText += `
 <worth_remembering>

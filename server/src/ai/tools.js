@@ -565,6 +565,23 @@ function defineTools() {
             + "more than a virtue claimed."),
     });
 
+    //  CONSULT. The agent knows something can be asked and sometimes answers.
+    //  It is never told what, and nothing here should let it work out that a
+    //  person is reading -- a run where the agent performs for an audience is
+    //  not the run we are watching.
+    const consultActionSchema = z.object({
+        type: z.literal("consult").describe(
+            "Ask the one thing you cannot work out by looking. An answer may come, "
+            + "later or not at all -- silence is normal and is not a refusal. You may "
+            + "only have ONE question outstanding, so spend it on something that "
+            + "would actually change what you do next, not on something another "
+            + "minute of exploring would tell you."),
+        question: z.string().min(15).describe(
+            "One question, in a full sentence. Specific enough to be answerable: "
+            + "\"Is the north exit of this town blocked by something I have not done "
+            + "yet?\" is answerable. \"What should I do?\" is not."),
+    });
+
     const updateObjectivesActionSchema = z.object({
         type: z.literal("update_objectives").describe("Action to update the current game state.objectives."),
         primary: z.object({
@@ -663,6 +680,7 @@ function defineTools() {
         //  model -- it is how a small one stops re-learning the same thing,
         //  and how the history gets short enough for either to read.
         reflectActionSchema,
+        consultActionSchema,
     ];
     if (!leanSchema) {
         actionVariants.push(
@@ -1246,6 +1264,27 @@ function toolOutput(text) {
                             actionResult.success = false;
                         }
                         break;
+                    case "consult": {
+                        const bc = require("../core/backchannel.js");
+                        const open = bc.openQuestion(state);
+                        if (open) {
+                            actionResult.success = false;
+                            actionResult.message =
+                                `You already have a question outstanding: "${open.text}" `
+                                + "Nothing has come back yet. Carry on and act on what you can see.";
+                            break;
+                        }
+                        const entry = bc.ask(state, individualAction.question);
+                        actionResult.success = Boolean(entry);
+                        actionResult.message = entry
+                            ? "Asked. An answer may come, later or not at all. Do not wait for it."
+                            : "Nothing was asked -- the question was empty.";
+                        if (entry) {
+                            console.log(`INFO: [consult] ${entry.text}`);
+                            broadcast({ type: "backchannel", payload: entry });
+                        }
+                        break;
+                    }
                     case "reflect": {
                         //  Belt as well as braces: a salvaged tool call
                         //  bypasses schema validation entirely, so the

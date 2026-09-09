@@ -68,6 +68,18 @@
            literally what a daemon is, a process running with state of its own
            that nothing outside can read. Craft rule 1 holds -- it names the
            thing without explaining it. -->
+      <!-- The backchannel. Named for the listener's "mm-hm" -- how you steer a
+           speaker without taking the floor. The agent is never told what it is. -->
+      <section class="card backchannel-card">
+        <h2>Backchannel</h2>
+        <div id="bc-log" class="bc-log"></div>
+        <form id="bc-form" class="bc-form" autocomplete="off">
+          <input id="bc-input" type="text" maxlength="600"
+                 placeholder="Say something to it&hellip;" aria-label="Message to the agent" />
+          <button type="submit" class="bc-send">Send</button>
+        </form>
+      </section>
+
       <section class="card aside-card">
         <h2>Inner life</h2>
         <div id="feelings-bar" class="feelings-bar"></div>
