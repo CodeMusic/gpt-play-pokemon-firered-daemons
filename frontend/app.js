@@ -457,6 +457,13 @@
     }
   }
 
+  //  Both panels can speak, so both have to redraw when playback moves --
+  //  otherwise hushing a dream leaves the aside list showing a stale icon.
+  function renderSpeakables() {
+    renderAsides();
+    renderDreams();
+  }
+
   function stopSpeaking() {
     if (currentAudio) {
       currentAudio.pause();
@@ -464,10 +471,10 @@
       currentAudio = null;
     }
     currentSpeakingText = null;
-    renderAsides();
+    renderSpeakables();
   }
 
-  async function speakAside(text) {
+  async function speakText(text) {
     //  Clicking the line that is already speaking hushes it. That is the
     //  whole reason the icon changes -- the button has to mean what it shows.
     if (currentSpeakingText === text) { stopSpeaking(); return; }
@@ -476,7 +483,7 @@
     let url = voiceCache.get(text);
     if (!url) {
       state.voiceLoading = text;
-      renderAsides();
+      renderSpeakables();
       try {
         const res = await fetch(buildSpeakUrl(), {
           method: "POST",
@@ -489,7 +496,7 @@
           //  quiet and stays quiet sends you looking at your speakers.
           state.voiceError = { text, reason: (data && data.error) || `http_${res.status}` };
           state.voiceLoading = null;
-          renderAsides();
+          renderSpeakables();
           return;
         }
         const bytes = Uint8Array.from(atob(data.audioBase64), (c) => c.charCodeAt(0));
@@ -498,7 +505,7 @@
       } catch (err) {
         state.voiceError = { text, reason: "unreachable" };
         state.voiceLoading = null;
-        renderAsides();
+        renderSpeakables();
         return;
       }
       state.voiceLoading = null;
@@ -510,7 +517,7 @@
     audio.addEventListener("error", stopSpeaking);
     currentAudio = audio;
     currentSpeakingText = text;
-    renderAsides();
+    renderSpeakables();
     audio.play().catch(() => stopSpeaking());
   }
 
@@ -544,11 +551,26 @@
         + 'summary folds the history away.</div>';
       return;
     }
-    el.innerHTML = items.slice(0, 4).map((d, i) =>
-      `<div class="dream-line${i === 0 ? " latest" : ""}">`
-      + `<span class="self-step mono">step ${Number(d.step) || 0}</span>`
-      + `<span class="dream-text">${escapeHtml(String(d.text || ""))}</span></div>`
-    ).join("");
+    el.innerHTML = items.slice(0, 4).map((d, i) => {
+      const text = String(d.text || "");
+      const speaking = currentSpeakingText === text;
+      const loading = state.voiceLoading === text;
+      const failed = state.voiceError && state.voiceError.text === text;
+      const cached = voiceCache.has(text);
+      const icon = loading ? "\u25CC" : speaking ? "\u25A0" : failed ? "\u26A0" : "\u25B6";
+      const label = loading ? "Generating audio..."
+        : speaking ? "Hush"
+        : failed ? `Voice unavailable (${state.voiceError.reason})`
+        : cached ? "Play (cached)"
+        : "Hear this dream";
+      return `<div class="dream-line${i === 0 ? " latest" : ""}${speaking ? " speaking" : ""}">`
+        + `<button class="aside-speak${speaking ? " on" : ""}${failed ? " failed" : ""}`
+        + `${cached && !speaking && !failed ? " cached" : ""}"`
+        + ` type="button" data-dream-index="${i}" title="${escapeHtml(label)}"`
+        + ` aria-label="${escapeHtml(label)}"${loading ? " disabled" : ""}>${icon}</button>`
+        + `<span class="self-step mono">step ${Number(d.step) || 0}</span>`
+        + `<span class="dream-text">${escapeHtml(text)}</span></div>`;
+    }).join("");
   }
 
   //  The four humor axes, above the voice they colour. Shown as signed bars
@@ -627,9 +649,17 @@
   document.addEventListener("click", (ev) => {
     const btn = ev.target.closest && ev.target.closest(".aside-speak");
     if (!btn) return;
+    //  Two panels, one handler. Dreams are rendered newest-first and sliced,
+    //  so the index is into that same reversed view rather than the raw array.
+    if (btn.hasAttribute("data-dream-index")) {
+      const dreams = Array.isArray(state.game.dreams) ? state.game.dreams.slice().reverse() : [];
+      const d = dreams[Number(btn.getAttribute("data-dream-index"))];
+      if (d && d.text) speakText(String(d.text));
+      return;
+    }
     const idx = Number(btn.getAttribute("data-aside-index"));
     const entry = state.asides && state.asides[idx];
-    if (entry) speakAside(entry.text);
+    if (entry) speakText(entry.text);
   });
 
   //  Tabs. The panels behind them are consulted occasionally; the ones left

@@ -1014,6 +1014,15 @@ input:focus-visible {
 
 /* A dream is not a log line, so it does not get a log line's treatment: no
    left rule, more air, and the newest one at full strength. */
+/* A dream is a paragraph, not a line, so its button sits at the TOP of the
+   block rather than on a shared baseline with three lines of text. */
+.dream-line .aside-speak { align-self: flex-start; margin-top: 0.15rem; }
+
+.dream-line.speaking {
+  opacity: 1;
+  border-left-color: var(--accent);
+}
+
 .dream-line {
   display: flex;
   gap: 0.6rem;
