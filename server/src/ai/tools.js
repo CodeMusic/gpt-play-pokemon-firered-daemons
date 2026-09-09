@@ -1408,6 +1408,46 @@ function toolOutput(text) {
                         //  model to decide.
                         state.objectives.map_id = gameDataJson?.current_trainer_data?.position?.map_id || null;
                         state.objectives.map_name = gameDataJson?.current_trainer_data?.position?.map_name || null;
+                        //  THE MODEL SOMETIMES SENDS ITS OWN MARKUP AS THE VALUE.
+                        //
+                        //  Observed three times running from muse-glimmer:
+                        //
+                        //    "primary": "\n<atem:parameter name=\"short_description\">
+                        //               Exit the north entrance back to Route 2."
+                        //
+                        //  A STRING, holding a fragment of the XML-ish tool syntax it
+                        //  decided to answer in, where an object with two fields belonged.
+                        //  The call is otherwise valid JSON so salvageToolCall never sees
+                        //  it -- a well-formed request carrying a badly-formed value.
+                        //
+                        //  Rejecting it is correct and it is also a wasted turn, and it
+                        //  repeated, so the intent is plainly recoverable: the field name
+                        //  and its text are both right there. Recover what is unambiguous,
+                        //  refuse what is not.
+                        const rescueObjective = (v) => {
+                            if (v && typeof v === "object") return v;
+                            if (typeof v !== "string") return null;
+                            const out = {};
+                            //  Any namespace, quoted or bare -- match the field NAME and
+                            //  take the fragment after it as its text.
+                            const re = /<[^>]*parameter[^>]*name=["']?(\w+)["']?[^>]*>([\s\S]*?)(?=<|$)/g;
+                            for (const m of v.matchAll(re)) out[m[1]] = m[2].trim();
+                            if (!out.short_description) return null;
+                            //  A recovered short_description with no description is still
+                            //  usable; reuse it rather than inventing prose it did not write.
+                            out.description = out.description || out.short_description;
+                            return out;
+                        };
+                        for (const slot of ["primary", "secondary", "third"]) {
+                            if (typeof individualAction[slot] === "string") {
+                                const fixed = rescueObjective(individualAction[slot]);
+                                if (fixed) {
+                                    individualAction[slot] = fixed;
+                                    console.warn(`INFO: [objectives] recovered '${slot}' from tool-call markup sent as a string.`);
+                                }
+                            }
+                        }
+
                         let updates = [];
                         let errorOccurred = false;
                         if (individualAction.hasOwnProperty('primary')) {
@@ -1415,7 +1455,7 @@ function toolOutput(text) {
                                 state.objectives.primary = individualAction.primary;
                                 updates.push(`Primary set.`);
                             } else {
-                                actionResult.message = "Error: 'primary' objective must be an object with a short_description and description.";
+                                actionResult.message = "Error: 'primary' must be an OBJECT with two string fields, short_description and description -- not a string and not tool-call markup. Send it as JSON: {\"short_description\": \"...\", \"description\": \"...\"}";
                                 errorOccurred = true;
                             }
                         }
@@ -1424,7 +1464,7 @@ function toolOutput(text) {
                                 state.objectives.secondary = individualAction.secondary;
                                 updates.push(`Secondary set.`);
                             } else {
-                                actionResult.message = "Error: 'secondary' objective must be an object with a short_description and description.";
+                                actionResult.message = "Error: 'secondary' must be an OBJECT with two string fields, short_description and description -- not a string and not tool-call markup. Send it as JSON: {\"short_description\": \"...\", \"description\": \"...\"}";
                                 errorOccurred = true;
                             }
                         }
@@ -1434,7 +1474,7 @@ function toolOutput(text) {
                                 state.objectives.third = individualAction.third;
                                 updates.push(`Third set.`);
                             } else {
-                                actionResult.message = "Error: 'third' objective must be an object with a short_description and description.";
+                                actionResult.message = "Error: 'third' must be an OBJECT with two string fields, short_description and description -- not a string and not tool-call markup. Send it as JSON: {\"short_description\": \"...\", \"description\": \"...\"}";
                                 errorOccurred = true;
                             }
                         }
