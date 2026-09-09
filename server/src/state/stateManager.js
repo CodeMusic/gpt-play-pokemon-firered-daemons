@@ -260,7 +260,32 @@ async function loadPersistentState() {
   try {
     const selfData = await fs.readFile(config.paths.selfModelSaveFile, "utf-8");
     const parsedSelf = JSON.parse(selfData);
-    if (Array.isArray(parsedSelf)) state.selfModel = parsedSelf;
+    if (Array.isArray(parsedSelf)) {
+      //  COLLAPSE ON LOAD, so a run that predates the counting does not have
+      //  to be thrown away to benefit from it. The duplicate rows already on
+      //  disk were written before reflect knew to count, and asking for a
+      //  --fresh to fix a display problem would spend a whole run on it.
+      //
+      //  Same normalised match as the writer -- case, punctuation, spacing --
+      //  so what merges here and what merges there cannot drift apart.
+      const key = (t) => String(t || "").toLowerCase().replace(/[^a-z0-9 ]/g, "")
+        .replace(/\s+/g, " ").trim();
+      const merged = [];
+      for (const e of parsedSelf) {
+        if (!e || !e.text) continue;
+        const seen = merged.find((m) => key(m.text) === key(e.text));
+        if (seen) {
+          seen.count = (seen.count || 1) + (e.count || 1);
+          seen.step = Math.max(Number(seen.step) || 0, Number(e.step) || 0);
+        } else {
+          merged.push({ text: e.text, step: Number(e.step) || 0, count: e.count || 1 });
+        }
+      }
+      if (merged.length !== parsedSelf.length) {
+        console.log(`Self-model: collapsed ${parsedSelf.length} entries to ${merged.length} by counting repeats.`);
+      }
+      state.selfModel = merged;
+    }
     console.log("Loaded self-model:", state.selfModel.length);
   } catch (error) {
     if (error.code !== "ENOENT") console.error("Error loading self-model:", error);
