@@ -1222,9 +1222,17 @@ async function gameLoop() {
                 });
 
                 let finalResponse = null;
+                //  WHAT THE STREAM ACTUALLY SENT. "No final response received"
+                //  says only that response.completed never arrived, not what did --
+                //  and that has been answered by guessing twice now. Declared HERE,
+                //  beside finalResponse, because the first attempt put it inside the
+                //  stream block and it was out of scope at the throw: a ReferenceError
+                //  standing in for the error it was added to explain.
+                const decisionEventTypes = [];
                 try {
 
                     for await (const event of stream) {
+                    decisionEventTypes.push(event.type);
                         switch (event.type) {
                             case "response.output_item.added":
                                 if (event.item.type === "reasoning") {
@@ -1462,6 +1470,13 @@ async function gameLoop() {
 
             // 7. Process the final response (after the stream)
             if (!finalResponse) {
+                const seenDec = decisionEventTypes.reduce((a, t) => ((a[t] = (a[t] || 0) + 1), a), {});
+                console.error(
+                    `  stream sent ${decisionEventTypes.length} events: `
+                    + (Object.keys(seenDec).length
+                        ? Object.entries(seenDec).map(([t, n]) => `${t} x${n}`).join(", ")
+                        : "NONE -- the stream was empty")
+                );
                 throw new Error("No final response received from the OpenAI API after the stream.");
             }
             if (!state.skipNextUserMessage && newUserMessage) {
