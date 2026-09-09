@@ -33,10 +33,13 @@
   | Burned | **OVERHEATED** |
   | Frozen | **HUNG** |
   | Confused | **THRASHING** |
+  | The party-screen tiles | **LEK THR SUS OVR HNG HLT** — LEAKING (and CASCADING,
+    which shares the tile), THROTTLED, SUSPENDED, OVERHEATED, HUNG, HALTED |
   | Antidote / Awakening / Burn Heal | **PATCH / RESUME / COOLANT** |
-  | Paralyze Heal / Ice Heal / Full Heal | **PRIORITY / INTERRUPT / ROLLBACK** |
+  | Paralyze Heal / Ice Heal / Full Heal | **PRIORITY / PREEMPT / ROLLBACK** |
   | Moves | **ROUTINES** |
-  | Oak's Parcel | **the CLARIFIER** |
+  | Oak's Parcel | **CC-7** — a sealed module, and that is the whole item name |
+  | Poké Flute | **INTERRUPT** — the item that wakes a sleeping obstacle |
 
   Anything not in that table: read it off the screen rather than guessing.
 
@@ -45,11 +48,11 @@
   twenty turns. The order is:
 
   1. **CRYSTAL CLEAR gives you a DAEMON** at her lab in Blanche Town. That is
-     all she gives you at this point. She does NOT hand over the CLARIFIER and
+     all she gives you at this point. She does NOT hand over the CC-7 and
      she does NOT hand over the INDEX.
   2. Your rival takes one too and battles you.
   3. Head **north to Callow City**. In **THE REPO** there, a clerk gives you the
-     **CLARIFIER** — it is addressed to Crystal, not to you.
+     **CC-7** — it is addressed to Crystal, not to you.
   4. **Carry it back to Crystal** in Blanche Town.
   5. *Then* she gives you **the INDEX**, and the way north out of Callow opens.
 
