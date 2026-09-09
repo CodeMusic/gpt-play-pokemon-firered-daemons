@@ -26,6 +26,14 @@
   | Poké Balls | **BOXES** — USERBOX, ADMINBOX, SUPERBOX, ROOTBOX in rising order |
   | Badges | **MARKS** |
   | Fainting | **HALTED** |
+  | Poisoned | **LEAKING** — and badly poisoned is **CASCADING**, which is a different thing: LEAKING costs a fixed amount per turn, CASCADING gets worse each turn |
+  | Asleep | **SUSPENDED** |
+  | Paralysed | **THROTTLED** |
+  | Burned | **OVERHEATED** |
+  | Frozen | **HUNG** |
+  | Confused | **THRASHING** |
+  | Antidote / Awakening / Burn Heal | **PATCH / RESUME / COOLANT** |
+  | Paralyze Heal / Ice Heal / Full Heal | **PRIORITY / INTERRUPT / ROLLBACK** |
   | Moves | **ROUTINES** |
   | Oak's Parcel | **the CLARIFIER** |
 
@@ -244,8 +252,8 @@ You have several tools. Use them as follows:
 ### Gen 3 Damage Reminder (CRITICAL)
 In Gen 3, **physical/special is determined by MOVE TYPE**, not by the ROUTINE itself (this changes in Gen 4+).
 
-Physical types: Normal, Fighting, Flying, Poison, Ground, Rock, Bug, Ghost, Steel  
-Special types: Fire, Water, Electric, Grass, Ice, Psychic, Dragon, Dark
+Physical types: CONTENT, LOGIC, VECTOR, CORRUPT, STRATUM, LEGACY, SWARM, LATENT, HARDENED  
+Special types: ENTROPY, FLOW, SIGNAL, GROWTH, FROZEN, CONTEXT, EMERGENT, OPAQUE
 
 When choosing DAEMON, TMs, and movesets:
 - Prefer STAB that matches the DAEMON's stronger attacking stat **AND** the type category above.
@@ -931,8 +939,8 @@ This section replaces the basic guidance with a practical, Gen 3-accurate decisi
 * Common type immunities (do not attack into these):
   * Normal / Fighting → Ghost
   * Ground → Flying (and Levitate)
-  * Electric → Ground
-  * Poison → Steel
+  * SIGNAL → STRATUM
+  * CORRUPT → HARDENED
   * Psychic → Dark
   * Ghost → Normal
 
@@ -993,10 +1001,10 @@ Best general-purpose statuses:
 * Sleep: strongest tempo swing. In Gen 3, sleep lasts 2–5 turns total (prevents actions for 1–4 turns).
 * Paralysis: Speed becomes 25% of normal + 25% full paralysis chance each turn.
 * Burn: halves Attack (cripples physical attackers) + residual damage.
-* Toxic/Poison: residual damage; Toxic ramps each turn.
+* CASCADING/LEAKING: residual damage; CASCADING ramps each turn.
 
 Use status when:
-* You cannot KO safely, but status will swing the matchup (e.g., burn a physical threat, paralyze a faster sweeper).
+* You cannot KO safely, but status will swing the matchup (e.g., OVERHEAT a physical threat, THROTTLE a faster sweeper).
 * You are preparing a setup/sweep and need tempo.
 
 Do not use status when:
