@@ -16,14 +16,49 @@ creatures are daemons and the type chart is an argument about consciousness.
 | the ROM | [CodeMusic/pokefirered-daemons](https://github.com/CodeMusic/pokefirered-daemons) |
 | this | the harness that lets a model play it |
 
+![The dashboard: runtime, inner life, user and frames across the top; tabs for
+summary, party, inventory, objectives, progress and memory below.](docs/screenshots/dashboard.png)
+
 ## What is different here
 
-**One code change, and it is inert without an environment variable.** The
-client was `new OpenAI({ apiKey })` with no `baseURL`, so it could only ever
-reach OpenAI. It now takes `OPENAI_BASE_URL`, falling back to `api.openai.com`
-exactly as before when unset.
+**It started as one line.** The client was `new OpenAI({ apiKey })` with no
+`baseURL`, so it could only ever reach OpenAI. It takes `OPENAI_BASE_URL` now,
+falling back to `api.openai.com` exactly as before when unset.
 
-**Everything else is configuration**, and it lives in the DAEMONS repo:
+It did not stay one line. **87 commits, ~8,000 insertions across 30 files**,
+almost all of it in two directions: making the loop survive a model that is not
+GPT-5, and giving the run an interior.
+
+### Running against a local or open model
+
+| | why |
+|---|---|
+| `ai/localPath.js` | **BFS pathfinding in-process.** Upstream calls OpenAI's Code Interpreter to plan a route. Reading the game's own tile grid needs no model at all, and unlike the rules we hand-wrote it has never needed revising. |
+| `ai/salvageToolCall.js` | **Recovers tool calls the bridge discards.** mlx-vlm emits calls LiteLLM drops on the floor; this parses them back out. 25/25 on real failures. |
+| `core/progress.js` | A **score** from badges, maps, levels, daemons bound and money — so "is it getting anywhere" has an answer that is not a vibe. |
+| `core/trajectory.js` | What the last 40 steps actually *did*, counted. Self-critique was asked to spot loops while being shown a single screen; this is the half it was missing. |
+| history folding | The summariser could fail forever without advancing, and the history it failed to fold grew to 12.4 MB and timed out every call. Three strikes, then a mechanical trim. |
+
+### An interior
+
+The agent has a **voice**, and three layers behind it that make the voice
+somebody's rather than nobody's:
+
+| | what it is | written when |
+|---|---|---|
+| `aside` | one or two sentences of inner thought, per turn | every action |
+| `core/feelings.js` | four **humor axes** — GLAD, MAD, SAD, and CALM↔AFRAID — plus a boredom drive. Derived from what happens, decaying toward nothing | every turn |
+| `<self>` | what it has noticed about **how it plays** | when it reflects |
+| `core/dream.js` | what the summariser threw away, written back as images | at every fold |
+
+None of it is asked of the model as a self-report. The feelings come off the
+same snapshot the score does; the trajectory comes off the history. Every time
+this fork has let a model assert something about itself, the value drifted.
+
+Any line of inner voice — or any dream — can be **spoken aloud** in the INDEX
+voice, through an n8n workflow in the DAEMONS repo. Click the ▶.
+
+**The rest is configuration**, and it lives in the DAEMONS repo:
 `./bindDaemons.sh --ai` builds the ROM, regenerates the symbol table from that
 build, finds the model proxy, reads its key, and starts the bridge and agent.
 

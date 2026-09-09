@@ -542,6 +542,39 @@ ${isInDialog ? "Not visible in dialogue" : minimapDisplay || "No minimap data"}
 </game_state>
   `.trim();
 
+  if (state.memoryNudge) {
+    userInputText += `
+<worth_remembering>
+${state.memoryNudge} If there is a rule in it that would help you later, save it
+now with \`write_memory\` under a \`tips_\` key — one sentence, phrased so it is
+useful the next time rather than a description of this time. If there is no rule
+in it, carry on; not everything that happens teaches something.
+</worth_remembering>`;
+  }
+
+  //  Asked ONCE, at the boundary, near the top -- not buried in the reminder
+  //  block where reflect went unused for 357 steps.
+  if (state.reflectPending) {
+    userInputText += `
+<reflect_now>
+You just replaced your primary objective:
+  was:  ${state.reflectPending.from}
+  now:  ${state.reflectPending.to}
+
+That means the previous one is finished or abandoned, and everything you
+learned doing it is about to be folded into a summary and lost.
+
+BEFORE your next move, call \`reflect\`. All four fields need real content:
+  learned     — a rule you could follow again, not a description of what happened
+  worked      — the one thing that worked, and why
+  wasted      — the one thing that cost you turns, or say plainly that nothing did
+  about_self  — one sentence about how YOU play, not about the game
+
+If you genuinely learned nothing, say that in \`learned\` in a full sentence
+rather than leaving fields empty. An empty reflection is refused.
+</reflect_now>`;
+  }
+
   if (state.selfCritiqueReminderPending) {
     userInputText += `
 <self_criticism_reminder>

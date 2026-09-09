@@ -52,6 +52,20 @@ const AXES = {
 //  there is no feeling on the far side of it.
 const SIGNED = new Set(Object.entries(AXES).filter(([, a]) => a.lo).map(([k]) => k));
 
+//  A drive rather than a humor, so it is kept out of AXES and off the humor
+//  panel. It has no lower pole: there is nothing on the far side of not-bored.
+const DRIVES = { BOREDOM: { hi: "RESTLESS" } };
+
+//  BOREDOM IS NOT A HUMOR, and pretending it is one would break the mapping
+//  that makes the other four worth having. It is a DRIVE: it rises when
+//  nothing is happening and pushes outward, and it is the counterweight to
+//  AFRAID -- which is exactly the deadlock worth breaking. An agent hiding
+//  from tall grass because its daemon is hurt is behaving sensibly for a
+//  while and then is simply stuck, and nothing in four humors ever gets it
+//  moving again. Boredom does.
+//
+//  It is derived the same way everything else here is: from whether the
+//  progress score has actually moved.
 const LIMIT = 100;
 
 //  Half-life in turns. Long enough that a faint still colours the next few
@@ -60,7 +74,7 @@ const HALF_LIFE = 15;
 const DECAY = Math.pow(0.5, 1 / HALF_LIFE);
 
 function zero() {
-    return { SANGUINE: 0, CHOLERIC: 0, MELANCHOLIC: 0, PHLEGMATIC: 0 };
+    return { SANGUINE: 0, CHOLERIC: 0, MELANCHOLIC: 0, PHLEGMATIC: 0, BOREDOM: 0 };
 }
 
 function clamp(n, axis) {
@@ -89,6 +103,15 @@ function readEvents(prev, now, turn = {}) {
         bump("PHLEGMATIC", -4, "new ground");   // unfamiliar: less settled
     }
     if (now.money < prev.money - 500) bump("MELANCHOLIC", 4, "spent heavily");
+
+    //  Boredom answers one question: has anything happened? Any real progress
+    //  clears it outright; a turn where nothing moved adds to it. It climbs
+    //  slowly, so it takes a genuine stretch of nothing to start pulling.
+    const movedOn = now.badges > prev.badges || now.caught > prev.caught
+        || now.maps > prev.maps || now.partyLevels > prev.partyLevels
+        || now.seen > prev.seen;
+    if (movedOn) bump("BOREDOM", -60, "something happened");
+    else bump("BOREDOM", 3, "nothing is happening");
 
     //  The body. A party at low health is the clearest danger signal there is.
     if (typeof turn.hpFraction === "number") {
@@ -162,9 +185,23 @@ function describe(f) {
     return live;
 }
 
+//  Boredom speaks in what it makes you WANT, not in a number. "You are 56%
+//  bored" is telemetry; "you have been in the same few tiles too long" is a
+//  reason to walk somewhere.
+function boredomLine(f) {
+    const b = Number(f?.BOREDOM) || 0;
+    if (b < 20) return null;
+    if (b < 45) return "Nothing has happened for a while and you are starting to feel it.";
+    if (b < 70) return "You have been going over the same ground too long. Somewhere you have "
+        + "not been is worth the risk of getting there.";
+    return "You are sick of this. Whatever you have been avoiding, it is now less "
+        + "unpleasant than another turn of nothing.";
+}
+
 function formatForPrompt(f) {
     const live = describe(f);
-    if (!live.length) {
+    const bored = boredomLine(f);
+    if (!live.length && !bored) {
         return "<feelings>\n  <note>Level. Nothing is pulling at you right now.</note>\n</feelings>\n";
     }
     return [
@@ -173,8 +210,10 @@ function formatForPrompt(f) {
         "  what happens and settles back toward nothing on its own. Let it colour the",
         "  aside -- never name these words aloud and never explain them.</note>",
         ...live.map((l) => `  <feeling>${l.phrase}</feeling>`),
+        ...(bored ? [`  <restlessness>${bored}</restlessness>`] : []),
         "</feelings>",
     ].join("\n") + "\n";
 }
 
-module.exports = { AXES, zero, readEvents, step, checkpoint, describe, formatForPrompt, HALF_LIFE };
+module.exports = { AXES, DRIVES, zero, readEvents, step, checkpoint, describe,
+                   boredomLine, formatForPrompt, HALF_LIFE };

@@ -191,6 +191,28 @@ async function gameLoop() {
                 state.wasInCheckpoint = inCheckpoint;
                 state.lastHpFraction = hpFraction;
                 state.feelingEvents = events;
+
+                //  A MEMORY IS WORTH ASKING FOR AT THE MOMENT IT IS CHEAP.
+                //  write_memory went unused for 357 steps while sitting in
+                //  the reminder block, because nothing ever made it the
+                //  obvious move. These events are already detected for the
+                //  feelings; the same signal can ask for the lesson while it
+                //  is still in front of the agent.
+                const WORTH_REMEMBERING = {
+                    "HALTED": "You were just HALTED.",
+                    "blocked 3x in a row": "That is three blocked moves in the same place.",
+                    "a MARK earned": "You just earned a MARK.",
+                    "new ground": "You just reached a map you had not seen.",
+                };
+                const notable = events.map((e) => e.why).find((w) => WORTH_REMEMBERING[w]);
+                //  Once per stretch, not once per turn -- a nudge on every
+                //  step is noise the model learns to skip past.
+                if (notable && (state.counters.currentStep - (state.lastMemoryNudgeStep || -99)) >= 12) {
+                    state.memoryNudge = WORTH_REMEMBERING[notable];
+                    state.lastMemoryNudgeStep = state.counters.currentStep;
+                } else {
+                    state.memoryNudge = null;
+                }
                 if (events.length) {
                     console.log(`  feelings: ${feelings.describe(state.feelings)
                         .map((f) => f.phrase).join(", ") || "level"}`

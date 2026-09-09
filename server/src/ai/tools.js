@@ -1294,6 +1294,7 @@ function toolOutput(text) {
                             }
                             console.log(`INFO: [reflect/self] ${individualAction.about_self}`);
                         }
+                        state.reflectPending = null;
                         state.progressMark = state.progressNow;
                         state.reflectedAtStep = state.counters.currentStep;
                         actionResult.success = true;
@@ -1306,6 +1307,27 @@ function toolOutput(text) {
                         break;
                     }
                     case "update_objectives":
+                        //  AN OBJECTIVE CHANGING IS THE MOMENT TO LEARN, and
+                        //  nothing was asking. `reflect` sat named once in the
+                        //  reminder block at line 376 of a 388-line prompt,
+                        //  and across 357 steps the agent used exactly two
+                        //  tools: key_press and path_to_location. Naming a
+                        //  tool is not the same as ever making it the obvious
+                        //  next move -- movement has a reason to happen every
+                        //  turn, and reflection never had one.
+                        //
+                        //  So the harness notices the boundary instead of
+                        //  hoping the agent does. If the PRIMARY objective
+                        //  text changes, the previous one is over: flag it,
+                        //  and promptBuilder asks for a reflection on the next
+                        //  turn, once, in its own block near the top.
+                        {
+                            const before = String(state.objectives?.primary?.short_description || "").trim();
+                            const after = String(individualAction.primary?.short_description || "").trim();
+                            if (before && after && before !== after) {
+                                state.reflectPending = { from: before, to: after };
+                            }
+                        }
                         //  DAEMONS: stamp the map an objective was written on.
                         //
                         //  Objectives go stale silently. "Leave this map by
