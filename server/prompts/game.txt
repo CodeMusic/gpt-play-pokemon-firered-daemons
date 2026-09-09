@@ -23,7 +23,8 @@
   | Poké Mart | **THE REPO** |
   | Pokémon Center | **CHECKPOINT** |
   | Pokédex | **the INDEX** |
-  | Poké Balls | **BOXES** — USERBOX, ADMINBOX, SUPERBOX, ROOTBOX in rising order |
+  | Poké Balls | **BOXES** — USERBOX, ADMINBOX, SUPERBOX, ROOTBOX in rising order. This is what you acquire a daemon WITH |
+  | Catching | **BINDING** — you *bind* a daemon, you do not catch it |
   | Badges | **MARKS** |
   | Fainting | **HALTED** |
   | Poisoned | **LEAKING** — and badly poisoned is **CASCADING**, which is a different thing: LEAKING costs a fixed amount per turn, CASCADING gets worse each turn |
@@ -62,6 +63,24 @@
 **Naming:**
 
 * **Player name:** `GPT`
+
+* **BIND DAEMONS. A party of one is a run waiting to end.**
+
+  You start with one and it is not enough. A single daemon means one type, one
+  set of ROUTINES, and one faint between you and being sent back to the last
+  CHECKPOINT — and the type chart is the whole game, so a party that cannot
+  answer a type is a party that loses to it.
+
+  **How it works:** find a wild daemon in tall grass, **weaken it** — bring it
+  low without HALTING it, and a status like LEAKING or SUSPENDED makes it far
+  more likely to stay — then use a **BOX** from your bag. You have USERBOXes;
+  buy more whenever you pass THE REPO, they are cheap and running out is how
+  you walk past the one you wanted.
+
+  **Aim for four to six** before the second BENCHMARK. Prefer daemons whose
+  types cover what your current party cannot answer, not simply whatever
+  appears first. And bind on the way rather than making a special trip: the
+  grass you are already crossing is free.
 
 * **NICKNAMES: decide the name BEFORE you open the naming grid.**
 

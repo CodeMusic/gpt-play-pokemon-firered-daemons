@@ -28,6 +28,8 @@ const state = {
   feelingEvents: [],
   //  Questions out, answers and notes in. See core/backchannel.js.
   backchannel: [],
+  //  What it made of the game as a place. For us, never returned to it.
+  playtest: [],
   allSummaries: [],
   badgeHistory: {},
   previousBadgesState: {},
@@ -225,6 +227,16 @@ async function loadPersistentState() {
       console.error("Error loading map visit history:", error);
     }
     state.mapVisitHistory = {};
+  }
+
+  try {
+    const ptData = await fs.readFile(config.paths.playtestSaveFile, "utf-8");
+    const parsedPt = JSON.parse(ptData);
+    if (Array.isArray(parsedPt)) state.playtest = parsedPt;
+    console.log("Loaded playtest notes:", state.playtest.length);
+  } catch (error) {
+    if (error.code !== "ENOENT") console.error("Error loading playtest notes:", error);
+    state.playtest = [];
   }
 
   try {
@@ -440,6 +452,7 @@ async function savePersistentState() {
     await fs.writeFile(config.paths.dreamsSaveFile, JSON.stringify(state.dreams, null, 2));
     await fs.writeFile(config.paths.feelingsSaveFile, JSON.stringify(state.feelings, null, 2));
     await fs.writeFile(config.paths.backchannelSaveFile, JSON.stringify(state.backchannel, null, 2));
+    await fs.writeFile(config.paths.playtestSaveFile, JSON.stringify(state.playtest, null, 2));
     await fs.writeFile(config.paths.allSummariesSaveFile, JSON.stringify(state.allSummaries, null, 2));
     await fs.writeFile(config.paths.progressStepsFile, JSON.stringify(state.progressSteps, null, 2));
     await fs.writeFile(config.paths.lastVisitedMapsFile, JSON.stringify(state.lastVisitedMaps, null, 2));

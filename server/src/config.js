@@ -153,6 +153,9 @@ const config = {
     get backchannelSaveFile() {
       return path.join(ROOT_DIR, config.dataDir, "backchannel.json");
     },
+    get playtestSaveFile() {
+      return path.join(ROOT_DIR, config.dataDir, "playtest.json");
+    },
     get progressStepsFile() {
       return path.join(ROOT_DIR, config.dataDir, "progress_steps.json");
     },

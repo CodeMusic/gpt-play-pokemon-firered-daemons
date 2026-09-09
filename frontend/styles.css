@@ -42,6 +42,14 @@
   --err: #ef4444;
   --err-dim: rgba(239, 68, 68, 0.10);
   --info: #3b82f6;
+  /*  The same four again, for TEXT rather than for a stripe. The LED colours
+      are deliberately universal across both themes -- as FILLS, which is what
+      an LED is. As text on the light ground they measure 1.4:1 to 2.5:1 and
+      cannot be read. A fill role and a text role are not the same role. */
+  --ok-ink: #22c55e;
+  --warn-ink: #f59e0b;
+  --err-ink: #ef4444;
+  --info-ink: #3b82f6;
   --purple: #8ea9c9;
   --focus: #3f9fd0;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
@@ -68,6 +76,10 @@
     --surface-raised: #f2f6f9;
     --surface-hover: #dbe4ec;
     --text: #16202e;
+    --ok-ink: #166534;
+    --warn-ink: #854d0e;
+    --err-ink: #991b1b;
+    --info-ink: #1e40af;
     --text-secondary: #33455c;
     --muted: #607790;
     --border: #b3c1cf;
@@ -90,6 +102,10 @@
   --surface-raised: #f2f6f9;
   --surface-hover: #dbe4ec;
   --text: #16202e;
+  --ok-ink: #166534;
+  --warn-ink: #854d0e;
+  --err-ink: #991b1b;
+  --info-ink: #1e40af;
   --text-secondary: #33455c;
   --muted: #607790;
   --border: #b3c1cf;
@@ -770,6 +786,60 @@ input:focus-visible {
 
 .log-entry.chat {
   border-left-color: var(--purple);
+}
+
+/* ---------- Playtest ----------
+   Four kinds, four colours, and the colour is the point: a wall of
+   undifferentiated feedback is a wall. The stripe carries the kind so the eye
+   can sort the list without reading it -- CONFUSED especially, which is the
+   one worth acting on and the easiest to lose among the rest. */
+.pt-line {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  padding: 0.55rem 0.65rem;
+  border-left: 3px solid var(--border-light);
+  background: var(--bg-subtle);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.pt-liked    { border-left-color: var(--ok); }
+.pt-disliked { border-left-color: var(--err); }
+.pt-confused { border-left-color: var(--warn); }
+.pt-noted    { border-left-color: var(--info); }
+
+.pt-kind {
+  flex: 0 0 4.6rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  padding-top: 0.15rem;
+  opacity: 0.9;
+}
+
+.pt-liked    .pt-kind { color: var(--ok-ink); }
+.pt-disliked .pt-kind { color: var(--err-ink); }
+.pt-confused .pt-kind { color: var(--warn-ink); }
+.pt-noted    .pt-kind { color: var(--info-ink); }
+
+.pt-body { flex: 1 1 auto; min-width: 0; }
+
+.pt-about {
+  font-weight: 600;
+  font-size: 0.84rem;
+  margin-bottom: 0.15rem;
+}
+
+/* Where it happened, so a note can be gone back to. */
+.pt-where {
+  font-weight: 400;
+  font-size: 0.66rem;
+  opacity: 0.45;
+}
+
+.pt-note {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
 }
 
 /* ---------- Backchannel ----------

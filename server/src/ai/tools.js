@@ -582,6 +582,29 @@ function defineTools() {
             + "yet?\" is answerable. \"What should I do?\" is not."),
     });
 
+    //  You are the only playtester this game has who never gets bored and has
+    //  never read the design document. Say what you made of it.
+    const playtestActionSchema = z.object({
+        type: z.literal("playtest").describe(
+            "Say what you make of the GAME as a place -- not how you are doing at it. "
+            + "The people building this cannot see it the way you do: they know what "
+            + "everything means. Use it when something lands well, annoys you, or you "
+            + "genuinely could not tell what was meant."),
+        kind: z.enum(["LIKED", "DISLIKED", "CONFUSED", "NOTED"]).describe(
+            "LIKED: it worked on you, and say why. DISLIKED: an actual complaint about "
+            + "the design -- not that something was hard, difficulty is not a fault. "
+            + "CONFUSED: you could not tell what was meant or what to do, which is the "
+            + "most useful of the four and the one to reach for when unsure. "
+            + "NOTED: an observation with no verdict."),
+        about: z.string().min(3).describe(
+            "The thing itself, short. A place, a line of dialogue, an item, a fight, "
+            + "a piece of music, a name."),
+        note: z.string().min(12).describe(
+            "One or two sentences, in your own voice. Concrete about what you saw and "
+            + "what it did to you. \"The sign near the water reads like an instruction "
+            + "but I think it was scenery\" is useful. \"Good level design\" is not."),
+    });
+
     const updateObjectivesActionSchema = z.object({
         type: z.literal("update_objectives").describe("Action to update the current game state.objectives."),
         primary: z.object({
@@ -681,6 +704,7 @@ function defineTools() {
         //  and how the history gets short enough for either to read.
         reflectActionSchema,
         consultActionSchema,
+        playtestActionSchema,
     ];
     if (!leanSchema) {
         actionVariants.push(
@@ -1264,6 +1288,25 @@ function toolOutput(text) {
                             actionResult.success = false;
                         }
                         break;
+                    case "playtest": {
+                        const pt = require("../core/playtest.js");
+                        const entry = pt.record(state, {
+                            kind: individualAction.kind,
+                            about: individualAction.about,
+                            note: individualAction.note,
+                            mapName: gameDataJson?.current_trainer_data?.position?.map_name,
+                            step: state.counters.currentStep,
+                        });
+                        actionResult.success = Boolean(entry);
+                        actionResult.message = entry
+                            ? "Noted. That goes to the people building this; it does not come back to you."
+                            : "Not recorded -- kind must be LIKED, DISLIKED, CONFUSED or NOTED, and the note needs a real sentence.";
+                        if (entry) {
+                            console.log(`INFO: [playtest/${entry.kind}] ${entry.about}: ${entry.note}`);
+                            broadcast({ type: "playtest", payload: entry });
+                        }
+                        break;
+                    }
                     case "consult": {
                         const bc = require("../core/backchannel.js");
                         const open = bc.openQuestion(state);

@@ -339,6 +339,7 @@ async function start() {
         self_model: Array.isArray(state.selfModel) ? state.selfModel : [],
         dreams: Array.isArray(state.dreams) ? state.dreams.slice(-8) : [],
         backchannel: Array.isArray(state.backchannel) ? state.backchannel.slice(-40) : [],
+        playtest: Array.isArray(state.playtest) ? state.playtest.slice(-60) : [],
         feelings: state.feelings || null,
         feeling_events: Array.isArray(state.feelingEvents) ? state.feelingEvents : [],
         //  THIS is the full_state a refreshed page receives -- the one sent on

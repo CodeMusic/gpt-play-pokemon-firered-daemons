@@ -165,6 +165,7 @@
       dreams: [],
       feelings: null,
       backchannel: [],
+      playtest: [],
       feeling_events: [],
       last_criticism: "",
       total_tokens_accumulated: 0,
@@ -618,6 +619,37 @@
         input.focus();
       }
     });
+  }
+
+  //  What it made of the game. Newest first: this is a list somebody reads
+  //  through looking for the next thing to fix, not a transcript.
+  const PT_KINDS = { LIKED:"liked", DISLIKED:"disliked", CONFUSED:"confused", NOTED:"noted" };
+  function renderPlaytest() {
+    const el = document.getElementById("playtest-wrap");
+    const tally = document.getElementById("pt-tally");
+    if (!el) return;
+    const list = Array.isArray(state.game.playtest) ? state.game.playtest : [];
+    if (tally) {
+      const t = list.reduce((a, e) => ((a[e.kind] = (a[e.kind] || 0) + 1), a), {});
+      tally.textContent = list.length
+        ? `\u2014 ${t.LIKED || 0} liked, ${t.DISLIKED || 0} disliked, ${t.CONFUSED || 0} confused, ${t.NOTED || 0} noted`
+        : "";
+    }
+    if (!list.length) {
+      el.innerHTML = '<div class="muted small">Nothing yet. The agent writes these when '
+        + 'something in the game lands, annoys it, or reads ambiguously \u2014 and when it reflects.</div>';
+      return;
+    }
+    el.innerHTML = list.slice().reverse().map((e) => {
+      const k = PT_KINDS[e.kind] || "noted";
+      return `<div class="pt-line pt-${k}">`
+        + `<span class="pt-kind mono">${escapeHtml(e.kind)}</span>`
+        + `<div class="pt-body">`
+        + `<div class="pt-about">${escapeHtml(e.about || "")}`
+        + `<span class="pt-where mono"> ${escapeHtml(e.map || "")} \u00b7 step ${Number(e.step) || 0}</span></div>`
+        + `<div class="pt-note">${escapeHtml(e.note || "")}</div>`
+        + `</div></div>`;
+    }).join("");
   }
 
   function renderSelf() {
@@ -1380,6 +1412,7 @@
     renderMinimap();
     renderLogs();
     renderBackchannel();
+    renderPlaytest();
   }
 
   function mergeFullState(payload) {
@@ -1411,6 +1444,10 @@
     if (Array.isArray(payload.self_model)) {
       state.game.self_model = payload.self_model;
       renderSelf();
+    }
+    if (Array.isArray(payload.playtest)) {
+      state.game.playtest = payload.playtest;
+      renderPlaytest();
     }
     if (Array.isArray(payload.backchannel)) {
       state.game.backchannel = payload.backchannel;
@@ -1534,6 +1571,14 @@
     const payload = message?.payload;
 
     switch (type) {
+      case "playtest":
+        if (payload && payload.note) {
+          if (!Array.isArray(state.game.playtest)) state.game.playtest = [];
+          state.game.playtest.push(payload);
+          renderPlaytest();
+        }
+        return;
+
       case "backchannel":
         if (payload && payload.text) {
           if (!Array.isArray(state.game.backchannel)) state.game.backchannel = [];

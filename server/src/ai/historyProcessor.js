@@ -64,6 +64,30 @@ function dropOldReasoning(history) {
   return history.filter((_, i) => !drop.has(i));
 }
 
+//  Removes function_calls whose arguments will not parse, and the outputs
+//  paired to them. Repairing is not attempted: `{` carries no intent to
+//  recover, and a guess at what the agent meant to do is worse than the turn
+//  simply not being in the record.
+function dropBrokenToolCalls(history) {
+  if (!Array.isArray(history)) return history;
+  const doomed = new Set();
+  for (const item of history) {
+    if (item?.type !== "function_call") continue;
+    try {
+      const parsed = JSON.parse(item.arguments ?? "{}");
+      if (parsed && typeof parsed === "object") continue;
+    } catch (e) { /* falls through to doomed */ }
+    if (item.call_id) doomed.add(item.call_id);
+  }
+  if (!doomed.size) return history;
+  const kept = history.filter((item) =>
+    !((item?.type === "function_call" || item?.type === "function_call_output")
+      && doomed.has(item.call_id)));
+  console.warn(`History: dropped ${history.length - kept.length} item(s) from `
+    + `${doomed.size} tool call(s) whose arguments were not valid JSON.`);
+  return kept;
+}
+
 function processHistoryForAPI(currentHistory) {
   const isSystemToolReminder = (message) => {
     if (message.role !== "user" || !message.content || !Array.isArray(message.content)) {
@@ -77,6 +101,23 @@ function processHistoryForAPI(currentHistory) {
     );
   };
 
+  //  A MALFORMED TOOL CALL IN HISTORY POISONS EVERY LATER REQUEST.
+  //
+  //  Observed in a live run: one function_call stored with arguments of `{`
+  //  -- a single opening brace. It is replayed on every subsequent turn, and
+  //  the provider rejects the whole request rather than the one bad item:
+  //
+  //    "Assistant tool call function.arguments must be valid JSON."   (Phala)
+  //    "Expecting property name enclosed in double quotes:
+  //     line 1 column 2 (char 1)"                                     (Together)
+  //
+  //  Char 1 of `{`. The complaint is exact and it is about OUR history, not
+  //  about the turn being taken -- which is why it looked intermittent and
+  //  provider-specific when it was neither.
+  //
+  //  A function_call and its function_call_output are a pair, so dropping one
+  //  without the other trades this 400 for the orphaned-output 400. Both go.
+  currentHistory = dropBrokenToolCalls(currentHistory);
   currentHistory = dropOldReasoning(currentHistory);
 
   const dataMessageIndices = currentHistory.reduce((acc, message, index) => {

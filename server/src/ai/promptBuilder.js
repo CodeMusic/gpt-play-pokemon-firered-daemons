@@ -641,6 +641,12 @@ BEFORE your next move, call \`reflect\`. All four fields need real content:
 
 If you genuinely learned nothing, say that in \`learned\` in a full sentence
 rather than leaving fields empty. An empty reflection is refused.
+
+And while you are looking back: if anything in that stretch was worth saying
+about the GAME rather than about your play -- something that landed, something
+that annoyed you, something you could not make sense of -- call \`playtest\` as
+well. This game is still being built and you are the only one walking it who
+does not already know what it means.
 </reflect_now>`;
   }
 
