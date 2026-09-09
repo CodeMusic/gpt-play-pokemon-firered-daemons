@@ -636,10 +636,13 @@
       return `<div class="self-line${speaking ? " speaking" : ""}">`
         + speakButton(text, "data-self-index", i, "Hear this")
         + `<span class="self-step mono">step ${Number(s.step) || 0}</span>`
-        + `<span class="self-text">${escapeHtml(text)}</span>`
-        //  How settled it is, not how many rows it earned.
-        + (n > 1 ? `<span class="self-count mono" title="noticed ${n} times">&times;${n}</span>` : "")
-        + `</div>`;
+        //  INSIDE the text, not after it. As a sibling flex item it was pushed
+        //  to the far edge of the panel by self-text's flex-grow, ending up a
+        //  hand's width from the sentence it modifies -- which reads as a
+        //  column of its own rather than as part of the line.
+        + `<span class="self-text">${escapeHtml(text)}`
+        + (n > 1 ? ` <span class="self-count mono" title="noticed ${n} times">&times;${n}</span>` : "")
+        + `</span></div>`;
     }).join("");
   }
 

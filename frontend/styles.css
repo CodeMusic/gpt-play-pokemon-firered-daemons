@@ -1025,13 +1025,13 @@ input:focus-visible {
 
 /* Reinforcement, not repetition. Sits at the end because it modifies the
    observation rather than labelling it. */
+/* Inline, so it sits against the last word rather than at the panel's edge. */
 .self-count {
-  flex: 0 0 auto;
-  align-self: flex-start;
-  margin-top: 0.1rem;
   font-size: 0.68rem;
   color: var(--accent);
   opacity: 0.85;
+  white-space: nowrap;
+  font-style: normal;
 }
 
 /* Same treatment as the other two lists that share the cache. */
