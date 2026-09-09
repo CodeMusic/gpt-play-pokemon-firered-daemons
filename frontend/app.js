@@ -632,10 +632,14 @@
     el.innerHTML = items.map((s, i) => {
       const text = String(s.text || "");
       const speaking = currentSpeakingText === text;
+      const n = Number(s.count) || 1;
       return `<div class="self-line${speaking ? " speaking" : ""}">`
         + speakButton(text, "data-self-index", i, "Hear this")
         + `<span class="self-step mono">step ${Number(s.step) || 0}</span>`
-        + `<span class="self-text">${escapeHtml(text)}</span></div>`;
+        + `<span class="self-text">${escapeHtml(text)}</span>`
+        //  How settled it is, not how many rows it earned.
+        + (n > 1 ? `<span class="self-count mono" title="noticed ${n} times">&times;${n}</span>` : "")
+        + `</div>`;
     }).join("");
   }
 

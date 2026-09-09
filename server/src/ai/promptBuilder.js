@@ -46,7 +46,12 @@ function formatSelfModel(selfModel) {
     "  <note>What you have noticed about your own play. This is who your inner",
     "  voice belongs to -- speak like this person, not like a status line.</note>"];
   for (const s of items) {
-    lines.push(`  <observation step="${Number(s.step) || 0}">${escapeXml(s.text)}</observation>`);
+    //  The count is the point of keeping it: something noticed four times is
+    //  more true of you than something noticed once, and the model should be
+    //  able to tell those apart.
+    const n = Number(s.count) || 1;
+    lines.push(`  <observation step="${Number(s.step) || 0}"${n > 1 ? ` noticed="${n} times"` : ""}>`
+      + `${escapeXml(s.text)}</observation>`);
   }
   lines.push("</self>");
   return lines.join("\n") + "\n";

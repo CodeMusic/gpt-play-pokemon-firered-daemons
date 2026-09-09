@@ -1023,6 +1023,17 @@ input:focus-visible {
 
 .self-text { flex: 1 1 auto; }
 
+/* Reinforcement, not repetition. Sits at the end because it modifies the
+   observation rather than labelling it. */
+.self-count {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  margin-top: 0.1rem;
+  font-size: 0.68rem;
+  color: var(--accent);
+  opacity: 0.85;
+}
+
 /* Same treatment as the other two lists that share the cache. */
 .self-line .aside-speak { align-self: flex-start; margin-top: 0.1rem; }
 .self-line.speaking { opacity: 1; border-left-color: var(--accent); }

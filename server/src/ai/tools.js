@@ -1324,14 +1324,39 @@ function toolOutput(text) {
                         if (typeof individualAction.about_self === "string"
                             && individualAction.about_self.trim()) {
                             if (!Array.isArray(state.selfModel)) state.selfModel = [];
-                            state.selfModel.push({
-                                text: individualAction.about_self.trim(),
-                                step: state.counters.currentStep,
-                            });
+                            const text = individualAction.about_self.trim();
+                            //  NOTICING IT AGAIN IS EVIDENCE, NOT A DUPLICATE.
+                            //
+                            //  It wrote the same sentence at step 3 and step 14
+                            //  and the panel showed it twice, which reads as a
+                            //  bug and buries the six-entry list under repeats.
+                            //  But an agent that keeps arriving at the same
+                            //  observation about itself is more sure of it than
+                            //  one that said it once -- so count it instead.
+                            //
+                            //  Matched on a normalised form: case, punctuation
+                            //  and spacing only. Nothing cleverer, because a
+                            //  fuzzy match would silently merge two DIFFERENT
+                            //  things it noticed, and losing an observation is
+                            //  worse than showing one twice.
+                            const key = (t) => t.toLowerCase().replace(/[^a-z0-9 ]/g, "")
+                                .replace(/\s+/g, " ").trim();
+                            const seen = state.selfModel.find((e) => key(e.text) === key(text));
+                            if (seen) {
+                                seen.count = (seen.count || 1) + 1;
+                                seen.step = state.counters.currentStep;
+                                console.log(`INFO: [reflect/self] again (x${seen.count}) ${text}`);
+                            } else {
+                                state.selfModel.push({
+                                    text,
+                                    step: state.counters.currentStep,
+                                    count: 1,
+                                });
+                                console.log(`INFO: [reflect/self] ${text}`);
+                            }
                             if (state.selfModel.length > 6) {
                                 state.selfModel.splice(0, state.selfModel.length - 6);
                             }
-                            console.log(`INFO: [reflect/self] ${individualAction.about_self}`);
                         }
                         state.reflectPending = null;
                         state.progressMark = state.progressNow;
