@@ -210,7 +210,10 @@ function formatInventory(inventory) {
   const pocketLabels = {
     item_pocket: "Items",
     key_item_pocket: "Key Items",
-    ball_pocket: "Balls",
+    //  The bag says BOXES. This said "Balls", so the one pocket holding the
+    //  thing it acquires daemons WITH was labelled in vanilla's word -- while
+    //  the prompt never once said "bind". No wonder it had a party of one.
+    ball_pocket: "Boxes",
     tm_case: "TM Case",
     berries_pocket: "Berries",
   };
