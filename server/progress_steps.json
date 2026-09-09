@@ -14,7 +14,7 @@
   {
     "id": "boulder_badge",
     "type": "badge",
-    "trigger": "BOULDER",
+    "trigger": "SLATE",
     "label": "SLATE MARK"
   },
   {
@@ -26,7 +26,7 @@
   {
     "id": "cascade_badge",
     "type": "badge",
-    "trigger": "CASCADE",
+    "trigger": "SLOPE",
     "label": "SLOPE MARK"
   },
   {
@@ -38,7 +38,7 @@
   {
     "id": "thunder_badge",
     "type": "badge",
-    "trigger": "THUNDER",
+    "trigger": "SENSE",
     "label": "SENSE MARK"
   },
   {
@@ -50,7 +50,7 @@
   {
     "id": "rainbow_badge",
     "type": "badge",
-    "trigger": "RAINBOW",
+    "trigger": "FIT",
     "label": "FIT MARK"
   },
   {
@@ -68,7 +68,7 @@
   {
     "id": "soul_badge",
     "type": "badge",
-    "trigger": "SOUL",
+    "trigger": "SKEW",
     "label": "SKEW MARK"
   },
   {
@@ -86,7 +86,7 @@
   {
     "id": "marsh_badge",
     "type": "badge",
-    "trigger": "MARSH",
+    "trigger": "FRAME",
     "label": "FRAME MARK"
   },
   {
@@ -98,13 +98,13 @@
   {
     "id": "volcano_badge",
     "type": "badge",
-    "trigger": "VOLCANO",
+    "trigger": "HEAT",
     "label": "HEAT MARK"
   },
   {
     "id": "earth_badge",
     "type": "badge",
-    "trigger": "EARTH",
+    "trigger": "TRUE",
     "label": "TRUE MARK"
   },
   {
