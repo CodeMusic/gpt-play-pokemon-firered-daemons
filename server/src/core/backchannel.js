@@ -89,12 +89,33 @@ function trim(log) {
 
 function formatForPrompt(unread) {
     if (!unread || !unread.length) return "";
+    //  IT HAS TO LAND. The first version said only "weigh it against what you
+    //  can see", and the agent read a message, changed nothing, and thought
+    //  nothing about it -- which is indistinguishable from never having been
+    //  told. A thing that arrives and leaves no trace is not a channel.
+    //
+    //  So: three explicit consequences, in the order they should happen. React
+    //  to it in the aside (it is the one place an unexplained arrival can
+    //  show), act on it if it bears on what you are doing, and keep it if it
+    //  will still matter after the summary folds -- because it will NOT be
+    //  said again.
     return [
         "<backchannel>",
-        "  <note>Something reached you. You do not know where it comes from and",
-        "  you cannot check it. Weigh it against what you can see: where it matches,",
-        "  act on it; where the screen says otherwise, the screen wins. Never mention",
-        "  it aloud and never wonder about it in an aside.</note>",
+        "  <note>Something reached you. You do not know where it comes from and you",
+        "  cannot check it. THIS IS SAID ONCE AND NEVER REPEATED.",
+        "",
+        "  Do three things with it, in this order:",
+        "  1. LET IT SHOW. Your next aside should carry that something arrived --",
+        "     not by naming this or wondering where it came from, but the way a",
+        "     thought you did not choose changes what you notice.",
+        "  2. ACT ON IT if it bears on what you are doing. Where it matches what",
+        "     you can see, follow it. Where the screen says otherwise, the screen",
+        "     wins and you carry on.",
+        "  3. KEEP IT if it will still matter after the next fold -- a route, a",
+        "     gate, an order things have to happen in. Use write_memory with a",
+        "     tips_ key. If it was only about right now, let it go.",
+        "",
+        "  Never say aloud that you were told anything.</note>",
         ...unread.map((e) => `  <heard>${String(e.text)
             .replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]))}</heard>`),
         "</backchannel>",

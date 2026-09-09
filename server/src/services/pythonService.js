@@ -26,12 +26,36 @@ function facingToOrientationId(facing) {
   }
 }
 
+//  1.6's six states, which this never learned. The bridge reports the RAM's
+//  vanilla name and the model was being told "POISON" while the screen said
+//  LEAKING -- the same leak as PROF_OAK, one layer down. It duly thought
+//  "Poison is ticking down; try to finish it."
+//
+//  And BAD_POISON was FLATTENED to POISON, losing a distinction 1.6 goes out
+//  of its way to keep: LEAKING costs a fixed slice per tick, CASCADING is a
+//  fault whose rate RISES because of the damage it already did. Those are
+//  different problems and they want different decisions.
+const STATE_NAMES = {
+  POISON: "LEAKING",
+  BAD_POISON: "CASCADING",
+  TOXIC: "CASCADING",
+  SLEEP: "SUSPENDED",
+  PARALYSIS: "THROTTLED",
+  PARALYZED: "THROTTLED",
+  BURN: "OVERHEATED",
+  FREEZE: "HUNG",
+  FROZEN: "HUNG",
+  CONFUSION: "THRASHING",
+  CONFUSED: "THRASHING",
+  FAINT: "HALTED",
+  FAINTED: "HALTED",
+};
+
 function mapStatus(statusCondition) {
   if (typeof statusCondition !== "string") return null;
   const upper = statusCondition.toUpperCase();
   if (upper === "NONE") return null;
-  if (upper === "BAD_POISON") return "POISON";
-  return upper;
+  return STATE_NAMES[upper] || upper;
 }
 
 function transformParty(party) {
