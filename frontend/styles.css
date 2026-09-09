@@ -686,9 +686,11 @@ input:focus-visible {
   gap: 0.6rem;
 }
 
+/* NO CAP. A legend is bounded by how many distinct tile types are on screen --
+   a dozen or so, never a list you scroll -- so a 160px window put a scrollbar
+   on eight rows while the card below them sat empty. It is short by nature;
+   let it be its own height and the card will fit it. */
 .legend-list {
-  max-height: 160px;
-  overflow: auto;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 0.45rem;
