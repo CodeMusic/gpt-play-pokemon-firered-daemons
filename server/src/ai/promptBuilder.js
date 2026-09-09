@@ -547,6 +547,40 @@ ${isInDialog ? "Not visible in dialogue" : minimapDisplay || "No minimap data"}
 </game_state>
   `.trim();
 
+  //  ARE YOU AT THE BEGINNING, OR DID YOU JUST GET HERE?
+  //
+  //  --fresh clears the AGENT and leaves the SAVE alone, so it can wake up
+  //  five hundred steps into a run with no history at all. It then reads the
+  //  opening sequence in the system prompt -- which is correct, and is about a
+  //  game it is no longer at the start of -- and writes "set the text speed"
+  //  as a primary objective while standing in the Undertone with a daemon in
+  //  its party.
+  //
+  //  The game itself answers this and never has to be told: a party, or money
+  //  spent, or a map that is not Blanche means the opening already happened.
+  //  Derived rather than tracked, so it survives a wipe of everything we store.
+  {
+    const partyN = Array.isArray(gameDataJson?.current_pokemon_data)
+      ? gameDataJson.current_pokemon_data.length : 0;
+    const mapNow = String(pos?.map_name || "");
+    const started = partyN > 0 || (badgeCount > 0)
+      || (mapNow && !/^BLANCHE_TOWN/.test(mapNow));
+    if (started) {
+      userInputText += `
+<already_underway>
+You are NOT at the beginning. This run is in progress and your notes were
+cleared, not the game — so anything you remember about the opening has already
+happened, whatever your objectives currently say.
+
+Right now: ${partyN} daemon${partyN === 1 ? "" : "s"} in the party, ${badgeCount} MARK${badgeCount === 1 ? "" : "s"}, in ${mapNow || "an unknown map"}.
+
+Read the state below and work out where you are from it. Do not set an
+objective you have plainly already completed — if you are holding a daemon you
+have met CRYSTAL CLEAR, and if you are outside Blanche you have left it.
+</already_underway>`;
+    }
+  }
+
   //  Delivered once, then never again. See core/backchannel.js.
   {
     const bc = require("../core/backchannel.js");
