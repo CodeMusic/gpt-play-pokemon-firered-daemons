@@ -58,6 +58,10 @@ this fork has let a model assert something about itself, the value drifted.
 Any line of inner voice — or any dream — can be **spoken aloud** in the INDEX
 voice, through an n8n workflow in the DAEMONS repo. Click the ▶.
 
+**[docs/WHAT-THIS-FORK-ADDS.md](docs/WHAT-THIS-FORK-ADDS.md)** goes through all
+of it properly — every module, why it exists, what it replaced, and the
+configuration. Including the pattern most of these bugs turned out to share.
+
 **The rest is configuration**, and it lives in the DAEMONS repo:
 `./bindDaemons.sh --ai` builds the ROM, regenerates the symbol table from that
 build, finds the model proxy, reads its key, and starts the bridge and agent.
