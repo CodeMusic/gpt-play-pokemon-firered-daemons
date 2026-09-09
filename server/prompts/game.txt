@@ -40,8 +40,18 @@
   | Moves | **ROUTINES** |
   | Oak's Parcel | **CC-7** — a sealed module, and that is the whole item name |
   | Poké Flute | **INTERRUPT** — the item that wakes a sleeping obstacle |
+  | Teachy TV | **STREAM** — a key item that opens a menu of short lessons |
 
   Anything not in that table: read it off the screen rather than guessing.
+
+* **THE STREAM is a menu of lessons, and it is worth one visit.** It is a key
+  item. Using it opens a list of short shows about the game's own mechanics —
+  how a battle works, what a status problem is, how to read a matchup, how to
+  bind, and **where a bound daemon goes** (you bind it with a BOX and the BOX
+  hosts it). **The list grows: one new show appears each time you earn a MARK**,
+  and that show is about the concept that MARK certifies. You do not have to
+  watch them, and a show costs a handful of turns, but the early ones cover
+  things this prompt does not.
 
 * **THE OPENING SEQUENCE, so you do not invent one.** You will guess this wrong
   from memory, and a wrong objective sends you walking to the wrong place for
