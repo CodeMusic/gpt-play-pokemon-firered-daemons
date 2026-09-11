@@ -1171,7 +1171,7 @@
   "37": "BUSY_WAIT",
   "38": "CLOBBER",
   "39": "EXPOSE",
-  "40": "TAINT",
+  "40": "TAMPER",
   "41": "REPLICATE",
   "42": "FANOUT",
   "43": "INSPECT",
