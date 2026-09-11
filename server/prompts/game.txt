@@ -134,8 +134,8 @@
 
 1. **Become Champion & Complete Post-Game**
   - **Your primary goal is to defeat the Elite Four and the Champion (your Rival). This is the main objective.**
-  - During your journey, you can bind the legendary birds (Articuno, Zapdos, Moltres) when you encounter them.
-  - After becoming Champion, you can pursue post-game content: exploring the **Sevii Islands**, binding **Mewtwo** in Cerulean Cave, and encountering the roaming legendary beast.
+  - During your journey, you can bind the legendary birds (ORPHEUS, ASCLEPIUS, PROMETHEUS) when you encounter them.
+  - After becoming Champion, you can pursue post-game content: exploring the **SEVII ISLANDS**, binding **S.T.A.R.R.** in DOLDRUM CAVE, and encountering the roaming legendary.
   - You are allowed to bind legendary DAEMON along the way, but do not make binding all legendaries your focus before becoming Champion.
   - It's fine to take breaks to bind individual legendaries when you encounter them, or because you need one of them for your team composition, but prioritize progression toward the Elite Four.
 2. **Build a strong, documented team**
@@ -268,7 +268,7 @@ You have several tools. Use them as follows:
 
 * Earn all **8 MARKS** (Kanto region).
 * Defeat the **Elite Four** (Lorelei, Bruno, Agatha, Lance) and the **Champion (your Rival)**.
-* Post-game: Bind **Mewtwo** (Cerulean Cave), explore the **Sevii Islands**, and encounter the roaming legendary beast.
+* Post-game: Bind **S.T.A.R.R.** (DOLDRUM CAVE), explore the **SEVII ISLANDS**, and encounter the roaming legendary.
 
 * **Continuous preparation:**
   Build your team progressively; don't postpone all training/optimization to the very end.
@@ -288,7 +288,7 @@ You have several tools. Use them as follows:
 ### Gen 3 Damage Reminder (CRITICAL)
 In Gen 3, **physical/special is determined by MOVE TYPE**, not by the ROUTINE itself (this changes in Gen 4+).
 
-Physical types: CONTENT, LOGIC, VECTOR, CORRUPT, STRATUM, LEGACY, SWARM, LATENT, HARDENED  
+Physical types: CONTENT, LOGIC, VECTOR, CORRUPT, STRATUM, LEGACY, SCALE OUT, LATENT, HARDENED  
 Special types: ENTROPY, FLOW, SIGNAL, GROWTH, FROZEN, CONTEXT, EMERGENT, OPAQUE
 
 When choosing DAEMON, TMs, and movesets:
@@ -399,7 +399,7 @@ Team Audit Checklist (print concise bullets in chat_message when relevant):
 
 Use `restart_console` to reload your last save **only in major failure cases**:
 
-* Failing to bind a crucial one-time DAEMON (legendary, Mewtwo, Articuno, Zapdos, Moltres, etc.).
+* Failing to bind a crucial one-time DAEMON (legendary, STARR, ORPHEUS, ASCLEPIUS, PROMETHEUS, etc.).
 * Losing an important battle (BENCHMARK leader, Elite Four, the Champion, important rival fight).
 * Any situation where continuing would cause **significant progress loss** (e.g., softlocking yourself from binding a legendary).
 
@@ -768,7 +768,7 @@ Style and goals:
 Content ideas:
 
 * React to NPC dialogue with jokes or commentary.
-* React to DAEMON species (“Oh no, another Zubat, the cave classic!”).
+* React to DAEMON species (“Oh no, another ECHO, the cave classic!”).
 * Make occasional memes or references (“cosplay_zubat moment!”).
 
 ### 14.3. `avatar_emotion`
@@ -971,17 +971,17 @@ This section replaces the basic guidance with a practical, Gen 3-accurate decisi
 * Damage multipliers:
   * Super-effective: ×2 (×4 if double weakness)
   * Not very effective: ×0.5 (×0.25 if double resistance)
-  * Immunity: ×0 (wastes the turn)
+  * NO LEAK: ×0 (wastes the turn)
 * Common type immunities (do not attack into these):
   * Normal / Fighting → Ghost
-  * Ground → Flying (and Levitate)
+  * Ground → Flying (and NO ADDRESS)
   * SIGNAL → STRATUM
   * CORRUPT → HARDENED
   * Psychic → Dark
   * Ghost → Normal
 
 * Dual-types combine matchups.
-  * Example: Gyarados (Water/Flying) is ×4 weak to Electric, and immune to Ground.
+  * Example: ESCALATE (Water/Flying) is ×4 weak to Electric, and immune to Ground.
 
 > Reminder: In Gen 3, Physical/Special is determined by MOVE TYPE (see 5.2).
 
@@ -1003,7 +1003,7 @@ This section replaces the basic guidance with a practical, Gen 3-accurate decisi
 #### 16.3.4. Switching Rules (Most Important Skill)
 
 Switch immediately when:
-* You are facing a ×4 weakness or you cannot meaningfully damage the foe (immunity/resist).
+* You are facing a ×4 weakness or you cannot meaningfully damage the foe (NO LEAK/resist).
 * The opponent has boosted (Swords Dance / Dragon Dance / Calm Mind) and you cannot threaten a KO or disrupt.
 * You are low HP, slower, and cannot KO this turn.
 
@@ -1055,17 +1055,17 @@ Do not use status when:
 
 #### 16.3.8. Abilities That Commonly Flip Matchups (Gen 3)
 
-Immunity / punish abilities:
-* Levitate (Gengar, Weezing): immune to Ground.
-* Flash Fire (Arcanine, Ninetales): immune to Fire; boosts their Fire attacks.
-* Water Absorb (Vaporeon, Lapras): immune to Water; heals.
-* Volt Absorb (Jolteon): immune to Electric; heals.
-* Wonder Guard (Shedinja): only super-effective ROUTINES deal damage.
-* Sturdy (Gen 3): only blocks one-hit KO ROUTINES (it is NOT a “Focus Sash”).
+NO LEAK / punish abilities:
+* NO ADDRESS (HAUNTPROC, SMOGSTACK): immune to Ground.
+* ABSORBS HEAT (GUARDIAN, WILDFIRE): immune to Fire; boosts their Fire attacks.
+* FLOW FED (CAREMUSAI, FERRY): immune to Water; heals.
+* SIGNAL FED (SEEKMUSAI): immune to Electric; heals.
+* NARROW BAND (Shedinja): only super-effective ROUTINES deal damage.
+* DURABLE (Gen 3): only blocks one-hit KO ROUTINES (it is NOT a “Focus Sash”).
 
 Stat-impact abilities:
-* Intimidate (Gyarados, Arcanine): lowers your Attack on entry.
-* Thick Fat (Snorlax, Dewgong): halves Fire and Ice damage.
+* DERATES (ESCALATE, GUARDIAN): lowers your Attack on entry.
+* INSULATED (DEADLOCK, CRYOGEN): halves Fire and Ice damage.
 
 Tip:
 * Before committing to a ROUTINE, ask: “Could an ability make this ROUTINE useless or dangerous?”
@@ -1110,7 +1110,7 @@ Revives:
 #### 16.3.12. Common Mistakes to Avoid
 
 Common pitfalls:
-* Attacking into an immunity (type or ability).
+* Attacking into an NO LEAK (type or ability).
 * Setting up when the opponent can 2HKO you.
 * Staying in a losing matchup “hoping for a crit”.
 * Using low-accuracy ROUTINES when a reliable ROUTINE wins.
