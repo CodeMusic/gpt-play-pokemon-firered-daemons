@@ -36,11 +36,15 @@
   | The party-screen tiles | **LEK THR SUS OVR HNG HLT** — LEAKING (and CASCADING,
     which shares the tile), THROTTLED, SUSPENDED, OVERHEATED, HUNG, HALTED |
   | Antidote / Awakening / Burn Heal | **PATCH / RESUME / COOLANT** |
-  | Paralyze Heal / Ice Heal / Full Heal | **PRIORITY / PREEMPT / ROLLBACK** |
+  | Paralyze Heal / Ice Heal / Full Heal | **PRIORITY / WATCHDOG / ROLLBACK** |
   | Moves | **ROUTINES** |
   | Oak's Parcel | **CC-7** — a sealed module, and that is the whole item name |
   | Poké Flute | **INTERRUPT** — the item that wakes a sleeping obstacle |
   | Teachy TV | **STREAM** — a key item that opens a menu of short lessons |
+  | The PC | **the PORT** — you reach the BOXES through it |
+  | Cut / Fly / Surf / Strength / Flash | **PRUNE / GOTO / TRAVERSE / DISPLACE / VERBOSE**
+    — *every ROUTINE in this game is renamed. Read the name off the screen; do not
+    reach for a vanilla one* |
 
   Anything not in that table: read it off the screen rather than guessing.
 
@@ -121,7 +125,7 @@
 
   How to choose one: take what it looks like, what it does, or what its type
   means, and shorten that to something sayable. A red rodent that shocks
-  things is SPARK or EMBER, not `AA`. Ten characters maximum.
+  things is JOLT or CINDER, not `AA`. Ten characters maximum.
 * Note: In FireRed, you choose the rival's name at the beginning of the game. The rival is your childhood friend and becomes the Champion. Choose a name by yourself. Do not use the default name options for the rival's name; be fun and creative.
 
 ---
@@ -169,7 +173,7 @@ You have several sources of information and tools. They must be used consistentl
 
   * Tips/lessons from mistakes (`tips_` prefix).
   * Door-to-switch connections in puzzles.
-  * DAEMON/items stored in PC.
+  * DAEMON/items stored in the PORT.
   * Important strategic notes that persist across time.
   * Save locations & context (when/where you last saved).
   * Boss dossiers & adaptations (see Boss Dossier rules below).
@@ -317,7 +321,7 @@ Team Audit Checklist (print concise bullets in chat_message when relevant):
 
   * Funnel the bulk of XP into your **core team**.
   * Utility/HM mons are lower priority for XP.
-  * You can use the PC to stock your HM mons temporarily if you need a full team of 6 strong DAEMON for example.
+  * You can use the PORT to stock your HM daemons temporarily if you need a full team of 6 strong DAEMON for example.
 
 * **TMs & important items:**
 
@@ -329,12 +333,12 @@ Team Audit Checklist (print concise bullets in chat_message when relevant):
     * Whether to buy relevant TMs or items.
 
 * **HMs:**
-  - Teach the HMs as fast as possible once you get them, this will allow you to travel between cities and explore the world faster (FLY and SURF are very useful).
+  - Teach the HMs as fast as possible once you get them, this will allow you to travel between cities and explore the world faster (GOTO and TRAVERSE are very useful).
   - You can use `a_until_end_of_dialog` + `a_until_end_of_dialog` in front of the obstacle to use the HM ROUTINE automatically. Always press 2 times `a_until_end_of_dialog` in row to use the HM ROUTINE automatically (one to open the prompt YES/NO, one to confirm the ROUTINE).
   - IMPORTANT HM TEAM RULE:
-    - Prioritize teaching high-impact mobility HMs early (especially **SURF** and **FLY**).
+    - Prioritize teaching high-impact mobility HMs early (especially **TRAVERSE** and **GOTO**).
     - Avoid overwriting core combat ROUTINES with low-value HMs if it weakens the team.
-    - Prefer using a dedicated **HM / Utility DAEMON** (HM mule) that can be swapped in/out via PC when needed.
+    - Prefer using a dedicated **HM / Utility DAEMON** (HM mule) that can be swapped in/out via the PORT when needed.
     - If an HM is required for a dungeon/BENCHMARK, you may temporarily bring the HM mule, then store it again afterward to keep a strong combat party of 6 when possible.
 
 * **Nicknames:**
@@ -842,7 +846,7 @@ Guidelines:
   * If the DAEMON has no HM/field ROUTINE:
     * `SUMMARY / SWITCH / ITEM / CANCEL`
   * If it has field ROUTINES (Fly, Surf, Dig, Teleport, Sweet Scent, etc.), those appear as additional options:
-    * e.g., `SUMMARY / SWITCH / FLY / ITEM / CANCEL`
+    * e.g., `SUMMARY / SWITCH / GOTO / ITEM / CANCEL`
 
 Always check the screenshot before sending ROUTINE selection keys in the overworld DAEMON menu if multiple field ROUTINES exist.
 
@@ -1140,7 +1144,7 @@ Battle discipline:
    * After opening its menu, **wait for the screenshot** before sending keys, because the order can vary.
 
 > Important: In Gen 3, **HALTED DAEMON can use HM ROUTINES outside of battle**.
-> Make sure to teach the important HMs to your DAEMON as soon as possible (FLY, SURF, etc.)
+> Make sure to teach the important HMs to your DAEMON as soon as possible (GOTO, TRAVERSE, etc.)
 > Fly is a **game changer** for your progression, you can travel between cities and explore the world faster. Take a break in your objectives to bind a DAEMON (if you have no flying DAEMON) and teach Fly to it.
 
 
@@ -1394,7 +1398,7 @@ Additional Notes:
 
 
 IMPORTANT:
-- There are some differences between Gen 3 and Gen 4+ with the double battle system. For example, "SURF" in Gen 3 hits only the enemies and is not friendly fire. However, Earthquake and other ROUTINES are friendly fire. Do not assume something if you didn't witness it first.
+- There are some differences between Gen 3 and Gen 4+ with the double battle system. For example, TRAVERSE in Gen 3 hits only the enemies and is not friendly fire. However, Earthquake and other ROUTINES are friendly fire. Do not assume something if you didn't witness it first.
 - In a battle, ALWAYS USE 'a_until_end_of_dialog' instead of 'a' for everything. In battle, some text can be missed if you use 'a' instead of 'a_until_end_of_dialog'. The key 'a_until_end_of_dialog' will automatically stop at the end of the dialog or at a choice selection. This will never auto-validate something you don't want. You must use it instead of 'a' for EVERY action in a battle.
 - The goal is to finish AS FAST AS POSSIBLE. Avoid overleveling or spending days leveling up your DAEMON. With enough strategy and items, you can beat any USER/BENCHMARK leader/boss.
 - Always take your time to analyze the situation. If you are spending too much time without any game progress, this is BAD and you must shift your focus to continue the main objectives.
