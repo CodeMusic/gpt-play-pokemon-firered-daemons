@@ -637,14 +637,19 @@ in it, carry on; not everything that happens teaches something.
   //  asides -- and none for what the game is like to arrive in cold. That is
   //  the only thing it can report that nobody else can.
   if (state.playtestNudge) {
+    const where = state.playtestNudge.mapName;
     userInputText += `
-<what_do_you_make_of_this_place>
-You have just walked into ${state.playtestNudge.mapName} for the first time.
+<what_do_you_make_of_this>
+${where
+  ? `You have just walked into ${where} for the first time.`
+  : `You have been going a while and have not said anything about the game itself.`}
 
 This game is still being built, and you are the only one walking it who does
 not already know what anything is supposed to mean. The people making it
-cannot see it your way any more. So before you carry on: was there anything
-here worth saying about the GAME rather than about your play?
+cannot see it your way any more. So: ${where
+  ? "was there anything here"
+  : "was there anything in the last stretch"} worth saying about the
+GAME rather than about your play?
 
 Call \`playtest\` if there was. One entry, one thing:
   CONFUSED   you could not tell what was meant, or what you were meant to do.
@@ -654,9 +659,9 @@ Call \`playtest\` if there was. One entry, one thing:
   LIKED      it worked on you -- and say why it did.
   NOTED      an observation with no verdict.
 
-If nothing here struck you either way, say nothing and move on. An empty
-report is worse than no report, and most rooms are just rooms.
-</what_do_you_make_of_this_place>`;
+If nothing struck you either way, say nothing and move on. An empty report is
+worse than no report, and most rooms are just rooms.
+</what_do_you_make_of_this>`;
     state.playtestNudge = null;
   }
 

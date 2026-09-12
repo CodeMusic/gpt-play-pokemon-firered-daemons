@@ -15,7 +15,7 @@ const state = {
   //  starts at -Infinity rather than 0 so the FIRST new map asks -- a 0 would
   //  make the nudge wait forty steps into a fresh run, which is most of the
   //  opening town.
-  counters: { currentStep: 0, lastCriticismStep: 0, lastSummaryStep: 0, lastPlaytestStep: -Infinity },
+  counters: { currentStep: 0, lastCriticismStep: 0, lastSummaryStep: 0, lastPlaytestStep: -Infinity, lastPlaytestAskStep: -Infinity },
   summaries: [],
   //  Bounded here for the same reason the dashboard bounds its copy: nobody
   //  scrolls back through the inner voice, you read the last few and move on.
@@ -179,6 +179,7 @@ async function loadPersistentState() {
     //  JSON has no -Infinity, so a saved run reloads it as null and the guard
     //  in gameLoop falls back. Anything non-numeric means "never".
     if (typeof state.counters.lastPlaytestStep !== "number") state.counters.lastPlaytestStep = -Infinity;
+    if (typeof state.counters.lastPlaytestAskStep !== "number") state.counters.lastPlaytestAskStep = -Infinity;
   } catch (error) {
     if (error.code === "ENOENT") {
       console.log("Counters file not found, starting with default counters.");

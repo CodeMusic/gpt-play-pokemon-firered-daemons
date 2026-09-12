@@ -16,10 +16,30 @@ const { updateProgressSteps, updateLastVisitedMaps } = require('./progressTracke
 const { openai } = require('./openaiClient');
 const { startLoop, recordLoopUsage, flush, getCumulativeTotals } = require('../utils/tokenUsageTracker');
 
-//  Turns between playtest asks. 40 is ~13 asks over a 770-step run, which is
-//  the rate the first run would have produced -- rare enough to stay a question
-//  and not a chore.
+//  PLAYTEST_NUDGE_GAP is the NAG limit: never ask twice inside this many steps,
+//  answered or not. PLAYTEST_CADENCE is the FLOOR: if nothing has been recorded
+//  in this many steps, ask anyway even though no new map turned up.
+//
+//  Two counters and not one, because they answer different questions.
+//  lastPlaytestStep moves only when an ENTRY IS RECORDED; lastPlaytestAskStep
+//  moves every time we ASK. Gating on the first alone would re-ask every single
+//  turn for as long as the agent declined, which is how a question becomes
+//  wallpaper.
 const PLAYTEST_NUDGE_GAP = 40;
+const PLAYTEST_CADENCE   = 60;
+
+function maybeAskPlaytest(state, arrival) {
+    if (state.playtestNudge) return;                       //  one ask per turn
+    const step = state.counters.currentStep;
+    const asked = state.counters.lastPlaytestAskStep;
+    if (step - (typeof asked === "number" ? asked : -Infinity) < PLAYTEST_NUDGE_GAP) return;
+    if (!arrival) {
+        const said = state.counters.lastPlaytestStep;
+        if (step - (typeof said === "number" ? said : -Infinity) < PLAYTEST_CADENCE) return;
+    }
+    state.playtestNudge = { mapName: arrival ? arrival.mapName : null, step };
+    state.counters.lastPlaytestAskStep = step;
+}
 const {
     startLoop: startTimeLoop,
     recordReasoning,
@@ -390,17 +410,21 @@ async function gameLoop() {
                 //  the whole reason its feedback is worth more than ours. Walk it
                 //  twice and it has already worked out what the sign meant.
                 //
-                //  Rate-limited by STEPS SINCE THE LAST ENTRY rather than by map, so
-                //  a building with four doors asks once instead of four times.
-                const sinceLast = state.counters.currentStep - (state.counters.lastPlaytestStep ?? -Infinity);
-                if (sinceLast >= PLAYTEST_NUDGE_GAP) {
-                    state.playtestNudge = {
-                        mapName: visitInfo.map_name || currentMapId,
-                        step: state.counters.currentStep,
-                    };
-                }
+                //  ...BUT ARRIVAL ALONE IS NOT ENOUGH, and the first run of this
+                //  proved it in one number. Arrival is the best-QUALITY moment and
+                //  it is far too RARE: the agent reached step 871 with its last new
+                //  map at step 666, so 205 steps went by with nothing to trigger on.
+                //  And it fails worst exactly where it matters -- a stuck agent stops
+                //  entering new maps, and a stuck agent is the one with the most to
+                //  say. The cadence below is the floor under it.
+                maybeAskPlaytest(state, { mapName: visitInfo.map_name || currentMapId });
             }
             // --- End Map First Visit Check ---
+
+            //  THE FLOOR: ask about the last stretch if nothing has been recorded in
+            //  a while, whether or not a new map turned up. Copied from the shape
+            //  consultNudge already uses -- a trigger, a rate limit, and one ask.
+            maybeAskPlaytest(state, null);
 
             // --- Update Progress Steps ---
             const progressUpdated = updateProgressSteps(gameDataJson);
