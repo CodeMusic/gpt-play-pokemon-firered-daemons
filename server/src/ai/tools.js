@@ -590,12 +590,13 @@ function defineTools() {
             + "The people building this cannot see it the way you do: they know what "
             + "everything means. Use it when something lands well, annoys you, or you "
             + "genuinely could not tell what was meant."),
-        kind: z.enum(["LIKED", "DISLIKED", "CONFUSED", "NOTED"]).describe(
+        kind: z.enum(["LIKED", "DISLIKED", "CONFUSED"]).describe(
             "LIKED: it worked on you, and say why. DISLIKED: an actual complaint about "
             + "the design -- not that something was hard, difficulty is not a fault. "
             + "CONFUSED: you could not tell what was meant or what to do, which is the "
-            + "most useful of the four and the one to reach for when unsure. "
-            + "NOTED: an observation with no verdict."),
+            + "most useful of the three and the one to reach for when unsure. "
+            + "\n\nThe test is whether it would still be true tomorrow for somebody "
+            + "else. A thought about THIS TURN is an `aside`, not a playtest note."),
         about: z.string().min(3).describe(
             "The thing itself, short. A place, a line of dialogue, an item, a fight, "
             + "a piece of music, a name."),
@@ -855,22 +856,24 @@ function defineTools() {
         //  So the anti-fabrication guard stays, because a made-up CONFUSED
         //  sends somebody off to rewrite a sign that was fine. It just does not
         //  go FIRST, and it is about inventing rather than about abstaining.
-        playtest_kind: z.enum(["", "LIKED", "DISLIKED", "CONFUSED", "NOTED"]).describe(
+        playtest_kind: z.enum(["", "LIKED", "DISLIKED", "CONFUSED"]).describe(
             "YOU ARE THE ONLY ONE WALKING THIS GAME WHO DOES NOT ALREADY KNOW WHAT "
             + "ANY OF IT MEANS. The people building it lost that the day they built it, "
             + "and they cannot get it back. This is where you hand it to them. "
-            + "\n\nSay the thing you would say to the person who made the room you are "
-            + "standing in -- about the GAME, not about how you are doing at it. "
+            + "\n\nTHE TEST, and it is the whole of it: WOULD THIS STILL BE TRUE "
+            + "TOMORROW, FOR SOMEBODY ELSE? \"The east exit is higher up than it looks "
+            + "from here\" survives the turn and belongs here. \"Menu is open\", \"JINX "
+            + "is selected\", \"the message is still on screen\" do not -- those are "
+            + "THIS TURN, and this turn is what `aside` is for. Put them there instead. "
             + "\n\nCONFUSED: you had to guess. A sign you could not parse, a word you "
             + "did not know, an exit you could not find, a fight you did not understand "
-            + "losing. The most valuable of the four BY FAR, because the moment you work "
-            + "it out you stop being able to report it. "
+            + "losing. The most valuable of the three BY FAR, because the moment you "
+            + "work it out you stop being able to report it. "
             + "\nDISLIKED: a complaint about the design. Difficulty is not a fault. "
             + "\nLIKED: it worked on you, and you can say what did it. "
-            + "\nNOTED: something you noticed, no verdict. "
             + "\n\nDo not invent one to fill the field -- a made-up complaint sends "
-            + "somebody to rewrite a sign that was fine. But you have almost certainly "
-            + "guessed at something recently, and that is a CONFUSED."),
+            + "somebody to rewrite a sign that was fine. Empty is the right answer on "
+            + "most turns, and two in a row is almost always the same one twice."),
         playtest_about: z.string().describe(
             "The thing itself, short: a place, a sign, a line, an item, a fight. "
             + "\"The route sign outside\", \"the FLOW gym door\". Empty only when "
@@ -1393,7 +1396,7 @@ function toolOutput(text) {
                         actionResult.success = Boolean(entry);
                         actionResult.message = entry
                             ? "Noted. That goes to the people building this; it does not come back to you."
-                            : "Not recorded -- kind must be LIKED, DISLIKED, CONFUSED or NOTED, and the note needs a real sentence.";
+                            : "Not recorded -- kind must be LIKED, DISLIKED or CONFUSED, the note needs a real sentence, and there is a short cooldown after each one.";
                         if (entry) {
                             console.log(`INFO: [playtest/${entry.kind}] ${entry.about}: ${entry.note}`);
                             broadcast({ type: "playtest", payload: entry });

@@ -623,6 +623,9 @@
 
   //  What it made of the game. Newest first: this is a list somebody reads
   //  through looking for the next thing to fix, not a transcript.
+  //  NOTED was removed: it had no test to fail and became the drawer. See
+  //  server/src/core/playtest.js. Old runs still hold NOTED entries, so the
+  //  map keeps it and the styling falls back for anything unknown.
   const PT_KINDS = { LIKED:"liked", DISLIKED:"disliked", CONFUSED:"confused", NOTED:"noted" };
   function renderPlaytest() {
     const el = document.getElementById("playtest-wrap");
@@ -632,7 +635,7 @@
     if (tally) {
       const t = list.reduce((a, e) => ((a[e.kind] = (a[e.kind] || 0) + 1), a), {});
       tally.textContent = list.length
-        ? `\u2014 ${t.LIKED || 0} liked, ${t.DISLIKED || 0} disliked, ${t.CONFUSED || 0} confused, ${t.NOTED || 0} noted`
+        ? `\u2014 ${t.LIKED || 0} liked, ${t.DISLIKED || 0} disliked, ${t.CONFUSED || 0} confused`
         : "";
     }
     if (!list.length) {

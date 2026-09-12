@@ -695,7 +695,9 @@ you no turn and no action. If the honest answer is that you guessed at
 something and got it right, that is still a CONFUSED and it is still worth
 having.
 
-Only leave \`playtest_kind\` empty if the question genuinely does not apply.
+The test is whether it would still be true tomorrow for somebody else. If it
+is only true of this turn -- what menu is open, what you are about to press --
+it is an \`aside\`, not a report. Leave \`playtest_kind\` empty then.
 </anything_to_report>`;
     state.playtestNudge = null;
   }
