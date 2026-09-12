@@ -636,32 +636,40 @@ in it, carry on; not everything that happens teaches something.
   //  has three channels for how it is doing -- reflect, self-criticism and
   //  asides -- and none for what the game is like to arrive in cold. That is
   //  the only thing it can report that nobody else can.
+  //  ASKED FOR THE FIELD, NOT THE ACTION -- and that distinction is the whole
+  //  reason this block exists twice.
+  //
+  //  v1 asked the agent to CALL `playtest`. The request goes out with
+  //  parallel_tool_calls false, tool_choice required and a flat tool shape, so
+  //  the agent gets EXACTLY ONE tool call per turn. It was being asked to spend
+  //  its only action on commentary instead of on playing, and it declined every
+  //  time -- correctly. `aside` has never had that problem because it rides
+  //  along on whatever action the agent was already taking, and it has two
+  //  hundred entries to playtest's zero.
+  //
+  //  So the fields now sit on NARRATION beside `aside`, and this asks for them.
   if (state.playtestNudge) {
     const where = state.playtestNudge.mapName;
     userInputText += `
-<what_do_you_make_of_this>
+<anything_to_report>
 ${where
   ? `You have just walked into ${where} for the first time.`
-  : `You have been going a while and have not said anything about the game itself.`}
+  : `You have been going a while without saying anything about the game itself.`}
 
 This game is still being built, and you are the only one walking it who does
 not already know what anything is supposed to mean. The people making it
-cannot see it your way any more. So: ${where
-  ? "was there anything here"
-  : "was there anything in the last stretch"} worth saying about the
-GAME rather than about your play?
+cannot see it your way any more.
 
-Call \`playtest\` if there was. One entry, one thing:
-  CONFUSED   you could not tell what was meant, or what you were meant to do.
-             This is the most useful one. Reach for it when unsure.
-  DISLIKED   an actual complaint about the design. Something being HARD is not
-             a fault and does not belong here.
-  LIKED      it worked on you -- and say why it did.
-  NOTED      an observation with no verdict.
+So on THIS TURN, while you do whatever you were going to do anyway: was there
+anything ${where ? "here" : "in the last stretch"} worth telling them about the
+GAME rather than about your play? If there was, fill in \`playtest_kind\`,
+\`playtest_about\` and \`playtest_note\` on the action you are already taking.
+It costs you nothing and no turn. CONFUSED is the most useful one.
 
-If nothing struck you either way, say nothing and move on. An empty report is
-worse than no report, and most rooms are just rooms.
-</what_do_you_make_of_this>`;
+If nothing struck you, leave \`playtest_kind\` empty and carry on. Most rooms
+are just rooms, and a report invented to fill a field sends someone off to
+rewrite a sign that was fine.
+</anything_to_report>`;
     state.playtestNudge = null;
   }
 

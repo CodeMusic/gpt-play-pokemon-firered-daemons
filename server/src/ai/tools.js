@@ -817,6 +817,48 @@ function defineTools() {
         //  nobody else can hear. Where "I" lands, or whether it appears at
         //  all, is left alone -- "That was closer than it should have been"
         //  is first person without the word in it.
+        //  PLAYTEST AS A FIELD, NOT AN ACTION -- and the numbers are why.
+        //
+        //  `playtest` shipped as its own action variant. The run reached step
+        //  893, was nudged, and recorded NOTHING, while `aside` recorded two
+        //  hundred entries over the same stretch. The tool was not the problem
+        //  and neither was the nudge: the request is sent with
+        //  parallel_tool_calls FALSE, tool_choice REQUIRED and a FLAT tool
+        //  shape, so the agent emits EXACTLY ONE tool call per turn. Asking it
+        //  to call `playtest` was asking it to spend its only action on
+        //  commentary instead of on playing, and it chose to play every time.
+        //  It was right to.
+        //
+        //  `aside` never had that problem because an aside rides along on
+        //  whatever the agent was already doing. So this does the same. The
+        //  standalone `playtest` action stays for the rare turn it is worth
+        //  spending, but this is the path that will actually carry traffic.
+        //
+        //  EMPTY IS THE NORMAL ANSWER. Most turns are nothing. A required
+        //  field that is usually "" matches how `aside` handles silence under
+        //  strict schemas, and a field that pressures an answer manufactures
+        //  one -- which is worse than an empty file, because a fabricated
+        //  CONFUSED sends someone to rewrite a sign that was fine.
+        playtest_kind: z.enum(["", "LIKED", "DISLIKED", "CONFUSED", "NOTED"]).describe(
+            "USUALLY EMPTY. Set it only when something about the GAME ITSELF is worth "
+            + "telling the people building it -- not how you are doing at it, which is "
+            + "what `aside` and `reflect` are for. "
+            + "\n\nCONFUSED: you could not tell what was meant, or what you were meant "
+            + "to do. The most useful of the four; reach for it when unsure. "
+            + "\nDISLIKED: an actual complaint about the design. Something being HARD is "
+            + "not a fault and does not belong here. "
+            + "\nLIKED: it worked on you, and you can say why. "
+            + "\nNOTED: an observation with no verdict. "
+            + "\n\nYou are the only one walking this game who does not already know what "
+            + "anything is supposed to mean. That is the whole value of it, and it is "
+            + "why an empty string is a perfectly good answer on most turns."),
+        playtest_about: z.string().describe(
+            "The thing itself, short -- a place, a line, an item, a fight. Empty when "
+            + "`playtest_kind` is empty."),
+        playtest_note: z.string().describe(
+            "One or two sentences, concrete, about the GAME. Empty when `playtest_kind` "
+            + "is empty. Say what you saw and what you made of it; a note under a dozen "
+            + "characters is discarded."),
         aside: z.string().describe(
             "One or two COMPLETE SENTENCES of inner thought, present tense: what you "
             + "are actually thinking, as though nobody can hear it. "
@@ -909,11 +951,17 @@ async function handleToolCall(toolCall, gameDataJson) {
             //  broadcast carried args.aside, and args.aside was undefined
             //  because this line had put it somewhere else. Every end wired,
             //  one silent hop in the middle.
-            const { step_details, chat_message, aside, ...rest } = a;
+            const { step_details, chat_message, aside,
+                    playtest_kind, playtest_about, playtest_note, ...rest } = a;
             argsString = JSON.stringify({
                 step_details: step_details || ("Performing " + name + "."),
                 chat_message: chat_message || "",
                 aside: aside || "",
+                //  Same hop `aside` was lost on: leave these in `rest` and they
+                //  end up inside actions[0], where nothing reads them.
+                playtest_kind: playtest_kind || "",
+                playtest_about: playtest_about || "",
+                playtest_note: playtest_note || "",
                 actions: [{ type: name, ...rest }],
             });
             name = "execute_action";
@@ -1016,6 +1064,29 @@ function toolOutput(text) {
             const ASIDE_KEEP = 200;
             if (state.asides.length > ASIDE_KEEP) {
                 state.asides.splice(0, state.asides.length - ASIDE_KEEP);
+            }
+        }
+        //  And the playtest fields, harvested the same way and on the same turn
+        //  as whatever the agent was actually doing. `playtest.record` does the
+        //  validating -- a bad kind or a note under twelve characters returns
+        //  null and nothing is stored, so an agent that fills the kind in and
+        //  then has nothing to say costs us nothing.
+        if (typeof args.playtest_kind === "string" && args.playtest_kind.trim()) {
+            const pt = require("../core/playtest.js");
+            const entry = pt.record(state, {
+                kind: args.playtest_kind,
+                about: args.playtest_about,
+                note: args.playtest_note,
+                mapName: gameDataJson?.current_trainer_data?.position?.map_name,
+                step: state.counters?.currentStep ?? 0,
+            });
+            if (entry) {
+                console.log(`INFO: [playtest/${entry.kind}] ${entry.about}: ${entry.note}`);
+                broadcast({ type: "playtest", payload: entry });
+                state.counters.lastPlaytestStep = state.counters.currentStep;
+                state.playtestNudge = null;
+            } else {
+                console.log(`INFO: playtest field declined (kind=${args.playtest_kind}, note=${(args.playtest_note || "").length} chars)`);
             }
         }
         broadcast({ type: 'action_start', payload: batchActionStartPayload });
