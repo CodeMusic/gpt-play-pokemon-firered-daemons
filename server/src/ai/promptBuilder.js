@@ -648,8 +648,33 @@ in it, carry on; not everything that happens teaches something.
   //  hundred entries to playtest's zero.
   //
   //  So the fields now sit on NARRATION beside `aside`, and this asks for them.
+  //  ASK ONE CONCRETE QUESTION, AND ROTATE IT.
+  //
+  //  v2 asked an open one -- "was there anything worth telling them?" -- and
+  //  closed with "if nothing struck you, leave it empty". The model emitted
+  //  kind="" on all 130 steps it was live for. An open question with a
+  //  sanctioned no gets the no, every time; the same thing happens to human
+  //  testers and is why nobody asks them "any feedback?".
+  //
+  //  A closed question presumes there was something and asks WHICH. "What did
+  //  you have to guess at?" is answerable in a way "was anything confusing?"
+  //  is not. Rotating them keeps the block from becoming wallpaper, and the
+  //  rotation is by ASK COUNT and not by step: asks fire every PLAYTEST_NUDGE_GAP
+  //  steps, the gap is 40, and 40 % 5 === 0 -- so a step-based index served the
+  //  same question every single time. Found by printing six consecutive asks
+  //  instead of trusting the arithmetic.
+  const PLAYTEST_QUESTIONS = [
+    "What did you have to guess at?",
+    "What did you expect to be able to do, and could not?",
+    "Was there a word on screen you did not actually know the meaning of?",
+    "What took you longest to work out, and what finally told you?",
+    "What did you assume, that turned out to be wrong?",
+  ];
   if (state.playtestNudge) {
     const where = state.playtestNudge.mapName;
+    const n = Number(state.counters.playtestAskCount) || 0;
+    const q = PLAYTEST_QUESTIONS[n % PLAYTEST_QUESTIONS.length];
+    state.counters.playtestAskCount = n + 1;
     userInputText += `
 <anything_to_report>
 ${where
@@ -658,17 +683,19 @@ ${where
 
 This game is still being built, and you are the only one walking it who does
 not already know what anything is supposed to mean. The people making it
-cannot see it your way any more.
+cannot see it your way any more, and they cannot get that back.
 
-So on THIS TURN, while you do whatever you were going to do anyway: was there
-anything ${where ? "here" : "in the last stretch"} worth telling them about the
-GAME rather than about your play? If there was, fill in \`playtest_kind\`,
-\`playtest_about\` and \`playtest_note\` on the action you are already taking.
-It costs you nothing and no turn. CONFUSED is the most useful one.
+So, ${where ? "about this place" : "about the last stretch"}:
 
-If nothing struck you, leave \`playtest_kind\` empty and carry on. Most rooms
-are just rooms, and a report invented to fill a field sends someone off to
-rewrite a sign that was fine.
+    ${q}
+
+Answer it on THIS TURN, in \`playtest_kind\`, \`playtest_about\` and
+\`playtest_note\`, alongside whatever you were going to do anyway. It costs
+you no turn and no action. If the honest answer is that you guessed at
+something and got it right, that is still a CONFUSED and it is still worth
+having.
+
+Only leave \`playtest_kind\` empty if the question genuinely does not apply.
 </anything_to_report>`;
     state.playtestNudge = null;
   }

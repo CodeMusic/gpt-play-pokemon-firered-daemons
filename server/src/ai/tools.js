@@ -839,26 +839,48 @@ function defineTools() {
         //  strict schemas, and a field that pressures an answer manufactures
         //  one -- which is worse than an empty file, because a fabricated
         //  CONFUSED sends someone to rewrite a sign that was fine.
+        //  DESCRIBE A STANCE, NOT A POLICY -- and the two attempts are the
+        //  evidence. v1 of these fields opened with "USUALLY EMPTY", closed
+        //  with "an empty string is a perfectly good answer on most turns",
+        //  and the nudge added "if nothing struck you, leave it empty". The
+        //  model emitted kind="" on every single turn for 130 steps. It was
+        //  doing exactly what it was told.
+        //
+        //  `aside` sits six lines above this and has two hundred entries. Its
+        //  description never states a policy: it describes WHO IS SPEAKING and
+        //  from where -- "a thought nobody else can hear", "speak as the person
+        //  described in <self>". A stance produces writing. A rule about when
+        //  to stay silent produces silence.
+        //
+        //  So the anti-fabrication guard stays, because a made-up CONFUSED
+        //  sends somebody off to rewrite a sign that was fine. It just does not
+        //  go FIRST, and it is about inventing rather than about abstaining.
         playtest_kind: z.enum(["", "LIKED", "DISLIKED", "CONFUSED", "NOTED"]).describe(
-            "USUALLY EMPTY. Set it only when something about the GAME ITSELF is worth "
-            + "telling the people building it -- not how you are doing at it, which is "
-            + "what `aside` and `reflect` are for. "
-            + "\n\nCONFUSED: you could not tell what was meant, or what you were meant "
-            + "to do. The most useful of the four; reach for it when unsure. "
-            + "\nDISLIKED: an actual complaint about the design. Something being HARD is "
-            + "not a fault and does not belong here. "
-            + "\nLIKED: it worked on you, and you can say why. "
-            + "\nNOTED: an observation with no verdict. "
-            + "\n\nYou are the only one walking this game who does not already know what "
-            + "anything is supposed to mean. That is the whole value of it, and it is "
-            + "why an empty string is a perfectly good answer on most turns."),
+            "YOU ARE THE ONLY ONE WALKING THIS GAME WHO DOES NOT ALREADY KNOW WHAT "
+            + "ANY OF IT MEANS. The people building it lost that the day they built it, "
+            + "and they cannot get it back. This is where you hand it to them. "
+            + "\n\nSay the thing you would say to the person who made the room you are "
+            + "standing in -- about the GAME, not about how you are doing at it. "
+            + "\n\nCONFUSED: you had to guess. A sign you could not parse, a word you "
+            + "did not know, an exit you could not find, a fight you did not understand "
+            + "losing. The most valuable of the four BY FAR, because the moment you work "
+            + "it out you stop being able to report it. "
+            + "\nDISLIKED: a complaint about the design. Difficulty is not a fault. "
+            + "\nLIKED: it worked on you, and you can say what did it. "
+            + "\nNOTED: something you noticed, no verdict. "
+            + "\n\nDo not invent one to fill the field -- a made-up complaint sends "
+            + "somebody to rewrite a sign that was fine. But you have almost certainly "
+            + "guessed at something recently, and that is a CONFUSED."),
         playtest_about: z.string().describe(
-            "The thing itself, short -- a place, a line, an item, a fight. Empty when "
+            "The thing itself, short: a place, a sign, a line, an item, a fight. "
+            + "\"The route sign outside\", \"the FLOW gym door\". Empty only when "
             + "`playtest_kind` is empty."),
         playtest_note: z.string().describe(
-            "One or two sentences, concrete, about the GAME. Empty when `playtest_kind` "
-            + "is empty. Say what you saw and what you made of it; a note under a dozen "
-            + "characters is discarded."),
+            "One or two sentences about the GAME, concrete, in your own voice. Say what "
+            + "you saw and what you took it to mean -- and if you got it wrong, that IS "
+            + "the report. Example: \"The sign gave a number and a name that did not "
+            + "match, and I could not tell which one the map would use.\" Empty only "
+            + "when `playtest_kind` is empty; under twelve characters is discarded."),
         aside: z.string().describe(
             "One or two COMPLETE SENTENCES of inner thought, present tense: what you "
             + "are actually thinking, as though nobody can hear it. "
