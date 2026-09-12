@@ -20,8 +20,10 @@
   {
     "id": "mt_moon",
     "type": "map_visit",
-    "trigger": "CERULEAN_CITY",
-    "label": "DEADSTACK"
+    "trigger": "DOLDRUM_CITY",
+    "label": "DEADSTACK",
+    "done": false,
+    "done_on": null
   },
   {
     "id": "cascade_badge",
@@ -44,7 +46,7 @@
   {
     "id": "rock_tunnel",
     "type": "map_visit",
-    "trigger": "LAVENDER_TOWN",
+    "trigger": "HALFTONE_TOWN",
     "label": "THE BLACKOUT"
   },
   {
@@ -92,7 +94,7 @@
   {
     "id": "pokemon_mansion",
     "type": "map_visit",
-    "trigger": "CINNABAR_ISLAND_GYM",
+    "trigger": "QUICKSILVER_ISLAND_GYM",
     "label": "DAEMON MANSION"
   },
   {
@@ -110,7 +112,7 @@
   {
     "id": "victory_road",
     "type": "map_visit",
-    "trigger": "INDIGO_PLATEAU_POKEMON_CENTER_1_F",
+    "trigger": "UMBRA_PLATEAU_CHECKPOINT_1_F",
     "label": "UMBRAL ASCENT"
   },
   {
