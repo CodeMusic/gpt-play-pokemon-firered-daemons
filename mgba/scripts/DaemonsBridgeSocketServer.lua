@@ -1,5 +1,5 @@
 -- ***********************
--- FireRed Bridge Socket Server
+-- DAEMONS Bridge Socket Server
 -- Custom Lua interface for fast memory reads + input control
 -- ***********************
 
@@ -41,7 +41,7 @@ function beginSocket()
 				server:close()
 				logError(formatSocketMessage("Listen", error, true))
 			else
-				logWithOverride("FireRed bridge socket server ready. Listening on port " .. port, 4)
+				logWithOverride("DAEMONS bridge socket server ready. Listening on port " .. port, 4)
 				server:add("received", socketAccept)
 			end
 		end

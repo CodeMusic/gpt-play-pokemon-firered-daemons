@@ -21,7 +21,7 @@ def ensure_overworld_control_initialized() -> None:
     Initialize the Lua-side overworld control system with symbol addresses.
 
     This is required for the `bridge.control` endpoint added in
-    `mgba/scripts/FireRedBridgeSocketServer.lua`.
+    `mgba/scripts/DaemonsBridgeSocketServer.lua`.
     """
     global _OVERWORLD_CONTROL_INIT_DONE
     if _OVERWORLD_CONTROL_INIT_DONE:

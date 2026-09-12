@@ -121,7 +121,7 @@ is not a Lua token. Two ways through:
 `~`, so it must be an absolute path:
 
 ```lua
-dofile("/ABSOLUTE/PATH/TO/mgba/scripts/FireRedBridgeSocketServer.lua")
+dofile("/ABSOLUTE/PATH/TO/mgba/scripts/DaemonsBridgeSocketServer.lua")
 ```
 
 `./bindDaemons.sh --ai` prints the exact line, resolved through the symlink.
@@ -182,7 +182,7 @@ The harness is currently compatible only with the **Pokemon - FireRed Version (U
 ├── firered_mgba_bridge.py      # FastAPI bridge — reads game state, sends commands
 ├── firered_bridge/             # Memory reading logic, game state, minimap, fog of war
 ├── mgba/scripts/
-│   └── FireRedBridgeSocketServer.lua  # Lua script to load inside mGBA
+│   └── DaemonsBridgeSocketServer.lua  # Lua script to load inside mGBA
 ├── server/                     # AI agent loop + WebSocket + runtime persistence
 │   └── prompts/                # Prompts used by the AI agent
 ├── frontend/                   # Static HTML/CSS/JS monitoring dashboard
@@ -273,7 +273,7 @@ cd server && npm install && cd ..
 1. Open **mGBA**
 2. Load the **FireRed ROM**
 3. Open the **Lua scripting window** (`Tools → Scripting`)
-4. Load `mgba/scripts/FireRedBridgeSocketServer.lua`
+4. Load `mgba/scripts/DaemonsBridgeSocketServer.lua`
 5. Keep the script running
 
 You should see a log message indicating the listening port (e.g. `Listening on port 8888`).
