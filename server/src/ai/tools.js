@@ -1304,6 +1304,10 @@ function toolOutput(text) {
                         if (entry) {
                             console.log(`INFO: [playtest/${entry.kind}] ${entry.about}: ${entry.note}`);
                             broadcast({ type: "playtest", payload: entry });
+                            //  Rate-limits gameLoop's arrival nudge: a building with
+                            //  four doors should ask once, not four times.
+                            state.counters.lastPlaytestStep = state.counters.currentStep;
+                            state.playtestNudge = null;
                         }
                         break;
                     }

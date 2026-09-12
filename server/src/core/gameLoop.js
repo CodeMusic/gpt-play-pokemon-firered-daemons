@@ -15,6 +15,11 @@ const progress = require('./progress.js');
 const { updateProgressSteps, updateLastVisitedMaps } = require('./progressTracker');
 const { openai } = require('./openaiClient');
 const { startLoop, recordLoopUsage, flush, getCumulativeTotals } = require('../utils/tokenUsageTracker');
+
+//  Turns between playtest asks. 40 is ~13 asks over a 770-step run, which is
+//  the rate the first run would have produced -- rare enough to stay a question
+//  and not a chore.
+const PLAYTEST_NUDGE_GAP = 40;
 const {
     startLoop: startTimeLoop,
     recordReasoning,
@@ -368,6 +373,32 @@ async function gameLoop() {
                 };
                 state.mapVisitHistory[currentMapId] = visitInfo;
                 console.log(`>>> FIRST VISIT TO MAP: ${currentMapId} (${gameDataJson.current_trainer_data?.position?.map_name}) at step ${state.counters.currentStep} <<< `);
+
+                //  ASK IT WHAT IT MAKES OF THE PLACE, ONCE, ON ARRIVAL.
+                //
+                //  The `playtest` tool shipped with a good description, sat in the
+                //  LEAN tool set, and recorded ZERO entries in 770 steps -- while
+                //  `asides` recorded 200, because asides are asked for and this was
+                //  not. The only ask lived in the last paragraph of <reflect_now>,
+                //  which fires only when the primary objective is replaced, and
+                //  which the comment above that block warns is exactly where reflect
+                //  itself went unused for 357 steps. A tool nobody asks for is a
+                //  tool nobody calls.
+                //
+                //  FIRST ARRIVAL is the right moment and not an arbitrary one: it is
+                //  the one turn where the agent is a cold reader of a place, which is
+                //  the whole reason its feedback is worth more than ours. Walk it
+                //  twice and it has already worked out what the sign meant.
+                //
+                //  Rate-limited by STEPS SINCE THE LAST ENTRY rather than by map, so
+                //  a building with four doors asks once instead of four times.
+                const sinceLast = state.counters.currentStep - (state.counters.lastPlaytestStep ?? -Infinity);
+                if (sinceLast >= PLAYTEST_NUDGE_GAP) {
+                    state.playtestNudge = {
+                        mapName: visitInfo.map_name || currentMapId,
+                        step: state.counters.currentStep,
+                    };
+                }
             }
             // --- End Map First Visit Check ---
 

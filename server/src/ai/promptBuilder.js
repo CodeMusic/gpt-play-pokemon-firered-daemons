@@ -624,6 +624,42 @@ in it, carry on; not everything that happens teaches something.
 </worth_remembering>`;
   }
 
+  //  ASKED ON ARRIVAL, ONCE, AND NEAR THE TOP.
+  //
+  //  `playtest` recorded ZERO entries in a 770-step run while `asides` recorded
+  //  200. The difference was not the tool -- it was that asides are asked for.
+  //  The only ask for playtest was the last paragraph of <reflect_now> below,
+  //  which fires only when the primary objective is replaced: the same burial
+  //  the comment under it warns about, applied to a different tool.
+  //
+  //  It asks about the PLACE and not about the play, because the agent already
+  //  has three channels for how it is doing -- reflect, self-criticism and
+  //  asides -- and none for what the game is like to arrive in cold. That is
+  //  the only thing it can report that nobody else can.
+  if (state.playtestNudge) {
+    userInputText += `
+<what_do_you_make_of_this_place>
+You have just walked into ${state.playtestNudge.mapName} for the first time.
+
+This game is still being built, and you are the only one walking it who does
+not already know what anything is supposed to mean. The people making it
+cannot see it your way any more. So before you carry on: was there anything
+here worth saying about the GAME rather than about your play?
+
+Call \`playtest\` if there was. One entry, one thing:
+  CONFUSED   you could not tell what was meant, or what you were meant to do.
+             This is the most useful one. Reach for it when unsure.
+  DISLIKED   an actual complaint about the design. Something being HARD is not
+             a fault and does not belong here.
+  LIKED      it worked on you -- and say why it did.
+  NOTED      an observation with no verdict.
+
+If nothing here struck you either way, say nothing and move on. An empty
+report is worse than no report, and most rooms are just rooms.
+</what_do_you_make_of_this_place>`;
+    state.playtestNudge = null;
+  }
+
   //  Asked ONCE, at the boundary, near the top -- not buried in the reminder
   //  block where reflect went unused for 357 steps.
   if (state.reflectPending) {
