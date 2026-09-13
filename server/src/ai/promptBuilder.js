@@ -43,8 +43,10 @@ function formatSelfModel(selfModel) {
   const items = Array.isArray(selfModel) ? selfModel.filter((s) => s?.text) : [];
   if (!items.length) return "<self />\n";
   const lines = ["<self>",
-    "  <note>What you have noticed about your own play. This is who your inner",
-    "  voice belongs to -- speak like this person, not like a status line.</note>"];
+    "  <note>The player you are becoming, in your own words -- each one a habit",
+    "  you have learned, not a fault you keep. Your inner voice belongs to this",
+    "  person: speak like them, not like a status line. When you notice one of",
+    "  these again, repeat its wording exactly so it is counted.</note>"];
   for (const s of items) {
     //  The count is the point of keeping it: something noticed four times is
     //  more true of you than something noticed once, and the model should be

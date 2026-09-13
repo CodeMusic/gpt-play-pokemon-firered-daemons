@@ -416,6 +416,48 @@ async function loadPersistentState() {
       }
     }
 
+    //  THE TEMPLATE OWNS THE DEFINITION; THE RUN OWNS THE PROGRESS.
+    //
+    //  A map_visit trigger was corrected in BOTH files, and the live one came
+    //  back wrong: the running server holds progressSteps in memory and writes
+    //  it back on every save, so it overwrote the fix with the copy it had
+    //  loaded -- and the next restart loaded that. DEADSTACK kept waiting on
+    //  CERULEAN_CITY, a map name this build no longer has, through two
+    //  "fixes". Editing a file a live process owns does not stick.
+    //
+    //  So on load each step's trigger, type and label come from the template by
+    //  id, and only done / done_on survive from the run. A rename is now fixed
+    //  by fixing the template and restarting, and cannot be clobbered.
+    try {
+      const templateSteps = JSON.parse(await fs.readFile(
+        path.join(config.paths.baseDir, "progress_steps.json"), "utf-8"));
+      const byId = new Map((Array.isArray(templateSteps) ? templateSteps : [])
+        .filter((t) => t && t.id).map((t) => [t.id, t]));
+      let redefined = 0;
+      for (const step of loadedSteps) {
+        const t = step && byId.get(step.id);
+        if (!t) continue;
+        for (const key of ["trigger", "type", "label"]) {
+          if (t[key] !== undefined && step[key] !== t[key]) { step[key] = t[key]; redefined++; }
+        }
+      }
+      //  And a step whose map was ALREADY visited is done, from the run's own
+      //  history rather than by assertion -- done_on is the visit, not now.
+      //  mapVisitHistory is loaded above this block.
+      let backfilled = 0;
+      const visits = Object.values(state.mapVisitHistory || {});
+      for (const step of loadedSteps) {
+        if (!step || step.done || step.type !== "map_visit") continue;
+        const hit = visits.find((v) => v && v.map_name === step.trigger);
+        if (hit) { step.done = true; step.done_on = hit.timestamp || null; backfilled++; }
+      }
+      if (redefined || backfilled) {
+        console.log(`Progress steps reconciled with template: ${redefined} field(s) redefined, ${backfilled} step(s) back-filled from map visits.`);
+      }
+    } catch (reconcileError) {
+      console.warn("Progress steps not reconciled with template:", reconcileError.message);
+    }
+
     state.progressSteps = loadedSteps;
     console.log("Progress steps loaded. Count:", state.progressSteps.length);
   }

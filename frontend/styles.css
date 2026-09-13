@@ -1481,3 +1481,26 @@ input:focus-visible {
 #frame-view p {
   margin: 8px 0 0;
 }
+
+/* LISTS THAT ONLY GROW get a ceiling and their own scrollbar.
+   Memory reached 21 entries of three lines each and pushed Self and Dreams
+   off the bottom of the tab; playtest and the backchannel only ever append.
+   Capped against the VIEWPORT rather than a fixed rem count, so a tall window
+   shows more before it scrolls -- a fixed cap elsewhere in this file already
+   made a panel scroll while the space below it sat empty.
+
+   .bc-log had overflow-y:auto all along and never scrolled: nothing bounded
+   its height, so it grew with the card and the card grew with the page. An
+   overflow rule with no height limit is a scrollbar that cannot appear. */
+#memory-wrap,
+#playtest-wrap {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 0.35rem;
+  overscroll-behavior: contain;
+}
+
+.bc-log {
+  max-height: 50vh;
+  overscroll-behavior: contain;
+}

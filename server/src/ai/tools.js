@@ -551,18 +551,44 @@ function defineTools() {
         //  different degenerate voices -- fragments, then "I am..." on every
         //  line, then terse procedural notes -- because the problem was never
         //  the wording.
+        //  DESCRIBE THE PLAYER WHO GETS IT RIGHT, NOT THE FAULT.
+        //
+        //  <self> is read back every turn and the aside is told to SPEAK AS THE
+        //  PERSON DESCRIBED THERE. So v1 -- "a tendency, a habit, something you
+        //  keep doing", "a fault named plainly is worth more" -- cast every
+        //  fault as a character to perform. Its own GOOD EXAMPLE was "I commit
+        //  to a route before I have checked it, and then I am reluctant to turn
+        //  back", and that exact sentence came back as four entries, x3, x2, x2,
+        //  with "noticed 4 times" presented as extra weight. The example seeded
+        //  the observation and the loop reinforced it.
+        //
+        //  Still a DESCRIPTION, not an instruction -- rules have `learned` and
+        //  write_memory tips, and <self> is a speaker to be consistent with. It
+        //  describes the player you are becoming, in the present tense, so the
+        //  identity performed is the corrected one.
+        //
+        //  And repeat an existing observation word for word. The match is exact
+        //  on purpose -- a fuzzy one could merge two different things -- so a
+        //  paraphrase of something already there becomes a second entry rather
+        //  than a count, which is how one observation filled four of six slots.
         about_self: z.string().min(20).describe(
-            "ONE SENTENCE about yourself, not about the game: what this stretch showed "
-            + "you about how YOU play. A tendency, a habit, something you keep doing, a "
-            + "way you tend to react. First person. "
-            + "\n\nGood: \"I commit to a route before I have checked it, and then I am "
-            + "reluctant to turn back.\" / \"I get impatient in menus and start mashing.\" "
-            + "/ \"I am more careful after a faint than before one.\" "
-            + "\n\nWrong: \"I explored the town\" -- that is what happened. \"Exit carpets "
-            + "need a blocked move\" -- that is the `learned` field. This one is about "
-            + "your own character as a player, and it is what your inner voice speaks "
-            + "from. Be honest rather than flattering; a fault named plainly is worth "
-            + "more than a virtue claimed."),
+            "ONE SENTENCE about yourself as a player, in the present tense, describing "
+            + "the player you are BECOMING -- what this stretch taught you to do, said "
+            + "as who you are. Not about the game, and not a list of faults. "
+            + "\n\nTurn what you noticed into the habit that fixes it. If you kept "
+            + "pushing down a blocked route, you are not \"someone who commits too "
+            + "early\" -- you are \"someone who checks the collision data before "
+            + "committing to a route.\" If you stayed in a losing fight hoping a status "
+            + "would wear off: \"I retreat to heal while I still can, rather than hoping "
+            + "a status wears off.\" "
+            + "\n\nWhy it matters: your inner voice speaks AS this person every turn. "
+            + "Describe a fault and you rehearse it; describe the fix and you rehearse "
+            + "that. "
+            + "\n\nIF ONE OF YOUR <self> OBSERVATIONS ALREADY SAYS THIS, COPY IT WORD "
+            + "FOR WORD. Only an exact repeat is counted as noticing it again; a "
+            + "rephrasing becomes a separate entry and crowds the others out. "
+            + "\n\nWrong: \"I explored the town\" -- that is what happened. \"Exit "
+            + "carpets need a blocked move\" -- that is the `learned` field."),
     });
 
     //  CONSULT. The agent knows something can be asked and sometimes answers.
