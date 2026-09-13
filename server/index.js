@@ -349,6 +349,9 @@ async function start() {
         //  ("I just refreshed"). Two builders of the same message shape, and I
         //  edited the one I happened to find first.
         asides: Array.isArray(state.asides) ? state.asides.slice(-60) : [],
+        //  So a refreshed page shows Resume rather than a Pause button that
+        //  would pause an agent already paused.
+        paused: Boolean(state.paused),
         isSummaryStep: loopStepState.isSummaryStep,
         isCriticismStep: loopStepState.isCriticismStep,
         safari_zone_counter: state.gameDataJsonRef?.safari_zone_counter ?? 0,
@@ -365,8 +368,20 @@ async function start() {
     }
 
     ws.on("message", (message) => {
-      // Frontend messages are currently ignored (agent runs autonomously).
-      // Keep for debugging.
+      //  ONE control message, and everything else is still ignored: the agent
+      //  runs autonomously and the dashboard is a window, not a remote.
+      //  set_paused is the exception because a person taking the controls is
+      //  the one thing the agent cannot observe for itself.
+      let msg = null;
+      try { msg = JSON.parse(String(message)); } catch (_) { /* not JSON */ }
+      if (msg && msg.type === "set_paused") {
+        const next = Boolean(msg.payload);
+        if (state.paused && !next) state.resumedFromPause = true;
+        state.paused = next;
+        console.log(`[CONTROL] agent ${next ? "PAUSED -- a person has the controls" : "RESUMED"}`);
+        socketHub.broadcast({ type: "paused_update", payload: state.paused });
+        return;
+      }
       console.log("Received from client (ignored): %s", message);
     });
 

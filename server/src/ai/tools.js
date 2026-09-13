@@ -871,6 +871,11 @@ function defineTools() {
             + "work it out you stop being able to report it. "
             + "\nDISLIKED: a complaint about the design. Difficulty is not a fault. "
             + "\nLIKED: it worked on you, and you can say what did it. "
+            + "\n\nSOMEONE ELSE CAN TAKE THE CONTROLS WITHOUT TELLING YOU. If the "
+            + "screen changed in a way your own last action cannot explain, say that "
+            + "you do not know why -- never report it as something you caused. A "
+            + "report that blames the wrong button sends somebody to fix a bug "
+            + "that is not there. "
             + "\n\nDo not invent one to fill the field -- a made-up complaint sends "
             + "somebody to rewrite a sign that was fine. Empty is the right answer on "
             + "most turns, and two in a row is almost always the same one twice."),
@@ -930,7 +935,12 @@ function defineTools() {
             + "What do you MAKE of what is in front of you? In a battle: the daemon "
             + "opposite, your own, how this is going. In the world: this place, this "
             + "person, this line of dialogue. Write it the way a thought arrives, not "
-            + "the way a report is filed."),
+            + "the way a report is filed. "
+            + "\n\nAND IF SOMETHING HAPPENED THAT YOUR OWN ACTION DOES NOT EXPLAIN -- "
+            + "you are suddenly somewhere else, in a menu you did not open, on a screen "
+            + "you did not choose -- a person may have taken the controls. Think THAT, "
+            + "rather than that you did it. What you think here is read back to you, "
+            + "and a wrong cause believed becomes a wrong lesson."),
     };
     const tools = actionVariants.map((variant) => {
         //  the literal `type` becomes the tool NAME, so it is dropped from the

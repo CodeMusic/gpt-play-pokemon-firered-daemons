@@ -599,6 +599,25 @@ ${isInDialog ? "Not visible in dialogue" : minimapDisplay || "No minimap data"}
     if (unread.length) userInputText += "\n" + bc.formatForPrompt(unread);
   }
 
+  //  ON RESUME, SAY WHAT HAPPENED. This is not the guess the tool descriptions
+  //  have to make -- the harness KNOWS a person had the controls, so it says
+  //  so plainly and once. The screen changed and none of it was the agent.
+  if (state.resumedFromPause) {
+    userInputText += `
+<you_were_paused>
+A person took the controls while you were paused, and has handed them back.
+
+The screen may not be where you left it. You may be somewhere else, inside a
+menu, or partway through something -- and none of what changed was caused by
+anything you did. Look at where you are before you act.
+
+Do not draw a lesson, a reflection, or a playtest note from anything that
+happened while you were not playing. It was not your play and it is not
+evidence about the game.
+</you_were_paused>`;
+    state.resumedFromPause = false;
+  }
+
   if (state.consultNudge) {
     userInputText += `
 <stuck>

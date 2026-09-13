@@ -46,6 +46,13 @@ const state = {
   gameDataJsonRef: null,
   lastTotalTokens: 0,
   isThinking: false,
+  //  PAUSED IS NOT PERSISTED, deliberately. A run that was paused when the
+  //  server died should come back playing rather than silently doing nothing
+  //  until someone remembers the button -- a stuck-looking run is exactly the
+  //  failure this project keeps paying for.
+  paused: false,
+  //  Set on resume, read once by promptBuilder, then cleared.
+  resumedFromPause: false,
 };
 
 let broadcast = null;

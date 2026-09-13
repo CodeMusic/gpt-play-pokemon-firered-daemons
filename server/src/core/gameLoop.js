@@ -101,6 +101,26 @@ let summaryAttempts = 0;
 
 async function gameLoop() {
     while (true) {
+        //  PAUSED: A PERSON HAS THE CONTROLS.
+        //
+        //  Without this the agent kept stepping while someone drove, and wrote
+        //  what they did into three channels as its own: a playtest CONFUSED
+        //  that read "pressing B after using DEEP RECOVER took me through a save
+        //  screen and then to the title screen" -- which was the human saving --
+        //  plus whatever reflect and self-criticism then learned from it.
+        //
+        //  ABOVE THE TRY, NOT INSIDE IT. The finally flushes the token and time
+        //  files and records loop duration, so a `continue` inside the try would
+        //  write two files twice a second and count idle time as loop time.
+        //
+        //  A pause takes effect AFTER the step in flight: a model call already
+        //  sent is allowed to land. Pressing the button mid-turn is safe; the
+        //  next turn simply does not start.
+        if (state.paused) {
+            if (state.isThinking) setIsThinking(false);
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            continue;
+        }
         const loopStartTime = Date.now(); // track per-iteration timing across try/catch/finally
         try {
             // <<< ADDED YIELD >>>

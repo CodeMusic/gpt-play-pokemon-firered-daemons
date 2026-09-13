@@ -93,6 +93,7 @@
     pollInput: document.getElementById("poll-input"),
     reconnectInput: document.getElementById("reconnect-input"),
     connectBtn: document.getElementById("connect-btn"),
+    pauseBtn: document.getElementById("pause-btn"),
     disconnectBtn: document.getElementById("disconnect-btn"),
     clearLogsBtn: document.getElementById("clear-logs-btn"),
 
@@ -153,6 +154,7 @@
       remaining_until_summary: 0,
       steps: 0,
       isThinking: false,
+      paused: false,
       isSummaryStep: false,
       isCriticismStep: false,
       visibility_reduced: false,
@@ -902,9 +904,15 @@
     const connBadge = state.isConnected
       ? `<span class="badge ok">Connected</span>`
       : `<span class="badge err">Disconnected</span>`;
-    const thinkingBadge = g.isThinking
-      ? `<span class="badge warn">Thinking</span>`
-      : `<span class="badge">Idle</span>`;
+    //  PAUSED OUTRANKS THINKING. A paused agent is not idle, it is waiting on a
+    //  person -- and "Idle" on screen while you hold the controls is how you
+    //  forget to hand them back.
+    const thinkingBadge = g.paused
+      ? `<span class="badge err">Paused \u2014 you have the controls</span>`
+      : g.isThinking
+        ? `<span class="badge warn">Thinking</span>`
+        : `<span class="badge">Idle</span>`;
+    renderPauseButton();
 
     //  DAEMONS: the run's score, with its arithmetic in the title attribute.
     //  A bare number nobody can check is a number nobody trusts -- and this one
@@ -1617,6 +1625,14 @@
         renderMinimap();
         return;
 
+      case "paused_update":
+        state.game.paused = Boolean(payload);
+        addLog("status", state.game.paused
+          ? "Agent paused. You have the controls."
+          : "Agent resumed. It has been told a person had the controls.");
+        renderRuntime();
+        return;
+
       case "isThinking_update":
         state.game.isThinking = Boolean(payload);
         renderRuntime();
@@ -1902,7 +1918,26 @@
     tick();
   }
 
+  //  The label says what PRESSING it does, not what state it is in.
+  function renderPauseButton() {
+    if (!els.pauseBtn) return;
+    const open = Boolean(state.ws && state.ws.readyState === WebSocket.OPEN);
+    els.pauseBtn.disabled = !open;
+    els.pauseBtn.textContent = state.game.paused ? "Resume agent" : "Pause agent";
+    els.pauseBtn.classList.toggle("btn-primary", Boolean(state.game.paused));
+    els.pauseBtn.classList.toggle("btn-secondary", !state.game.paused);
+  }
+
   function wireControls() {
+    //  Sends the WANTED state rather than "toggle", so two open dashboards
+    //  cannot each flip it and cancel out. The server's paused_update is what
+    //  changes the label; the click never assumes it worked.
+    if (els.pauseBtn) els.pauseBtn.addEventListener("click", () => {
+      const ws = state.ws;
+      if (!ws || ws.readyState !== WebSocket.OPEN) return;
+      ws.send(JSON.stringify({ type: "set_paused", payload: !state.game.paused }));
+    });
+
     els.connectBtn.addEventListener("click", () => {
       readSettingsFromInputs();
       connectWebSocket();
