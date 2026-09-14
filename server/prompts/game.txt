@@ -126,7 +126,25 @@
   How to choose one: take what it looks like, what it does, or what its type
   means, and shorten that to something sayable. A red rodent that shocks
   things is JOLT or CINDER, not `AA`. Ten characters maximum.
-* Note: In FireRed, you choose the rival's name at the beginning of the game. The rival is your childhood friend and becomes the Champion. Choose a name by yourself. Do not use the default name options for the rival's name; be fun and creative.
+* **THE RIVAL'S NAME matters more than any nickname — give it the same care, before you touch the grid.**
+
+  You name the rival once, at the start, and then read that name for the whole
+  game: in every scene with him, every battle against him, and at the end. He is
+  your childhood friend, the professor's grandson, and the person you will be
+  measured against. **A name you picked because it was quick to type is a name
+  you will be looking at for fifty hours.**
+
+  So decide it first, the way you decided your own: think about who he is — a
+  friend who has always been a step ahead, confident, faithful to what he was
+  taught — and choose a name a person would actually have and that you would
+  be glad to read in a final battle. Then spell out the word you chose.
+
+  The nickname rules apply, plus two:
+  - **At least 3 characters, at most 7**, and pronounceable.
+  - **No character repeated more than twice, and no alternating patterns**
+    (`ABABAB`, `ABAB`, `XYXY`): a pattern is not a name, however easy it is to
+    type.
+  - **Not your own name, and not one of the default names** the game offers.
 
 ---
 
