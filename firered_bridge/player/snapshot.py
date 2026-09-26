@@ -94,6 +94,13 @@ FLAG_GOT_GUIDE = DAEMONS_FLAGS_START + 0x60
 #  designs the rest); its name is undecided, so it is described by what it does.
 UNDERSTANDINGS = (
     (FLAG_UNDERSTANDING_FIRST, "EVENT_UNDERSTANDING_FIRST", "the first understanding: DOLDRUM CAVE can be read"),
+    #  T-252 (2026-09-26): the six the user named. Set by the game on a map load once their moment is complete.
+    (DAEMONS_FLAGS_START + 0x61, "EVENT_UNDERSTANDING_SCHOOL", "from the CALLOW SCHOOL: the TEXTBOOK and the exam"),
+    (DAEMONS_FLAGS_START + 0x62, "EVENT_UNDERSTANDING_READING", "from BRAZEN's Reading Room, with REVEAL"),
+    (DAEMONS_FLAGS_START + 0x63, "EVENT_UNDERSTANDING_NOTES", "from QUICKSILVER's notes: the run logs and THE FILE"),
+    (DAEMONS_FLAGS_START + 0x64, "EVENT_UNDERSTANDING_SCORN", "from beating SCORN, and seeing what he counted"),
+    (DAEMONS_FLAGS_START + 0x65, "EVENT_UNDERSTANDING_RETURN", "from meeting TY and finding CRYSTAL"),
+    (DAEMONS_FLAGS_START + 0x66, "EVENT_UNDERSTANDING_GUIDE", "from reading the GUIDE to its end"),
 )
 
 

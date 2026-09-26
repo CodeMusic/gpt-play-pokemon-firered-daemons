@@ -10,6 +10,12 @@ const { gameAreaToMarkdown, minimapToMarkdown } = require("../formatters/markdow
 //  The bridge reads both out of RAM (snapshot.py); the words for an understanding follow its UNDERSTANDINGS table.
 const UNDERSTANDING_WORDS = {
   EVENT_UNDERSTANDING_FIRST: "the first understanding: DOLDRUM CAVE can be read",
+  EVENT_UNDERSTANDING_SCHOOL: "from the CALLOW SCHOOL: the TEXTBOOK and the exam",
+  EVENT_UNDERSTANDING_READING: "from BRAZEN's Reading Room, with REVEAL",
+  EVENT_UNDERSTANDING_NOTES: "from QUICKSILVER's notes: the run logs and THE FILE",
+  EVENT_UNDERSTANDING_SCORN: "from beating SCORN, and seeing what he counted",
+  EVENT_UNDERSTANDING_RETURN: "from meeting TY and finding CRYSTAL",
+  EVENT_UNDERSTANDING_GUIDE: "from reading the GUIDE to its end",
 };
 function formatMarksAndUnderstandings(trainer, events) {
   const marks = Object.entries(trainer?.badges || {}).filter(([, have]) => have).map(([name]) => `${name} MARK`);
