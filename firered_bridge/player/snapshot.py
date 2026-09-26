@@ -59,6 +59,7 @@ from ..constants.addresses import (
     SCRIPT_MODE_STOPPED,
     SECURITY_KEY_OFFSET,
     SECURITY_KEY_POINTER_ADDR,
+    GSAVEBLOCK2_PTR_ADDR,
     SB1_FLASH_LEVEL_OFFSET,
     SB2_PYRAMID_LIGHT_RADIUS_OFFSET,
     SGLOBAL_SCRIPT_CONTEXT_ADDR,
@@ -78,12 +79,55 @@ _ELITE_FOUR_FLAGS = (
     FLAG_DEFEATED_AGATHA,
     FLAG_DEFEATED_LANCE,
 )
+#  DAEMONS (T-319): the CALLOW SCHOOL, BRAZEN's Reading Room, the GUIDE and the UNDERSTANDINGS are objectives now.
+#  Values from engineGba include/constants/flags.h. The school's three live in the ordinary flag array; the GUIDE and
+#  the understandings are DAEMONS flags, which live in SaveBlock2's filler (daemonsFlags at +0xEA0, from 0x900).
+FLAG_SCHOOL_GOT_TEXTBOOK = 0x311
+FLAG_GOT_DIPLOMA = 0x314
+FLAG_GOT_REVEAL = 0x315
+DAEMONS_FLAGS_START = 0x900
+SB2_DAEMONS_FLAGS_OFFSET = 0xEA0
+DAEMONS_FLAGS_READ = 0x20
+FLAG_UNDERSTANDING_FIRST = DAEMONS_FLAGS_START + 0x50
+FLAG_GOT_GUIDE = DAEMONS_FLAGS_START + 0x60
+#  Each understanding the game has, by flag, with the words the agent is shown. Only the first exists yet (T-252
+#  designs the rest); its name is undecided, so it is described by what it does.
+UNDERSTANDINGS = (
+    (FLAG_UNDERSTANDING_FIRST, "EVENT_UNDERSTANDING_FIRST", "the first understanding: DOLDRUM CAVE can be read"),
+)
+
+
+def _daemons_flag_from_bytes(data: bytes, flag_id: int) -> bool:
+    idx = (int(flag_id) - DAEMONS_FLAGS_START) // 8
+    return 0 <= idx < len(data) and (data[idx] & (1 << (int(flag_id) % 8))) != 0
+
+
+def _daemons_events(data: bytes) -> Dict[str, bool]:
+    out = {"EVENT_GOT_GUIDE": _daemons_flag_from_bytes(data, FLAG_GOT_GUIDE)}
+    for flag_id, key, _words in UNDERSTANDINGS:
+        out[key] = _daemons_flag_from_bytes(data, flag_id)
+    return out
+
+
+def _read_daemons_flag_bytes(sb2_ptr: Optional[int] = None) -> bytes:
+    try:
+        sb2 = int(sb2_ptr) if sb2_ptr else int(mgba.mgba_read32(GSAVEBLOCK2_PTR_ADDR))
+        if sb2 == 0:
+            return b""
+        return bytes(mgba.mgba_read_ranges_bytes([(sb2 + SB2_DAEMONS_FLAGS_OFFSET, DAEMONS_FLAGS_READ)])[0])
+    except Exception:
+        return b""
+
+
 _LOW_IMPORTANT_EVENT_FLAGS = (
     FLAG_HIDE_HIDEOUT_GIOVANNI,
     FLAG_HIDE_SAFFRON_ROCKETS,
     FLAG_HIDE_SS_ANNE,
     FLAG_GOT_HM03,
     FLAG_GOT_POKE_FLUTE,
+    FLAG_SCHOOL_GOT_TEXTBOOK,
+    FLAG_GOT_DIPLOMA,
+    FLAG_GOT_REVEAL,
 )
 
 
@@ -169,6 +213,10 @@ def get_important_events(*, sb1_ptr: Optional[int] = None) -> Dict[str, bool]:
             "EVENT_BEAT_CHAMPION_RIVAL": _story_league_gate_done_from_reader(_read_flag, FLAG_DEFEATED_CHAMP),
             "EVENT_BEAT_ELITE_FOUR": _elite_four_done_from_reader(_read_flag),
             "EVENT_HALL_OF_FAME": hall_of_fame,
+            "EVENT_GOT_TEXTBOOK": _read_flag(FLAG_SCHOOL_GOT_TEXTBOOK),
+            "EVENT_GOT_DIPLOMA": _read_flag(FLAG_GOT_DIPLOMA),
+            "EVENT_GOT_REVEAL": _read_flag(FLAG_GOT_REVEAL),
+            **_daemons_events(_read_daemons_flag_bytes()),
         }
     except Exception:
         return {}
@@ -290,8 +338,10 @@ def _read_player_snapshot() -> Dict[str, Any]:
         (base_ptr + SAVESTATE_FLAGS_OFFSET + badge_base_byte, 2),
         (base_ptr + SAVESTATE_FLAGS_OFFSET + elite4_base_byte, 1),
         (sec_ptr + SECURITY_KEY_OFFSET, 4),
+        (sec_ptr + SB2_DAEMONS_FLAGS_OFFSET, DAEMONS_FLAGS_READ),   # DAEMONS (T-319): the GUIDE, the understandings
     ]
     res2 = mgba.mgba_read_ranges_bytes(ranges2)
+    daemons_flag_bytes = bytes(res2[6]) if len(res2) > 6 else b""
 
     base_block = res2[0] if len(res2) > 0 else b""
     x = _u16le_from(base_block, 0)
@@ -339,6 +389,10 @@ def _read_player_snapshot() -> Dict[str, Any]:
         "EVENT_BEAT_CHAMPION_RIVAL": _story_league_gate_done_from_reader(_read_prefetched_flag, FLAG_DEFEATED_CHAMP),
         "EVENT_BEAT_ELITE_FOUR": _elite_four_done_from_reader(_read_prefetched_flag),
         "EVENT_HALL_OF_FAME": hall_of_fame,
+        "EVENT_GOT_TEXTBOOK": _read_prefetched_flag(FLAG_SCHOOL_GOT_TEXTBOOK),
+        "EVENT_GOT_DIPLOMA": _read_prefetched_flag(FLAG_GOT_DIPLOMA),
+        "EVENT_GOT_REVEAL": _read_prefetched_flag(FLAG_GOT_REVEAL),
+        **_daemons_events(daemons_flag_bytes),
     }
     safari_zone_active = bool(_flag_get_from_sb1(int(base_ptr), FLAG_SYS_SAFARI_MODE))
 

@@ -5,6 +5,19 @@ const { state } = require("../state/stateManager");
 const { config } = require("../config");
 const { gameAreaToMarkdown, minimapToMarkdown } = require("../formatters/markdownFormatter");
 
+
+//  DAEMONS (T-319): every prompt says WHICH MARKS are held, by name, and which UNDERSTANDINGS have been arrived at.
+//  The bridge reads both out of RAM (snapshot.py); the words for an understanding follow its UNDERSTANDINGS table.
+const UNDERSTANDING_WORDS = {
+  EVENT_UNDERSTANDING_FIRST: "the first understanding: DOLDRUM CAVE can be read",
+};
+function formatMarksAndUnderstandings(trainer, events) {
+  const marks = Object.entries(trainer?.badges || {}).filter(([, have]) => have).map(([name]) => `${name} MARK`);
+  const held = Object.entries(UNDERSTANDING_WORDS).filter(([key]) => events && events[key] === true).map(([, w]) => w);
+  return `<marks_held count="${marks.length}">${marks.length ? escapeXml(marks.join(", ")) : "none yet"}</marks_held>
+  <understandings count="${held.length}">${held.length ? escapeXml(held.join("; ")) : "none yet"}</understandings>`;
+}
+
 function escapeXml(text) {
   if (text == null) return "";
   return String(text);
@@ -563,6 +576,7 @@ objective describes something you have plainly done, replace it this turn.
 
 <player_stats>
   <user name="${escapeXml(trainerName)}" cache="${money}" marks="${badgeCount}/8" />
+  ${formatMarksAndUnderstandings(trainer, gameDataJson?.important_events)}
   ${formatPokemonTeam(gameDataJson?.current_pokemon_data)}
   ${formatInventory(gameDataJson?.inventory_data)}
   ${formatPcItems(gameDataJson?.pc_items)}

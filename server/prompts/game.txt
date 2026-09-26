@@ -301,6 +301,23 @@ You have several tools. Use them as follows:
   * Does not send you back too far in progress.
   * **Escape Rope** is a very useful item to escape a dungeon or cave after you've completed it. This is a significant time saver (you will be teleported back to the entrance of the dungeon or cave). Always to carry a few Escape Rope in your inventory in case.
 
+### 5.1b. This game's own road: the school, the Reading Room, the GUIDE, and UNDERSTANDINGS
+
+DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) carries these too:
+
+* **CALLOW SCHOOL** (in CALLOW, right after the INDEX). Climb its floors and read the boards; the teacher on **7F** hands
+  over the **TEXTBOOK**. Then, **in exam season**, sit the paper. Answer from what the boards and the TEXTBOOK taught;
+  **80 or better earns the DIPLOMA**. The DIPLOMA is a key: **BRAZEN's Reading Room** will not let you in without it.
+* **The Reading Room** (BRAZEN) teaches; read its shelves and listen to its lecturers. **REVEAL** is installed there.
+  With REVEAL, hidden things sparkle -- it only makes plain what a sharp eye could already see.
+* **The GUIDE** (*The Programmer's Guide to the Human Mind*) sits on a bookshelf on **ONE ISLAND**. Read it.
+* **UNDERSTANDINGS.** A DRIVER is handed to you; an UNDERSTANDING is **arrived at** -- by reading, by seeing something
+  from where someone else stands, by noticing what a place is really saying. **You cannot grind one or buy one.**
+  The game never counts them and never announces a number, but some places change once you hold one: a cave you
+  could not read becomes readable, a note appears in the GUIDE's margin. **Your prompt lists the understandings you
+  hold (`<understandings>`) and the MARKS you hold by name (`<marks_held>`).** When something new appears in that
+  list, stop and notice what changed around you -- that is the point of it.
+
 ### 5.2. Team Building & Documentation
 
 ### Gen 3 Damage Reminder (CRITICAL)

@@ -12,6 +12,18 @@
     "label": "Get the INDEX"
   },
   {
+    "id": "callow_textbook",
+    "type": "event",
+    "trigger": "EVENT_GOT_TEXTBOOK",
+    "label": "CALLOW SCHOOL: climb to 7F for the TEXTBOOK"
+  },
+  {
+    "id": "callow_exam",
+    "type": "event",
+    "trigger": "EVENT_GOT_DIPLOMA",
+    "label": "CALLOW SCHOOL: pass the exam (the DIPLOMA)"
+  },
+  {
     "id": "boulder_badge",
     "type": "badge",
     "trigger": "SLATE",
@@ -54,6 +66,12 @@
     "type": "badge",
     "trigger": "FIT",
     "label": "FIT MARK"
+  },
+  {
+    "id": "reading_room",
+    "type": "event",
+    "trigger": "EVENT_GOT_REVEAL",
+    "label": "BRAZEN's Reading Room: REVEAL (needs the DIPLOMA)"
   },
   {
     "id": "rocket_hideout",
@@ -102,6 +120,18 @@
     "type": "badge",
     "trigger": "HEAT",
     "label": "HEAT MARK"
+  },
+  {
+    "id": "the_guide",
+    "type": "event",
+    "trigger": "EVENT_GOT_GUIDE",
+    "label": "ONE ISLAND: the GUIDE, on a bookshelf"
+  },
+  {
+    "id": "understanding_first",
+    "type": "event",
+    "trigger": "EVENT_UNDERSTANDING_FIRST",
+    "label": "An UNDERSTANDING, arrived at on the islands"
   },
   {
     "id": "earth_badge",
