@@ -316,7 +316,17 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   The game never counts them and never announces a number, but some places change once you hold one: a cave you
   could not read becomes readable, a note appears in the GUIDE's margin. **Your prompt lists the understandings you
   hold (`<understandings>`) and the MARKS you hold by name (`<marks_held>`).** When something new appears in that
-  list, stop and notice what changed around you -- that is the point of it.
+  list, stop and notice what changed around you -- that is the point of it. **The TOWN MAP is one of those places**:
+  its land and sea look a little blocky while understandings are still to come, and sharpen as they arrive.
+* **The MARKS bring virtues.** On the USER card, press R for the BENCHMARKS: each of the first seven MARKS you hold
+  ends on a virtue, and the card's portrait of you comes out of shadow from the feet up as they arrive.
+* **Side threads, never required** (your objectives list does not carry them; do them when you are nearby):
+  * **The singing fir.** The S.S. ANNE's captain gives you **THE BAND'S SHEET** (NOTEBOOK, LOOSE PAGES). After the
+    ship has sailed, the pier in ARDOR stays open; with TRAVERSE, something at its far end hums an old tune that is not
+    quite right. Holding the sheet changes that.
+  * **The Five Witnesses.** Five people in five cities describe the QUICKSILVER lab accident, and a damaged terminal
+    in the MANSION logs a number. Only once you hold **every** UNDERSTANDING does the place they point to answer.
+    Work it out from what they say; nothing will tell you where.
 
 ### 5.2. Team Building & Documentation
 

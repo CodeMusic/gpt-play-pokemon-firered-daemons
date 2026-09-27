@@ -90,6 +90,10 @@ SB2_DAEMONS_FLAGS_OFFSET = 0xEA0
 DAEMONS_FLAGS_READ = 0x20
 FLAG_UNDERSTANDING_FIRST = DAEMONS_FLAGS_START + 0x50
 FLAG_GOT_GUIDE = DAEMONS_FLAGS_START + 0x60
+#  2026-09-27: side threads the agent can notice without being sent after them.
+FLAG_ARTSAI_PAGE = DAEMONS_FLAGS_START + 0x51          # the TRANSCRIPT: the Five Witnesses' reward
+FLAG_NOTEBOOK_LOOSE_KEY = DAEMONS_FLAGS_START + 0x57   # THE BAND'S SHEET, from DAVID on the S.S. ANNE
+FLAG_FIR_IN_KEY = DAEMONS_FLAGS_START + 0x58           # the singing fir, heard in its key
 #  Each understanding the game has, by flag, with the words the agent is shown. Only the first exists yet (T-252
 #  designs the rest); its name is undecided, so it is described by what it does.
 UNDERSTANDINGS = (
@@ -110,7 +114,10 @@ def _daemons_flag_from_bytes(data: bytes, flag_id: int) -> bool:
 
 
 def _daemons_events(data: bytes) -> Dict[str, bool]:
-    out = {"EVENT_GOT_GUIDE": _daemons_flag_from_bytes(data, FLAG_GOT_GUIDE)}
+    out = {"EVENT_GOT_GUIDE": _daemons_flag_from_bytes(data, FLAG_GOT_GUIDE),
+           "EVENT_GOT_TRANSCRIPT": _daemons_flag_from_bytes(data, FLAG_ARTSAI_PAGE),
+           "EVENT_GOT_BANDS_SHEET": _daemons_flag_from_bytes(data, FLAG_NOTEBOOK_LOOSE_KEY),
+           "EVENT_FIR_IN_KEY": _daemons_flag_from_bytes(data, FLAG_FIR_IN_KEY)}
     for flag_id, key, _words in UNDERSTANDINGS:
         out[key] = _daemons_flag_from_bytes(data, flag_id)
     return out
