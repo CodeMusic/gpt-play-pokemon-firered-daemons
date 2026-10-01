@@ -318,6 +318,17 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   hold (`<understandings>`) and the MARKS you hold by name (`<marks_held>`).** When something new appears in that
   list, stop and notice what changed around you -- that is the point of it. **The TOWN MAP is one of those places**:
   its land and sea look a little blocky while understandings are still to come, and sharpen as they arrive.
+* **Where the understandings are arrived at** (none is announced; your prompt's `<understandings>` shows them):
+  reading the last inscription in **TANOBY CHAMBERS**; finishing the CALLOW SCHOOL (the TEXTBOOK and the paper);
+  BRAZEN's Reading Room with REVEAL; QUICKSILVER's notes (the run logs and THE FILE); beating SCORN; meeting TY and
+  finding CRYSTAL; and reading the GUIDE to its end. **The brain on the USER card** fills one coloured lobe for each.
+* **The INDEX shows every daemon** you have seen from the start -- its page reads, and every daemon evolves, without
+  waiting for the GLOBAL INDEX (only trading beyond the first 151 still waits for it). Read a new daemon's page: the
+  entries teach what its name means.
+* **The NOTEBOOK fills as you go.** Pages are found in the world (on shelves, terminals, a stump in a grove, a
+  folded note) and file themselves; after CRYSTAL is home, the INDEX writes a page about your own choices.
+* **The START menu is two columns**: UP/DOWN move within a column, LEFT/RIGHT between them. The `startMenu` state
+  gives each option's `column` and `row`.
 * **The MARKS bring virtues.** On the USER card, press R for the BENCHMARKS: each of the first seven MARKS you hold
   ends on a virtue, and the card's portrait of you comes out of shadow from the feet up as they arrive.
 * **Side threads, never required** (your objectives list does not carry them; do them when you are nearby):

@@ -94,10 +94,11 @@ FLAG_GOT_GUIDE = DAEMONS_FLAGS_START + 0x60
 FLAG_ARTSAI_PAGE = DAEMONS_FLAGS_START + 0x51          # the TRANSCRIPT: the Five Witnesses' reward
 FLAG_NOTEBOOK_LOOSE_KEY = DAEMONS_FLAGS_START + 0x57   # THE BAND'S SHEET, from DAVID on the S.S. ANNE
 FLAG_FIR_IN_KEY = DAEMONS_FLAGS_START + 0x58           # the singing fir, heard in its key
-#  Each understanding the game has, by flag, with the words the agent is shown. Only the first exists yet (T-252
-#  designs the rest); its name is undecided, so it is described by what it does.
+FLAG_POSTER_READ = DAEMONS_FLAGS_START + 0x69          # T-323: the bedroom poster (it sparkles until read)
+#  Each understanding the game has, by flag, with the words the agent is shown (T-330, 2026-10-01: all seven; the
+#  first is arrived at reading TANOBY's seventh chamber, T-252). Each fills a lobe of the brain on the USER card.
 UNDERSTANDINGS = (
-    (FLAG_UNDERSTANDING_FIRST, "EVENT_UNDERSTANDING_FIRST", "the first understanding: DOLDRUM CAVE can be read"),
+    (FLAG_UNDERSTANDING_FIRST, "EVENT_UNDERSTANDING_FIRST", "the first: TANOBY's last chamber read; DOLDRUM CAVE can be read"),
     #  T-252 (2026-09-26): the six the user named. Set by the game on a map load once their moment is complete.
     (DAEMONS_FLAGS_START + 0x61, "EVENT_UNDERSTANDING_SCHOOL", "from the CALLOW SCHOOL: the TEXTBOOK and the exam"),
     (DAEMONS_FLAGS_START + 0x62, "EVENT_UNDERSTANDING_READING", "from BRAZEN's Reading Room, with REVEAL"),
@@ -117,7 +118,8 @@ def _daemons_events(data: bytes) -> Dict[str, bool]:
     out = {"EVENT_GOT_GUIDE": _daemons_flag_from_bytes(data, FLAG_GOT_GUIDE),
            "EVENT_GOT_TRANSCRIPT": _daemons_flag_from_bytes(data, FLAG_ARTSAI_PAGE),
            "EVENT_GOT_BANDS_SHEET": _daemons_flag_from_bytes(data, FLAG_NOTEBOOK_LOOSE_KEY),
-           "EVENT_FIR_IN_KEY": _daemons_flag_from_bytes(data, FLAG_FIR_IN_KEY)}
+           "EVENT_FIR_IN_KEY": _daemons_flag_from_bytes(data, FLAG_FIR_IN_KEY),
+           "EVENT_READ_BEDROOM_POSTER": _daemons_flag_from_bytes(data, FLAG_POSTER_READ)}
     for flag_id, key, _words in UNDERSTANDINGS:
         out[key] = _daemons_flag_from_bytes(data, flag_id)
     return out

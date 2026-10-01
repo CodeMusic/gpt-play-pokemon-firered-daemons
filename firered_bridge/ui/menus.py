@@ -248,13 +248,20 @@ def get_start_menu_state(
         if not action_ids:
             return None
 
+        #  DAEMONS T-332: the START menu is TWO COLUMNS, filled down the left and then the right. UP/DOWN move within a
+        #  column (and wrap inside it); LEFT/RIGHT cross to the same row of the other column. The DEBUG build's own
+        #  pages are one column, but the agent never opens them.
+        rows = (num_actions + 1) // 2
         options = []
         for i, action_id in enumerate(action_ids):
             name = START_MENU_ACTION_NAMES.get(action_id, f"UNKNOWN_{action_id}")
-            options.append({"index": i, "name": name, "selected": i == cursor_pos})
+            options.append({"index": i, "name": name, "selected": i == cursor_pos,
+                            "column": i // rows, "row": i % rows})
 
         return {
             "type": "startMenu",
+            "layout": "two columns: UP/DOWN within a column, LEFT/RIGHT between columns",
+            "rows": rows,
             "options": options,
             "selectedIndex": cursor_pos,
             "selectedOption": options[cursor_pos]["name"] if cursor_pos < len(options) else None,
