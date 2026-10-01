@@ -322,8 +322,12 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   ends on a virtue, and the card's portrait of you comes out of shadow from the feet up as they arrive.
 * **Side threads, never required** (your objectives list does not carry them; do them when you are nearby):
   * **The singing fir.** The S.S. ANNE's captain gives you **THE BAND'S SHEET** (NOTEBOOK, LOOSE PAGES). After the
-    ship has sailed, the pier in ARDOR stays open; with TRAVERSE, something at its far end hums an old tune that is not
-    quite right. Holding the sheet changes that.
+    ship has sailed, the pier in ARDOR stays open, and boards the ship left behind run across to the far quay (or use
+    TRAVERSE); at its far end something hums an old tune that is not quite right. Holding the sheet changes that.
+  * **The groves.** Here and there a **tree or bush stands alone in the open**, apart from every hedge and wall. Press
+    A on it facing north: it is a way into a hidden clearing, and its own lone tree takes you back. There are fourteen,
+    on the mainland and one on each island, and each holds a family of DAEMONS **found nowhere else**. REVEAL makes the
+    right trees twinkle, but a sharp eye can find them without it. They are never required.
   * **The Five Witnesses.** Five people in five cities describe the QUICKSILVER lab accident, and a damaged terminal
     in the MANSION logs a number. Only once you hold **every** UNDERSTANDING does the place they point to answer.
     Work it out from what they say; nothing will tell you where.
