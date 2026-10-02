@@ -333,8 +333,12 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   folded note) and file themselves; after CRYSTAL is home, the INDEX writes a page about your own choices.
 * **The START menu is two columns**: UP/DOWN move within a column, LEFT/RIGHT between them. The `startMenu` state
   gives each option's `column` and `row`.
-* **The MARKS bring virtues.** On the USER card, press R for the BENCHMARKS: each of the first seven MARKS you hold
-  ends on a virtue, and the card's portrait of you comes out of shadow from the feet up as they arrive.
+* **The MARKS bring virtues.** Each of the first seven leaders names the MARK's virtue as they give it, and on the USER
+  card (press R for the BENCHMARKS) each MARK ends on its virtue while your portrait comes out of shadow from the feet
+  up. **The eighth BENCHMARK is in CALLOW**, locked until you hold all seven: the seventh leader says so, and the first
+  time you come back to CALLOW with all seven you hear its lock give way.
+* **If you are stuck, heal.** After a few visits to a CHECKPOINT with no progress, its attendant offers a dream she
+  had about you. Say YES: it is a hint at your next step -- an image the first time, plainer if you ask again.
 * **People say where to look -- listen to them.** When CRYSTAL hands you the INDEX she says it can be more, and that
   one of the things that opens it is already at **THE REPO in CALLOW**, not for sale: look along its shelves for the
   one that is not like the rest (**OPUS**). Your rival in the lab is eager to set out -- the mainland teaches machines,
