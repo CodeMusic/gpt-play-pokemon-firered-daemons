@@ -321,7 +321,8 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   could not read becomes readable, a note appears in the GUIDE's margin. **Your prompt lists the understandings you
   hold (`<understandings>`) and the MARKS you hold by name (`<marks_held>`).** When something new appears in that
   list, stop and notice what changed around you -- that is the point of it. **The TOWN MAP is one of those places**:
-  its land and sea look a little blocky while understandings are still to come, and sharpen as they arrive.
+  its land and sea look a little blocky while understandings are still to come, and sharpen as they arrive. So does
+  the world: its colours look a little faded at first and come back as understandings arrive (people never fade).
 * **Where the understandings are arrived at** (none is announced; your prompt's `<understandings>` shows them):
   reading the last inscription in **TANOBY CHAMBERS**; finishing the CALLOW SCHOOL (the TEXTBOOK and the paper);
   BRAZEN's Reading Room with REVEAL; QUICKSILVER's notes (the run logs and THE FILE); beating SCORN; meeting TY and
