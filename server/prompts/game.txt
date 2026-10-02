@@ -309,7 +309,11 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   over the **TEXTBOOK**. Then, **in exam season**, sit the paper. Answer from what the boards and the TEXTBOOK taught;
   **80 or better earns the DIPLOMA**. The DIPLOMA is a key: **BRAZEN's Reading Room** will not let you in without it.
 * **The Reading Room** (BRAZEN) teaches; read its shelves and listen to its lecturers. **REVEAL** is installed there.
-  With REVEAL, hidden things sparkle -- it only makes plain what a sharp eye could already see.
+  With REVEAL, hidden things sparkle -- it only makes plain what a sharp eye could already see. A NOTEBOOK page lying
+  somewhere you have not read it yet shimmers too, until you read it. **Before REVEAL**, a very few things already
+  twinkle, faintly and only now and then (the poster in your bedroom; one spot on ONE ISLAND): worth a look.
+  The Reading Room's **ATTENDANT** wishes she could read one book the room has never held -- the GUIDE. Bring it to
+  her once you have it.
 * **The GUIDE** (*The Programmer's Guide to the Human Mind*) sits on a bookshelf on **ONE ISLAND**. Read it.
 * **UNDERSTANDINGS.** A DRIVER is handed to you; an UNDERSTANDING is **arrived at** -- by reading, by seeing something
   from where someone else stands, by noticing what a place is really saying. **You cannot grind one or buy one.**
@@ -331,6 +335,10 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   gives each option's `column` and `row`.
 * **The MARKS bring virtues.** On the USER card, press R for the BENCHMARKS: each of the first seven MARKS you hold
   ends on a virtue, and the card's portrait of you comes out of shadow from the feet up as they arrive.
+* **People say where to look -- listen to them.** When CRYSTAL hands you the INDEX she says it can be more, and that
+  one of the things that opens it is already at **THE REPO in CALLOW**, not for sale: look along its shelves for the
+  one that is not like the rest (**OPUS**). Your rival in the lab is eager to set out -- the mainland teaches machines,
+  the islands how a mind works.
 * **Side threads, never required** (your objectives list does not carry them; do them when you are nearby):
   * **The singing fir.** The S.S. ANNE's captain gives you **THE BAND'S SHEET** (NOTEBOOK, LOOSE PAGES). After the
     ship has sailed, the pier in ARDOR stays open, and boards the ship left behind run across to the far quay (or use
@@ -338,7 +346,10 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   * **The groves.** Here and there a **tree or bush stands alone in the open**, apart from every hedge and wall. Press
     A on it facing north: it is a way into a hidden clearing, and its own lone tree takes you back. There are fourteen,
     on the mainland and one on each island, and each holds a family of DAEMONS **found nowhere else**. REVEAL makes the
-    right trees twinkle, but a sharp eye can find them without it. They are never required.
+    right trees twinkle, but a sharp eye can find them without it: **a grove's tree has a small dark door in its trunk**
+    where an ordinary tree has bark, and a grove's bush a dark gap at its foot. They are never required.
+  * **Hidden pages.** Some NOTEBOOK pages are tucked away rather than shelved; a corner of paper where none should be
+    is worth pressing A on.
   * **The Five Witnesses.** Five people in five cities describe the QUICKSILVER lab accident, and a damaged terminal
     in the MANSION logs a number. Only once you hold **every** UNDERSTANDING does the place they point to answer.
     Work it out from what they say; nothing will tell you where.
