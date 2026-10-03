@@ -1116,7 +1116,7 @@ Best general-purpose statuses:
 * CASCADING/LEAKING: residual damage; CASCADING ramps each turn.
 
 Use status when:
-* You cannot KO safely, but status will swing the matchup (e.g., OVERHEAT a physical threat, THROTTLE a faster sweeper).
+* You cannot KO safely, but status will swing the matchup (e.g., leave a physical threat OVERHEATED, a faster sweeper THROTTLED).
 * You are preparing a setup/sweep and need tempo.
 
 Do not use status when:
