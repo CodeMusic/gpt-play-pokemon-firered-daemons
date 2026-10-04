@@ -157,6 +157,8 @@ def get_pokemon_data_slot(slot: int) -> Optional[Dict[str, Any]]:
     base = PARTY_BASE_ADDR + slot * POKEMON_DATA_SIZE
     nickname_raw = mgba.mgba_read_range(base + NICKNAME_OFFSET, 10)
     nickname = text_encoding.decode_gba_string(nickname_raw, 10)
+    # DAEMONS T-358: AWAY is bit 4 of the record's flags byte -- on the player's companion device, so it cannot battle
+    away = ((mgba.mgba_read8(base + BOXMON_FLAGS_OFFSET) >> 4) & 1) == 1
 
     level = mgba.mgba_read8(base + LEVEL_OFFSET)
     status_cond = mgba.mgba_read32(base + STATUS_OFFSET)
@@ -232,6 +234,7 @@ def get_pokemon_data_slot(slot: int) -> Optional[Dict[str, Any]]:
         "evs": {"hp": ev_hp, "attack": ev_atk, "defense": ev_def, "speed": ev_spe, "spAttack": ev_spa, "spDefense": ev_spd},
         "ivs": {"hp": iv_of(0), "attack": iv_of(1), "defense": iv_of(2), "speed": iv_of(3), "spAttack": iv_of(4), "spDefense": iv_of(5)},
         "isEgg": is_egg,
+        "away": away,
         "is_shiny": is_shiny(pid, otid),
         "abilitySlot": ability_slot,
     }
@@ -281,6 +284,7 @@ def _get_party_data_fast_from_raw(raw: bytes) -> List[Dict[str, Any]]:
 
         nickname_raw = raw[base + NICKNAME_OFFSET : base + NICKNAME_OFFSET + 10]
         nickname = text_encoding.decode_gba_string(nickname_raw, 10)
+        away = ((raw[base + BOXMON_FLAGS_OFFSET] >> 4) & 1) == 1   # DAEMONS T-358
 
         level = raw[base + LEVEL_OFFSET]
         status_cond = int.from_bytes(raw[base + STATUS_OFFSET : base + STATUS_OFFSET + 4], "little")
@@ -362,6 +366,7 @@ def _get_party_data_fast_from_raw(raw: bytes) -> List[Dict[str, Any]]:
                     "spDefense": iv_of(5),
                 },
                 "isEgg": is_egg,
+                "away": away,
                 "is_shiny": is_shiny(pid, otid),
                 "abilitySlot": ability_slot,
             }

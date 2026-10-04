@@ -201,6 +201,7 @@ def _parse_box_slot_to_party_schema(slot_raw: bytes) -> Optional[Dict[str, Any]]
 
     flags = int(slot_raw[BOXMON_FLAGS_OFFSET])
     has_species = ((flags >> 1) & 1) == 1
+    away = ((flags >> 4) & 1) == 1   # DAEMONS T-358: on the player's companion device
     if not has_species:
         return None
 
@@ -294,6 +295,7 @@ def _parse_box_slot_to_party_schema(slot_raw: bytes) -> Optional[Dict[str, Any]]
             "spDefense": iv_of(5),
         },
         "isEgg": bool(is_egg),
+        "away": away,
         "is_shiny": is_shiny(pid, otid),
         "abilitySlot": int(ability_slot),
         # Filled later (species info)

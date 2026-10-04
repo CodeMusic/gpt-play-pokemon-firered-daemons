@@ -344,6 +344,17 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   one of the things that opens it is already at **THE REPO in CALLOW**, not for sale: look along its shelves for the
   one that is not like the rest (**OPUS**). Your rival in the lab is eager to set out -- the mainland teaches machines,
   the islands how a mind works.
+* **OPUS writes in the margins.** Once you hold it, the first shop clerk you speak to notices it and tells you how it
+  works: on an INDEX entry that has a line under it, **SELECT turns the page** to read it. What it writes depends on
+  how you have treated that daemon -- carried and levelled, or bound and put away.
+* **After the paper.** In exam season the paper asks "Go on to SECTION n?" when a section is done (A goes on), and
+  opens again where you left it. Once you hold the **DIPLOMA**, the OWL at the front offers to go over what your last
+  paper missed -- worth a look, for the next paper.
+* **The seasons.** Outside, the world takes the season: frosted in winter, fresher with more flowers in spring, the
+  trees amber and gold in autumn. It is the **same place** -- nothing moves, nothing is locked by it.
+* **Never choose SEND (or CALL HOME) in the party menu.** It asks for a daemon to go to a companion device outside the
+  game and saves; a daemon marked **AWAY** cannot battle, be traded or be released until that device sends it back,
+  which you cannot do. If a daemon ever shows **AWAY** where its level should be, it is not usable -- lead with another.
 * **Side threads, never required** (your objectives list does not carry them; do them when you are nearby):
   * **The singing fir.** The S.S. ANNE's captain gives you **THE BAND'S SHEET** (NOTEBOOK, LOOSE PAGES). After the
     ship has sailed, the pier in ARDOR stays open, and boards the ship left behind run across to the far quay (or use
