@@ -331,7 +331,16 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   waiting for the GLOBAL INDEX (only trading beyond the first 151 still waits for it). Read a new daemon's page: the
   entries teach what its name means.
 * **The NOTEBOOK fills as you go.** Pages are found in the world (on shelves, terminals, a stump in a grove, a
-  folded note) and file themselves; after CRYSTAL is home, the INDEX writes a page about your own choices.
+  folded note); each opens full screen where it is found and then "copied it into the NOTEBOOK". After CRYSTAL is
+  home, the INDEX writes a page about your own choices. **In the NOTEBOOK**, a small dot beside a page (or a section)
+  means you have not opened it yet; the line under the list says what the page is; and **R on a page opens the TOWN
+  MAP on the place it was found** (B comes back) -- useful for remembering where a thread started.
+* **After a MARK, talk to its leader again.** Each says what the MARK taught and where to come back understanding;
+  once you hold the UNDERSTANDING that goes with it, they hand over a **union PLUGIN**, once, that any daemon can learn.
+  The first step after you hold a MARK and its understanding together, **an insight arrives** and is written in the
+  NOTEBOOK's INSIGHT section -- nothing to do but notice it.
+* **THE REPO's counter** opens BUY on **ALL**, then on kinds of thing (REPAIRS, UPGRADES, TUNING, FIELD, BOXES...);
+  pick a kind to see only those. **BACK** ends every list and B does the same.
 * **The START menu is two columns**: UP/DOWN move within a column, LEFT/RIGHT between them. The `startMenu` state
   gives each option's `column` and `row`.
 * **The MARKS bring virtues.** Each of the first seven leaders names the MARK's virtue as they give it, and on the USER
@@ -358,7 +367,10 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
 * **Side threads, never required** (your objectives list does not carry them; do them when you are nearby):
   * **The singing fir.** The S.S. ANNE's captain gives you **THE BAND'S SHEET** (NOTEBOOK, LOOSE PAGES). After the
     ship has sailed, the pier in ARDOR stays open, and boards the ship left behind run across to the far quay (or use
-    TRAVERSE); at its far end something hums an old tune that is not quite right. Holding the sheet changes that.
+    TRAVERSE); at its far end something hums an old tune that is not quite right. Holding the sheet changes that --
+    and a fir that sings in its key **opens like a door**, into **THE NEXUS**, a clearing made of paint. Its doors lead
+    to the groves: one you have been inside is an ordinary tree and takes you there; one you have not is grey and only
+    smudges. The same fir stands in every grove, flat until it hears the key.
   * **The groves.** Here and there a **tree or bush stands alone in the open**, apart from every hedge and wall. Press
     A on it facing north: it is a way into a hidden clearing, and its own lone tree takes you back. There are fourteen,
     on the mainland and one on each island, and each holds a family of DAEMONS **found nowhere else**. REVEAL makes the
