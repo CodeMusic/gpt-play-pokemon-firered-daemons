@@ -371,6 +371,19 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
     and a fir that sings in its key **opens like a door**, into **THE NEXUS**, a clearing made of paint. Its doors lead
     to the groves: one you have been inside is an ordinary tree and takes you there; one you have not is grey and only
     smudges. The same fir stands in every grove, flat until it hears the key.
+  * **The instrument.** One edition has a **HARP** (a LYREBIRD outside CALLOW SCHOOL gives it), the other a **FLUTE**
+    (in the shade of a palm on a beach on the islands). Use it from the BAG, or register it to SELECT. A **KEY WHEEL**
+    of twelve coloured dots rings you: LEFT and RIGHT turn it, A chooses the key, B or START puts it away. Then the
+    buttons are the seven notes of that key -- DOWN, LEFT, UP, RIGHT, then B, A, SELECT, climbing -- with L held an
+    octave down and R an octave up; START puts it away. While it is out you cannot walk, and A and B are notes, not
+    talk and cancel. The notes you play are written on a staff across the top of the screen.
+  * **Songs are learned by ear.** Some places play a short tune once you understand them, and say the key it hangs
+    in. Take the instrument out in that key and play the tune back from what you heard; if it is right, the notes
+    join, it echoes, and it is written into the **SONGBOOK** (a NOTEBOOK section, read there as coloured notes). A
+    learned song, played again in its key, does something where it belongs. Close -- the right shape in the wrong key
+    -- is answered as such: change the key, not the notes. Nobody will play a song for you or tell you its notes; do
+    not guess at random for long -- go back and listen again, or read the SONGBOOK. Once you know a song, its next
+    notes appear faintly on the staff as you begin it. Never required.
   * **The groves.** Here and there a **tree or bush stands alone in the open**, apart from every hedge and wall. Press
     A on it facing north: it is a way into a hidden clearing, and its own lone tree takes you back. There are fourteen,
     on the mainland and one on each island, and each holds a family of DAEMONS **found nowhere else**. REVEAL makes the
