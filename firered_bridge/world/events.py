@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+MOVEMENT_TYPE_INVISIBLE = 0x4C   # include/constants/event_object_movement.h
+
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -581,6 +583,11 @@ def get_current_map_npcs(
             object_event_id = None
             is_active = False
 
+        # DAEMONS (the user, 2026-10-20): an invisible object is not something a player can see -- the walk-in
+        # legends (T-334) stand invisible, so leave them out; the model finds one by walking in, as a player does.
+        if movement_type == MOVEMENT_TYPE_INVISIBLE:
+            continue
+
         wandering = movement_type in OBJECT_EVENT_WANDERING_TYPES
 
         out.append(
@@ -609,6 +616,11 @@ def get_current_map_npcs(
         if local_id in seen_local:
             continue
         movement_type = int(live.get("movementType", 0) or 0)
+        # DAEMONS (the user, 2026-10-20): an invisible object is not something a player can see -- the walk-in
+        # legends (T-334) stand invisible, so leave them out; the model finds one by walking in, as a player does.
+        if movement_type == MOVEMENT_TYPE_INVISIBLE:
+            continue
+
         wandering = movement_type in OBJECT_EVENT_WANDERING_TYPES
         gid = int(live.get("graphicsId", 0) or 0)
         pos = live.get("position") or [0, 0]
