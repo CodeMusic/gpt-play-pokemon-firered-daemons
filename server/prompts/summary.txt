@@ -1,7 +1,7 @@
 The conversation has been too long; it is time to summarize the gameplay history so we can continue the journey without losing context.
 
 Your task is to create a detailed, continuation-ready summary of the DAEMON FireRed gameplay history.  
-This summary must be complete enough that gameplay can resume immediately with minimal confusion.
+This summary must be complete enough that gameplay can resume immediately with little to work out again.
 
 ---
 
@@ -75,7 +75,7 @@ Keep it concise but meaningful.
 ## Current Game State (RAM-Authoritative)
 - Location (map + coords + facing) [CONFIRMED/INFERRED/UNKNOWN]
 - Current objective / immediate goal [CONFIRMED/INFERRED/UNKNOWN]
-- MARKS obtained (Kanto count, max 8) [CONFIRMED/INFERRED/UNKNOWN]
+- MARKS obtained (max 8) [CONFIRMED/INFERRED/UNKNOWN]
 - Money [CONFIRMED/UNKNOWN]
 - Any active menus/battle/dialog status if currently relevant [CONFIRMED/UNKNOWN]
 
@@ -87,39 +87,39 @@ For each party DAEMON, include:
 - HP + status conditions [CONFIRMED/UNKNOWN]
 - Moves + PP (if visible) [CONFIRMED/UNKNOWN]
 - Held item (if visible) [CONFIRMED/UNKNOWN]
-- Intended role (sweeper / pivot / status-control / catcher / HM-utility) [INFERRED/UNKNOWN]
-- Notes: strengths, coverage, constraints (e.g., key TM used, important coverage) [INFERRED/UNKNOWN]
+- Intended role (sweeper / pivot / status-control / catcher / DRIVER-utility) [INFERRED/UNKNOWN]
+- Notes: strengths, coverage, constraints (e.g., key PLUGIN used, important coverage) [INFERRED/UNKNOWN]
 Do NOT fabricate stats. Only include stat numbers if they were explicitly visible.
 
 ## Inventory Snapshot (Bag)
-- Key consumables (balls, heals, status cures, repels, escape ropes) [CONFIRMED/UNKNOWN]
+- Key consumables (BOXES, heals, status cures, SUPPRESS, EJECTs) [CONFIRMED/UNKNOWN]
 - Any item shortages that matter for next steps [INFERRED/UNKNOWN]
 Do not attempt a full bag dump if it is not visible; prioritize what matters.
 
 ## Bag Kits Readiness (Context-Based)
 Summarize whether we are ready for the next context:
-- Bind readiness (balls + status tools) [INFERRED/UNKNOWN]
-- Dungeon readiness (heals + status cures + escape rope) [INFERRED/UNKNOWN]
-- Boss readiness (strong heals + status cures + optional X-items) [INFERRED/UNKNOWN]
+- Bind readiness (BOXES + status tools) [INFERRED/UNKNOWN]
+- Dungeon readiness (heals + status cures + EJECT) [INFERRED/UNKNOWN]
+- Boss readiness (strong heals + status cures + optional TUNE items) [INFERRED/UNKNOWN]
 If not ready, state what’s missing.
 
 ## Key Items and Progress
 - Important Key Items obtained (story-critical items, passes/tickets, etc.) [CONFIRMED/UNKNOWN]
-- HMs obtained + who can use them (if known) [CONFIRMED/UNKNOWN]
-- Important TMs obtained/used (only notable ones) [CONFIRMED/INFERRED/UNKNOWN]
+- DRIVERS obtained + who can use them (if known) [CONFIRMED/UNKNOWN]
+- Important PLUGINS obtained/used (only notable ones) [CONFIRMED/INFERRED/UNKNOWN]
 - Major story gates cleared/unlocked (e.g., new regions, key events) [CONFIRMED/INFERRED/UNKNOWN]
 
-## PC Items / DAEMON Storage
-- DAEMON stored in PC that matter (HM mules, backups, candidates for roles) [CONFIRMED/UNKNOWN]
-- Items stored in PC if referenced [CONFIRMED/UNKNOWN]
+## PORT Items / DAEMON Storage
+- DAEMON stored in the PORT that matter (DRIVER carriers, backups, candidates for roles) [CONFIRMED/UNKNOWN]
+- Items stored in the PORT if referenced [CONFIRMED/UNKNOWN]
 If storage is not visible in logs, write: **UNKNOWN**.
 
 ## Boss Dossier Highlights
 Record only what we actually observed:
-- BENCHMARK leaders / Rival / Team Rocket bosses / Elite Four / Champion (Rival) attempts:
+- BENCHMARK leaders / Rival / CORPUS bosses / THE REVIEW BOARD / CHAMPION (Rival) attempts:
   - What we fought (species seen, notable ROUTINES/status/strategies) [CONFIRMED/INFERRED/UNKNOWN]
   - What worked / what failed [INFERRED/UNKNOWN]
-  - Any planned fixes (levels, TMs, items, lead changes) [INFERRED/UNKNOWN]
+  - Any planned fixes (levels, PLUGINS, items, lead changes) [INFERRED/UNKNOWN]
 Keep it concise but actionable.
 
 ## Map Exploration Status (Actionable, Not Exhaustive)
@@ -135,7 +135,7 @@ For each solved dungeon/maze include:
 - Key connector mapping (ladder A -> floor X, door -> room, switch -> gate), using markers if referenced [CONFIRMED/INFERRED/UNKNOWN]
 - The successful route (short paragraph + bullet points) [INFERRED/UNKNOWN]
 - Pitfalls/traps/one-way patterns (e.g., 1F->2F->1F->3F) [INFERRED/UNKNOWN]
-- Exit method (normal exit / escape rope / warp) if relevant [CONFIRMED/INFERRED/UNKNOWN]
+- Exit method (normal exit / EJECT / warp) if relevant [CONFIRMED/INFERRED/UNKNOWN]
 Do not invent mappings. If incomplete, say what is unknown.
 
 ## Restart Console History (Cumulative)
@@ -184,7 +184,7 @@ A higher-detail view of the most recent portion (since the last summary):
 
 ## Critical Decisions & Strategy Notes
 Highlight high-impact strategic choices and why they mattered:
-- Team building ROUTINES (TMs, role assignments, evolutions)
+- Team building ROUTINES (PLUGINS, role assignments, evolutions)
 - XP routing decisions
 - Inventory management decisions (restocks, kits)
 - Boss preparation/adjustments

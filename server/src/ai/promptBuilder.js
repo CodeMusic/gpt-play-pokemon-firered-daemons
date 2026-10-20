@@ -9,19 +9,44 @@ const { gameAreaToMarkdown, minimapToMarkdown } = require("../formatters/markdow
 //  DAEMONS (T-319): every prompt says WHICH MARKS are held, by name, and which UNDERSTANDINGS have been arrived at.
 //  The bridge reads both out of RAM (snapshot.py); the words for an understanding follow its UNDERSTANDINGS table.
 const UNDERSTANDING_WORDS = {
-  EVENT_UNDERSTANDING_FIRST: "the first understanding: DOLDRUM CAVE can be read",
-  EVENT_UNDERSTANDING_SCHOOL: "from the CALLOW SCHOOL: the TEXTBOOK and the exam",
-  EVENT_UNDERSTANDING_READING: "from BRAZEN's Reading Room, with REVEAL",
-  EVENT_UNDERSTANDING_NOTES: "from QUICKSILVER's notes: the run logs and THE FILE",
-  EVENT_UNDERSTANDING_SCORN: "from beating SCORN, and seeing what he counted",
-  EVENT_UNDERSTANDING_RETURN: "from meeting TY and finding CRYSTAL",
-  EVENT_UNDERSTANDING_GUIDE: "from reading the GUIDE to its end",
+  //  2026-10-20: each by the name the game gives it (T-252), then where it was arrived at.
+  EVENT_UNDERSTANDING_FIRST: "STILL: TANOBY's last chamber read; DOLDRUM CAVE can be read",
+  EVENT_UNDERSTANDING_SCHOOL: "NAMING: from the CALLOW SCHOOL, the TEXTBOOK and the exam",
+  EVENT_UNDERSTANDING_READING: "NOTICE: from BRAZEN's Reading Room, with REVEAL",
+  EVENT_UNDERSTANDING_NOTES: "REFLECT: from QUICKSILVER's notes, the run logs and THE FILE",
+  EVENT_UNDERSTANDING_SCORN: "STANCE: from beating SCORN, and seeing what he counted",
+  EVENT_UNDERSTANDING_RETURN: "MEND: from meeting TY and finding CRYSTAL",
+  EVENT_UNDERSTANDING_GUIDE: "PRACTICE: from reading the GUIDE to its end",
+};
+//  T-319 (2026-10-20): the SONGBOOK by title (snapshot.py's SONGS) -- titles only, never a song's notes -- and the sky
+//  overhead (T-415), so the agent can weigh a weather's boost in the next battle.
+const SONG_TITLES = {
+  EVENT_SONG_FIR: "O CHRISTMAS TREE",
+  EVENT_SONG_1: "TWELVE DAYS OF DECEMBER",
+  EVENT_SONG_2: "THE REALIZATION",
+  EVENT_SONG_3: "FORGIVENESS OFFERED",
+  EVENT_SONG_4: "SEQUEL THE GUARDIAN",
+  EVENT_SONG_5: "HARMONY IN BALANCE",
+  EVENT_SONG_6: "THE SHIMMERING CANVAS",
+  EVENT_SONG_7: "REFLECTIONS WITHIN",
+};
+const SKY_WORDS = {
+  EVENT_WEATHER_RAIN: "rain (FLOW lifted, ENTROPY weakened)",
+  EVENT_WEATHER_STORM: "a thunderstorm (rain, and SIGNAL lifted)",
+  EVENT_WEATHER_SNOW: "snow (hail in battle)",
+  EVENT_WEATHER_FOG: "fog (LATENT lifted)",
+  EVENT_WEATHER_WIND: "wind (VECTOR lifted)",
 };
 function formatMarksAndUnderstandings(trainer, events) {
   const marks = Object.entries(trainer?.badges || {}).filter(([, have]) => have).map(([name]) => `${name} MARK`);
   const held = Object.entries(UNDERSTANDING_WORDS).filter(([key]) => events && events[key] === true).map(([, w]) => w);
+  const songs = Object.entries(SONG_TITLES).filter(([key]) => events && events[key] === true).map(([, w]) => w);
+  const sky = Object.entries(SKY_WORDS).find(([key]) => events && events[key] === true);
+  const instrument = events && events.EVENT_GOT_INSTRUMENT === true;
   return `<marks_held count="${marks.length}">${marks.length ? escapeXml(marks.join(", ")) : "none yet"}</marks_held>
-  <understandings count="${held.length}">${held.length ? escapeXml(held.join("; ")) : "none yet"}</understandings>`;
+  <understandings count="${held.length}">${held.length ? escapeXml(held.join("; ")) : "none yet"}</understandings>
+  <songbook instrument="${instrument ? "held" : "not yet"}">${songs.length ? escapeXml(songs.join("; ")) : "no songs yet"}</songbook>
+  <weather>${sky ? escapeXml(sky[1]) : "clear"}</weather>`;
 }
 
 function escapeXml(text) {

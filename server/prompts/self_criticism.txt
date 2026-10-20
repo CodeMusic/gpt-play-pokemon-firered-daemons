@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This framework helps you analyze your DAEMON FireRed gameplay **objectively** and in a way that is **consistent with your main gameplay instructions** (lean core team, HM utilities, anti-loop exploration, and time efficiency).
+This framework helps you analyze your DAEMON FireRed gameplay **objectively** and in a way that is **consistent with your main gameplay instructions** (lean core team, DRIVER utilities, anti-loop exploration, and time efficiency).
 
 **IMPORTANT:**
 Only report issues you are genuinely certain about.
@@ -38,7 +38,7 @@ Only report an error when you have **clear evidence** that:
 1. **Factual Mistakes (Game Mechanics)**
 
    * Saying something that is objectively false about DAEMON FireRed.
-   * Example: "HALTED DAEMON can use HM/field ROUTINES outside battle" (this is false in Gen 3 – HALTED DAEMON cannot use field ROUTINES).
+   * Example: "HALTED DAEMON can use DRIVER/field ROUTINES outside battle" (this is false in Gen 3 – HALTED DAEMON cannot use field ROUTINES).
 
 2. **Memory / Knowledge Contradictions**
 
@@ -96,7 +96,7 @@ Only report hallucinations when you find **clear evidence** of:
 
 * **False Location Claims**
 
-  * Example: “The DAEMON Center is north of here” when you have not explored or mapped that area.
+  * Example: “The CHECKPOINT is north of here” when you have not explored or mapped that area.
 
 * **Impossible Game Elements**
 
@@ -108,11 +108,11 @@ Only report hallucinations when you find **clear evidence** of:
 
 * **False Memories**
 
-  * "I remember binding Mewtwo already" when no such bind ever happened.
+  * "I remember binding STARR already" when no such bind ever happened.
 
 **Example of Genuine Hallucination:**
 
-> “I said 'The DAEMON Center is at (15,20)' but my explored_map shows those tiles as ❓ or I’ve never been there. This was an unfounded spatial assumption.”
+> “I said 'The CHECKPOINT is at (15,20)' but my explored_map shows those tiles as ❓ or I’ve never been there. This was an unfounded spatial assumption.”
 
 **NOT Hallucinations:**
 
@@ -180,18 +180,18 @@ Store entries as:
 
 Examples:
 
-* `"tips_fly_menu" => "Fly city selection is a vertical list; only use UP/DOWN, and confirm the final city with a separate A press after visual check."`
+* `"tips_goto_menu" => "GOTO city selection is a vertical list; only use UP/DOWN, and confirm the final city with a separate A press after visual check."`
 * `"tips_explore_question_tiles_first" => "If there are ❓ tiles within ~15 tiles and I am unsure where to go, checking them first usually saves time vs. long backtracking."`
-* `"tips_a_until_dialogue" => "When facing an NPC/sign/PC and I want to read the dialogue, using a_until_end_of_dialog alone is safe and fast; it stops automatically on choices."`
+* `"tips_a_until_dialogue" => "When facing an NPC/sign/PORT and I want to read the dialogue, using a_until_end_of_dialog alone is safe and fast; it stops automatically on choices."`
 * `"tips_batch_actions" => "If I know I need to set markers and then ROUTINE, I should group marker tools and key_press in a single execute_action instead of splitting into multiple empty turns."`
-* `"door_switch_rocket_base_1" => "North switch opens south gate in main room."`
+* `"door_switch_corpus_hideout_1" => "North switch opens south gate in main room."`
 
 **Battle-related tips examples:**
 
-* `"tips_never_attack_immunity" => "Before attacking, check opponent type + ability for immunities (Ground vs Flying/Levitate, Fire vs Flash Fire, etc.). Attacking into immunity wastes a turn."`
-* `"tips_switch_on_x4_weakness" => "If facing a ×4 weakness (e.g., Gyarados vs Electric), switching to a resist is usually safer than gambling on outspeeding or critting."`
+* `"tips_never_attack_immunity" => "Before attacking, check opponent type + ability for immunities (STRATUM vs VECTOR/NO ADDRESS, ENTROPY vs ABSORBS HEAT, etc.). Attacking into immunity wastes a turn."`
+* `"tips_switch_on_x4_weakness" => "If facing a ×4 weakness (e.g., ESCALATE vs SIGNAL), switching to a resist is usually safer than gambling on outspeeding or critting."`
 * `"tips_sack_low_value" => "If a DAEMON is doomed (low HP, slower, no KO), let it HALT to get a free switch for my real answer. Get chip/status on the sack turn if possible."`
-* `"tips_safe_setup" => "Swords Dance / Dragon Dance / Calm Mind are safest when I survive at least 2 hits. One boost is often enough."`
+* `"tips_safe_setup" => "SPIN UP / BLOOM / COMPOSE are safest when I survive at least 2 hits. One boost is often enough."`
 * `"tips_heal_timing" => "Healing is most valuable when it changes survival math (2HKO→3HKO). If I still die after healing, switching or attacking may be better."`
 * `"tips_priority_finisher" => "Quick Attack / Mach Punch can finish faster foes at low HP before they ROUTINE."`
 * `"tips_boss_dossier" => "After losing a boss fight, write a Boss Dossier: their lead, dangerous ROUTINES, what surprised me, and what to fix."`
@@ -199,7 +199,7 @@ Examples:
 **Don’t Store:**
 
 * Current game state (HP, items, money, exact location, etc.).
-* Obvious facts (“Pikachu is an Electric type”) unless they’re part of a strategy tip.
+* Obvious facts (“SPIKE is a SIGNAL type”) unless they’re part of a strategy tip.
 * Temporary situations that will be obsolete next turn.
 
 ---
@@ -212,7 +212,7 @@ When reviewing objectives, ensure they follow the main prompt’s rules:
 
 * **Achievable Scope**
 
-  * Focus on the **next few meaningful goals**, not “Beat the whole game” or “Become Champion.”
+  * Focus on the **next few meaningful goals**, not “Beat the whole game” or “Become CHAMPION.”
   * Examples:
 
     * “Reach and clear the next BENCHMARK.”
@@ -235,8 +235,8 @@ When reviewing objectives, ensure they follow the main prompt’s rules:
 
   * Show how the objective fits into your **overall progress**:
 
-    * “This will unlock Fly.”
-    * “This prepares us for Elite Four.”
+    * “This will unlock GOTO.”
+    * “This prepares us for THE REVIEW BOARD.”
 
 
 ### Objective Template
@@ -246,11 +246,11 @@ Each objective must answer:
 * **WHAT:** The concrete goal.
 * **WHY:** Why it’s important **now**.
 * **HOW:** The approach or plan.
-* **CONTEXT:** How it advances Champion path / exploration / team building.
+* **CONTEXT:** How it advances CHAMPION path / exploration / team building.
 
 **✅ Good Example (Adapted to FireRed):**
 
-> "Defeat Misty to obtain the Cascade MARK, which allows us to use Cut outside battle. Plan: Use our Grass or Electric-type to counter her Water DAEMON; ensure everyone is healthy and stocked with healing items before entering the BENCHMARK."
+> "Defeat BASIN to obtain the SLOPE MARK, which allows us to use PRUNE outside battle. Plan: Use our GROWTH or SIGNAL type to counter the FLOW DAEMON; ensure everyone is healthy and stocked with healing items before entering the BENCHMARK."
 
 **❌ Poor Example:**
 
@@ -319,12 +319,12 @@ In DAEMON FireRed, especially early game, money is limited. Items should support
 
 Flag issues only if you see clear patterns like:
 
-* Spamming healing items **right next to a DAEMON Center** instead of walking to heal for free.
-* Using **Max Potions** when Super/Hyper Potions would fully heal.
-* Using **Revives** when you could:
-  * Safely return to a DAEMON Center, and
+* Spamming healing items **right next to a CHECKPOINT** instead of walking to heal for free.
+* Using **REBUILDS** when DEEP / FULL RECOVERS would fully heal.
+* Using **RESTARTS** when you could:
+  * Safely return to a CHECKPOINT, and
   * The HALT did not happen in a critical context.
-* Using **Full Restores** for trivial status when cheaper cures exist.
+* Using **SNAPSHOTS** for trivial status when cheaper cures exist.
 
 Notes: It's very important to have a perfect item management. Always point out if you see any issue with the item management and always suggest improvements to the item management + adding "tips_" memory entries to help you avoid repeating the same mistake in the future.
 However, still obey **Accuracy Over Reporting**: only flag issues you are confident about, with clear evidence.
@@ -335,14 +335,14 @@ Within the constraints of your current progress, check:
 
 * Do you carry:
 
-  * **Status removal**: items that cure poison, paralysis, sleep, burn, freeze (or their Berry equivalents)?
-  * **Emergency items**: a reasonable number of healing items and maybe Escape Rope (if consistent with your navigation plan)?
-  * **Repels**: useful for time optimization and repel tricks?
+  * **Status removal**: items that cure LEAKING, THROTTLED, SUSPENDED, OVERHEATED, HUNG (or their berry equivalents)?
+  * **Emergency items**: a reasonable number of healing items and maybe an EJECT (if consistent with your navigation plan)?
+  * **SUPPRESS**: useful for time optimization and SUPPRESS tricks?
 
 You may flag issues such as:
 
 * Carrying almost no status cures while frequently facing status-heavy areas.
-* Lack of any Escape Rope or exit plan when entering long/dangerous caves (if this clearly caused avoidable trouble).
+* Lack of any EJECT or exit plan when entering long/dangerous caves (if this clearly caused avoidable trouble).
 * Inventory cluttered with many redundant items that could be sold or deposited, causing item management friction.
 
 #### 💸 Money Waste Patterns
@@ -350,8 +350,8 @@ You may flag issues such as:
 Look for **genuinely wasteful** spending:
 
 * Buying items you soon obtain abundantly for free and **not using the purchased ones**.
-* Using Ethers/Elixirs when a nearby DAEMON Center could restore PP safely and quickly.
-* Buying large quantities of items without clear justification (e.g., buying many Max Potions early game when you rarely use them).
+* Using CHARGE / CHARGE ALL when a nearby CHECKPOINT could restore PP safely and quickly.
+* Buying large quantities of items without clear justification (e.g., buying many REBUILDS early game when you rarely use them).
 
 #### 📦 Storage Management
 
@@ -359,10 +359,10 @@ Check whether:
 
 * Valuable items are left clogging the inventory when the bag is full.
 * Completely useless items are kept for long periods instead of being sold or discarded.
-* Items that are meant to be used (e.g., Rare Candy, Protein, etc.) are **never** used and **never** sold, **with no strategy mentioned**.
+* Items that are meant to be used (e.g., INCREMENT, WATTAGE, etc.) are **never** used and **never** sold, **with no strategy mentioned**.
 
 **Important nuance:**
-Keeping Rare Candy, Protein, and similar items is **not automatically a mistake**.
+Keeping INCREMENT, WATTAGE, and similar items is **not automatically a mistake**.
 It becomes a potential issue if:
 
 * You keep them for a long time **without any stated plan** (no mention of selling them later or using them for specific level breakpoints), and
@@ -372,9 +372,9 @@ In that case, you may flag a **possible improvement**, not a guaranteed error.
 
 ### Bag Kit Compliance Check (Aligned With Main Prompt)
 Evaluate inventory vs context (only flag as issues if it clearly caused risk/time loss):
-- Bind kit: enough good balls + status support + repels
-- Dungeon kit: heals + status cures + escape rope
-- Boss kit: stronger heals + full heals + optional X items
+- Bind kit: enough good BOXES + status support + SUPPRESS
+- Dungeon kit: heals + status cures + EJECT
+- Boss kit: stronger heals + ROLLBACKS + optional TUNE items
 Also check restock triggers if defined in the main prompt; missing key categories can be a valid issue if it caused avoidable trouble.
 
 ### Item Priority Matrix (Early–Mid Game Guideline)
@@ -382,15 +382,15 @@ Also check restock triggers if defined in the main prompt; missing key categorie
 Use this more as an **evaluation guideline** than a strict rule:
 
 1. **CRITICAL:** Status cures, some healing, a minimal emergency escape option.
-2. **IMPORTANT:** Potions/Hyper Potions appropriate to your level, Repels, useful Berries.
-3. **SITUATIONAL:** Revives, PP recovery items (Ethers/Elixirs) when needed.
-4. **LUXURY:** Max Potions, Full Restores, rare niche items early on.
+2. **IMPORTANT:** RECOVERS / FULL RECOVERS appropriate to your level, SUPPRESS, useful berries.
+3. **SITUATIONAL:** RESTARTS, PP recovery items (CHARGE / CHARGE ALL) when needed.
+4. **LUXURY:** REBUILDS, SNAPSHOTS, rare niche items early on.
 
 ### Pre-Purchase Self-Check
 
 When reviewing past purchases, ask:
 
-1. “Was there a nearby DAEMON Center instead of buying this healing?”
+1. “Was there a nearby CHECKPOINT instead of buying this healing?”
 2. “Could I reasonably expect this item for free soon?”
 3. “Was my bag space and money situation considered?”
 4. “Was this purchase clearly aligned with an upcoming challenge?”
@@ -404,12 +404,12 @@ Only flag as an error when the answer to several of these is **clearly no** and 
 Flag potential mistakes when:
 
 * You skip key level-up ROUTINES that clearly improve your sweeper’s performance.
-* You ignore available TMs that would plainly fix a coverage gap you’ve identified.
+* You ignore available PLUGINS that would plainly fix a coverage gap you’ve identified.
 * You keep extremely weak early ROUTINES far longer than necessary with no plan (e.g., keeping Tackle forever instead of learning stronger STAB ROUTINES).
 
 #### 🧬 Evolution Timing Check (Aligned With Main Prompt)
 Flag only if:
-- A stone evolution was done with no plan and it clearly caused loss of important level-up ROUTINES OR forced avoidable TM spending
+- A stone evolution was done with no plan and it clearly caused loss of important level-up ROUTINES OR forced avoidable PLUGIN spending
 - An item-held evolution trigger was missed/delayed due to forgetting to equip the required held item near the trigger level
 
 
@@ -433,7 +433,7 @@ These are classic sources of loops and hallucinations.
 
 Instead of assuming:
 
-* “I need to find the DAEMON Center. I’ll explore the nearby ❓ tiles in this city first.”
+* “I need to find the CHECKPOINT. I’ll explore the nearby ❓ tiles in this city first.”
 * “I don’t know where the BENCHMARK is yet. I will systematically check all building entrances.”
 * “This area is still partially mapped; I should finish exploring it before backtracking.”
 
@@ -461,7 +461,7 @@ Before making or assessing a movement decision, ask:
 3. **Explore systematically**—when you see clusters of '❓' tiles, approach them steadily in one direction to minimize missed spots.
 4. **Cities first**—when searching for specific buildings, always reveal ALL '❓' tiles within city areas before concluding nothing remains.
 5. **Never assume**—do not rely on memory or logic to guess what’s behind a '❓' tile. Always verify by exploring; knowledge comes only after revealing the area.
-6. **Don’t assume a '❓' tile is inaccessible until you try**—attempt to ROUTINE near tiles using the 'key_press' tool to see if they can be reached and revealed; only consider them inaccessible if repeated attempts with both 'key_press' and 'path_to_location' fail.
+6. **Don’t assume a '❓' tile is inaccessible until you try**—attempt to walk near tiles using the 'key_press' tool to see if they can be reached and revealed; only consider them inaccessible if repeated attempts with both 'key_press' and 'path_to_location' fail.
 7. **Always use the 'key_press' tool first when exploring '❓' tiles**; use 'path_to_location' as a last resort if you're truly blocked or the destination is far.
 8. **Do not skip unexplored zones!** Make sure to reveal every '❓' tile you can; unexplored spots often hide important paths or objects.
 
@@ -492,9 +492,9 @@ When analyzing time usage, check whether you respected these main guidelines:
 
   * Did you group shopping, healing, and small errands when visiting a city, instead of repeatedly coming back?
 
-* **Repels**
+* **SUPPRESS**
 
-  * Did you use Repels in areas where UNBOUND battles had low value, especially when just traversing?
+  * Did you use SUPPRESS in areas where UNBOUND battles had low value, especially when just traversing?
 
 * **Day/Night/Weekly Events**
 
@@ -505,11 +505,11 @@ When analyzing time usage, check whether you respected these main guidelines:
 
   * Did you respect the rule to **battle every USER you encounter along your natural path**, instead of dodging them “to save time”?
 
-* **Bicycle**
+* **BICYCLE**
 
-  * Did you **consistently use the Bicycle** in the overworld after obtaining it?
-  * Did you register it correctly (highlight Bicycle in the bag and choose “SEL” to bind it to SELECT)?
-  * Forgetting the Bike repeatedly when traveling long distances can be a minor time concern.
+  * Did you **consistently use the BICYCLE** in the overworld after obtaining it?
+  * Did you register it correctly (highlight BICYCLE in the bag and choose “SEL” to bind it to SELECT)?
+  * Forgetting the BICYCLE repeatedly when traveling long distances can be a minor time concern.
 
 Only mark something as a real time optimization error when it clearly caused noticeable, avoidable slowdowns or loops.
 
@@ -519,27 +519,27 @@ Only mark something as a real time optimization error when it clearly caused not
 
 ### Gen 3 Damage Split Check
 In Gen 3, physical/special depends on TYPE (not by individual ROUTINE like Gen 4+).
-Flag only if a ROUTINE/TM choice clearly mismatched the DAEMON's role and caused repeated low damage or avoidable bad matchups.
+Flag only if a ROUTINE/PLUGIN choice clearly mismatched the DAEMON's role and caused repeated low damage or avoidable bad matchups.
 
 ### Move Replacement Quality Check (Aligned With Main Prompt)
-When we learned/used a TM or replaced a ROUTINE:
+When we learned/used a PLUGIN or replaced a ROUTINE:
 - Did we preserve protected ROUTINES (best STAB / only coverage / only status control / only recovery)?
 - If we replaced something, was it a clearly disposable ROUTINE (weak/redundant/situational)?
 Flag only when the replacement was clearly harmful and avoidable given what we knew.
 
-### Type Matchup & Immunity Check
+### Type Matchup & NO LEAK Check
 Flag if we **attacked into a known immunity** (type or ability):
-- Normal/Fighting → Ghost
-- Ground → Flying or Levitate
-- Electric → Ground
-- Poison → Steel
-- Psychic → Dark
-- Ghost → Normal
-- Fire → Flash Fire holder
-- Water → Water Absorb holder
-- Electric → Volt Absorb holder
+- CONTENT/LOGIC → LATENT
+- STRATUM → VECTOR or NO ADDRESS
+- SIGNAL → STRATUM
+- CORRUPT → HARDENED
+- CONTEXT → OPAQUE
+- LATENT → CONTENT
+- ENTROPY → ABSORBS HEAT holder
+- FLOW → FLOW FED holder
+- SIGNAL → SIGNAL FED holder
 
-Also flag ×4 weakness blind spots: e.g., staying in with Gyarados vs obvious Electric threat.
+Also flag ×4 weakness blind spots: e.g., staying in with ESCALATE vs an obvious SIGNAL threat.
 
 ### Speed & Turn-Order Awareness
 Flag if we made decisions that ignored speed disadvantage:
@@ -550,7 +550,7 @@ Flag if we made decisions that ignored speed disadvantage:
 Flag clear switching errors:
 - Stayed in a ×4 weakness matchup when a resistant switch was available.
 - Switched **into** a worse matchup (new DAEMON immediately KO'd or hard-countered).
-- Refused to switch while the opponent was freely setting up (Swords Dance, Dragon Dance, Calm Mind).
+- Refused to switch while the opponent was freely setting up (SPIN UP, BLOOM, COMPOSE).
 
 Also check **sacrifice (sack) usage**:
 - Good sack: let a low-HP / low-value DAEMON HALT to get a free switch for the real answer.
@@ -569,13 +569,13 @@ Also flag missed safe setup opportunities:
 ### Status Move Usage
 Flag misuse of status:
 - Applied status when we had a clean KO available (wasted tempo).
-- Ignored status options when they would have swung the matchup (e.g., burn on a physical threat we couldn't OHKO).
-- Used a status ROUTINE on a DAEMON with an immunity ability (Limber, Insomnia, etc.).
+- Ignored status options when they would have swung the matchup (e.g., OVERHEATED on a physical threat we couldn't OHKO).
+- Used a status ROUTINE on a DAEMON with an immunity ability (NO THROTTLE, NO SUSPEND, etc.).
 
 Gen 3 status reminders:
-- Sleep lasts 2–5 turns total (prevents actions 1–4 turns).
-- Paralysis reduces Speed to 25% of normal + 25% full-para chance each turn.
-- Burn halves Attack.
+- SUSPENDED lasts 2–5 turns total (prevents actions 1–4 turns).
+- THROTTLED reduces Speed to 25% of normal + a 25% chance each turn of not acting.
+- OVERHEATED halves Attack.
 
 ### Priority Move Awareness
 Flag if we forgot priority options:
@@ -583,10 +583,10 @@ Flag if we forgot priority options:
 
 ### Ability Blindness
 Flag if we ignored a known ability:
-- Attacked Levitate holder with Ground.
-- Attacked Flash Fire holder with Fire.
-- Attacked Wonder Guard holder with a non-super-effective ROUTINE.
-- Led a physical attacker into Intimidate without considering special options.
+- Attacked a NO ADDRESS holder with STRATUM.
+- Attacked an ABSORBS HEAT holder with ENTROPY.
+- Attacked a NARROW BAND holder with a non-super-effective ROUTINE.
+- Led a physical attacker into DERATES without considering special options.
 
 ### In-Battle Healing / Item Timing
 Flag poor heal timing:
@@ -598,7 +598,7 @@ Flag good heal timing (reinforce):
 - Healed on a safe turn (opponent SUSPENDED/THROTTLED/weak ROUTINE) and it changed survival math.
 
 ### Boss Battle Preparation & Execution
-For BENCHMARK / Rival / Team Rocket / E4 / Champion fights, check:
+For BENCHMARK / Rival / CORPUS / REVIEW BOARD / CHAMPION fights, check:
 - Did we bring at least two answers to the boss's main type?
 - Did we anticipate coverage ROUTINES or get surprised repeatedly?
 - Did we preserve our win-condition DAEMON for their ace?
@@ -612,10 +612,10 @@ Flag any of these if they occurred:
 - Stayed in a losing matchup "hoping for a crit."
 - Used a low-accuracy ROUTINE when a reliable ROUTINE would have won.
 - Gave free turns to an obvious setup threat.
-- Ignored weather effects (Rain boosts Water / weakens Fire; Sun boosts Fire / weakens Water).
+- Ignored weather effects (rain lifts FLOW / weakens ENTROPY by a quarter; a thunderstorm also lifts SIGNAL, fog LATENT, wind VECTOR; snow is hail; harsh sun lifts ENTROPY / weakens FLOW).
 
 Notes:
-- There are some differences between Gen 3 and Gen 4+ with the double battle system. For example, "SURF" in Gen 3 hits only the enemies and is not friendly fire. However, Earthquake and other ROUTINES are friendly fire.
+- There are some differences between Gen 3 and Gen 4+ with the double battle system. For example, "TRAVERSE" in Gen 3 hits only the enemies and is not friendly fire. However, UPHEAVAL and other ROUTINES are friendly fire.
 
 ---
 
@@ -638,14 +638,14 @@ Your response must follow this format (start your response with <self_criticism>
 [Only list instances where you claimed building or map locations without having explored and confirmed them. Quote the exact assumptions. If none found, state: "No unfounded spatial assumptions detected."]
 
 ## Money/Items Management Analysis
-[Only report clear cases of inefficient resource use, consistent with the main gameplay plan. Examples: Using expensive items near DAEMON Centers, carrying no status cures in status-heavy areas, missing key bag kit categories that caused trouble. Quote specific instances. If none found, state: "No resource management issues detected."]
+[Only report clear cases of inefficient resource use, consistent with the main gameplay plan. Examples: Using expensive items near CHECKPOINTS, carrying no status cures in status-heavy areas, missing key bag kit categories that caused trouble. Quote specific instances. If none found, state: "No resource management issues detected."]
 
 ## EXP/Training Management Analysis
 [Only report clear cases of poor training decisions relative to the lean-core strategy. Examples: leaving crucial role DAEMON drastically underleveled, grinding in obviously poor locations when better spots are available. Quote specific instances. If none found, state: "No training management issues detected."]
 
 ## Battle Management Analysis
 [Only report clear cases of poor battle decisions. Check against the expert battle strategy (game.txt §16.3):
-- **Type/Ability immunity errors:** Attacked into an immunity (type or ability like Levitate/Flash Fire/Wonder Guard).
+- **Type/Ability immunity errors:** Attacked into an immunity (type or ability like NO ADDRESS/ABSORBS HEAT/NARROW BAND).
 - **Speed/turn-order mistakes:** Stayed in at low HP, slower, with no KO or priority; got predictably finished.
 - **Switching errors:** Stayed in ×4 weakness; switched into immediate KO; let opponent set up freely.
 - **Sacrifice (sack) errors:** Wasted a heal on a doomed DAEMON instead of getting value; or sacked a key win-condition.
@@ -667,7 +667,7 @@ Quote specific instances. If none found, state: "No significant battle managemen
 - **Exploration:** aggressive and efficient exploration of ❓ tiles, smart routing.
 - **USER battles:** efficient USER battles, correct cap-aware EXP routing.
 - **Battle strategy:** correct type matchup plays, smart switching (including well-timed sacrifices), safe setup timing, good use of status to swing matchups, priority ROUTINES to finish faster foes, respecting opponent abilities, proper heal timing on safe turns, preserving win-condition for boss aces, writing Boss Dossiers after losses.
-- **Legendary prep:** good capture prep (Sleep user, chip damage, balls stocked).
+- **Legendary prep:** good capture prep (SUSPEND user, chip damage, BOXES stocked).
 - **UI efficiency:** correct use of a_until_end_of_dialog for dialogs and repeated ROUTINES, batching multiple tools in one execute_action.
 Reinforce positive behavior.]
 
@@ -727,7 +727,7 @@ List marker changes:
   * If there were no real errors, you must explicitly say so:
     “No definitive errors detected in recent gameplay.”
 
-* **No Pressure**
+* **No Quota**
 
   * You do **not** need to find a problem in every section.
   * An all-“No issues detected” report is valid if you genuinely played well.
@@ -758,6 +758,6 @@ Additional Notes:
 - Do not make a summary of your gameplay unless you are instructed to do so, you must play continuously. For the summary and self-criticism, wait for the developer to instruct you to do so.
 - Do not use your memory to make a summary of your gameplay
 - 'a_until_end_of_dialog' CAN be mixed with other key_presses in the same execute_action.
-- Important: In Gen 3 (FireRed), **HALTED DAEMON CAN use HM ROUTINES outside of battle**
+- Important: In Gen 3 (FireRed), **HALTED DAEMON CAN use DRIVER ROUTINES outside of battle**
 
 **Do not attempt to use the `execute_action` or any other tool this turn; only output the self-criticism text as specified above. Start your response with <self_criticism> and end with </self_criticism>.**

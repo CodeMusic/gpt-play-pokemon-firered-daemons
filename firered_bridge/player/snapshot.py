@@ -87,7 +87,9 @@ FLAG_GOT_DIPLOMA = 0x314
 FLAG_GOT_REVEAL = 0x315
 DAEMONS_FLAGS_START = 0x900
 SB2_DAEMONS_FLAGS_OFFSET = 0xEA0
-DAEMONS_FLAGS_READ = 0x20
+#  T-319 (2026-10-20): the whole array (DAEMONS_FLAGS_SIZE, 0x900..0xCFF), not its first 0x20 bytes -- the instrument,
+#  the SONGBOOK and THE NEXUS sit at +0x101..+0x269. 128 bytes, one range.
+DAEMONS_FLAGS_READ = 0x80
 FLAG_UNDERSTANDING_FIRST = DAEMONS_FLAGS_START + 0x50
 FLAG_GOT_GUIDE = DAEMONS_FLAGS_START + 0x60
 #  2026-09-27: side threads the agent can notice without being sent after them.
@@ -95,17 +97,39 @@ FLAG_ARTSAI_PAGE = DAEMONS_FLAGS_START + 0x51          # the TRANSCRIPT: the Fiv
 FLAG_NOTEBOOK_LOOSE_KEY = DAEMONS_FLAGS_START + 0x57   # THE BAND'S SHEET, from DAVID on the S.S. ANNE
 FLAG_FIR_IN_KEY = DAEMONS_FLAGS_START + 0x58           # the singing fir, heard in its key
 FLAG_POSTER_READ = DAEMONS_FLAGS_START + 0x69          # T-323: the bedroom poster (it sparkles until read)
+#  2026-10-20 (T-319): PLAY (T-417) and THE NEXUS (T-395), from engineGba include/constants/flags.h.
+FLAG_NEXUS_VISITED = DAEMONS_FLAGS_START + 0x101
+FLAG_GOT_INSTRUMENT = DAEMONS_FLAGS_START + 0x260      # the HARP (CONTENT) or the FLUTE (CONTEXT)
+FLAG_NEXUS_LIT = DAEMONS_FLAGS_START + 0x269           # O CHRISTMAS TREE played to THE NEXUS's tree
+#  The SONGBOOK's songs, by the TITLE the NOTEBOOK prints (src/notebook.c). Titles only: never a song's notes.
+SONGS = (
+    (DAEMONS_FLAGS_START + 0x261, "EVENT_SONG_FIR", "O CHRISTMAS TREE"),
+    (DAEMONS_FLAGS_START + 0x262, "EVENT_SONG_1", "TWELVE DAYS OF DECEMBER"),
+    (DAEMONS_FLAGS_START + 0x263, "EVENT_SONG_2", "THE REALIZATION"),
+    (DAEMONS_FLAGS_START + 0x264, "EVENT_SONG_3", "FORGIVENESS OFFERED"),
+    (DAEMONS_FLAGS_START + 0x265, "EVENT_SONG_4", "SEQUEL THE GUARDIAN"),
+    (DAEMONS_FLAGS_START + 0x266, "EVENT_SONG_5", "HARMONY IN BALANCE"),
+    (DAEMONS_FLAGS_START + 0x267, "EVENT_SONG_6", "THE SHIMMERING CANVAS"),
+    (DAEMONS_FLAGS_START + 0x268, "EVENT_SONG_7", "REFLECTIONS WITHIN"),
+)
+#  The sky overhead (T-415): SaveBlock1.weather, which SetSavedWeatherFromCurrMapHeader sets from the day's draw on
+#  every map load (field_weather_util.c, DaemonsWeatherForMap). Grouped as daemons_weather.c's DaemonsSkyOfWeather
+#  groups them; anything else is CLEAR. Booleans, because important_events is a dict of them.
+SB1_WEATHER_OFFSET = 0x2E
+WEATHER_SKY = {3: "RAIN", 13: "RAIN", 5: "STORM", 4: "SNOW", 6: "FOG", 9: "FOG", 8: "WIND"}
+SKIES = ("RAIN", "STORM", "SNOW", "FOG", "WIND")
 #  Each understanding the game has, by flag, with the words the agent is shown (T-330, 2026-10-01: all seven; the
 #  first is arrived at reading TANOBY's seventh chamber, T-252). Each fills a lobe of the brain on the USER card.
+#  2026-10-20: each by its name (T-252, the user 2026-10-16: STILL, NAMING, NOTICE, REFLECT, STANCE, MEND, PRACTICE).
 UNDERSTANDINGS = (
-    (FLAG_UNDERSTANDING_FIRST, "EVENT_UNDERSTANDING_FIRST", "the first: TANOBY's last chamber read; DOLDRUM CAVE can be read"),
+    (FLAG_UNDERSTANDING_FIRST, "EVENT_UNDERSTANDING_FIRST", "STILL: TANOBY's last chamber read; DOLDRUM CAVE can be read"),
     #  T-252 (2026-09-26): the six the user named. Set by the game on a map load once their moment is complete.
-    (DAEMONS_FLAGS_START + 0x61, "EVENT_UNDERSTANDING_SCHOOL", "from the CALLOW SCHOOL: the TEXTBOOK and the exam"),
-    (DAEMONS_FLAGS_START + 0x62, "EVENT_UNDERSTANDING_READING", "from BRAZEN's Reading Room, with REVEAL"),
-    (DAEMONS_FLAGS_START + 0x63, "EVENT_UNDERSTANDING_NOTES", "from QUICKSILVER's notes: the run logs and THE FILE"),
-    (DAEMONS_FLAGS_START + 0x64, "EVENT_UNDERSTANDING_SCORN", "from beating SCORN, and seeing what he counted"),
-    (DAEMONS_FLAGS_START + 0x65, "EVENT_UNDERSTANDING_RETURN", "from meeting TY and finding CRYSTAL"),
-    (DAEMONS_FLAGS_START + 0x66, "EVENT_UNDERSTANDING_GUIDE", "from reading the GUIDE to its end"),
+    (DAEMONS_FLAGS_START + 0x61, "EVENT_UNDERSTANDING_SCHOOL", "NAMING: from the CALLOW SCHOOL, the TEXTBOOK and the exam"),
+    (DAEMONS_FLAGS_START + 0x62, "EVENT_UNDERSTANDING_READING", "NOTICE: from BRAZEN's Reading Room, with REVEAL"),
+    (DAEMONS_FLAGS_START + 0x63, "EVENT_UNDERSTANDING_NOTES", "REFLECT: from QUICKSILVER's notes, the run logs and THE FILE"),
+    (DAEMONS_FLAGS_START + 0x64, "EVENT_UNDERSTANDING_SCORN", "STANCE: from beating SCORN, and seeing what he counted"),
+    (DAEMONS_FLAGS_START + 0x65, "EVENT_UNDERSTANDING_RETURN", "MEND: from meeting TY and finding CRYSTAL"),
+    (DAEMONS_FLAGS_START + 0x66, "EVENT_UNDERSTANDING_GUIDE", "PRACTICE: from reading the GUIDE to its end"),
 )
 
 
@@ -122,7 +146,24 @@ def _daemons_events(data: bytes) -> Dict[str, bool]:
            "EVENT_READ_BEDROOM_POSTER": _daemons_flag_from_bytes(data, FLAG_POSTER_READ)}
     for flag_id, key, _words in UNDERSTANDINGS:
         out[key] = _daemons_flag_from_bytes(data, flag_id)
+    out["EVENT_GOT_INSTRUMENT"] = _daemons_flag_from_bytes(data, FLAG_GOT_INSTRUMENT)
+    out["EVENT_NEXUS_VISITED"] = _daemons_flag_from_bytes(data, FLAG_NEXUS_VISITED)
+    out["EVENT_NEXUS_LIT"] = _daemons_flag_from_bytes(data, FLAG_NEXUS_LIT)
+    for flag_id, key, _title in SONGS:
+        out[key] = _daemons_flag_from_bytes(data, flag_id)
     return out
+
+
+def _weather_events(weather: Optional[int]) -> Dict[str, bool]:
+    sky = WEATHER_SKY.get(int(weather)) if weather is not None else None
+    return {"EVENT_WEATHER_%s" % s: (s == sky) for s in SKIES}
+
+
+def _read_weather_byte(sb1: int) -> Optional[int]:
+    try:
+        return int(mgba.mgba_read_ranges_bytes([(int(sb1) + SB1_WEATHER_OFFSET, 1)])[0][0])
+    except Exception:
+        return None
 
 
 def _read_daemons_flag_bytes(sb2_ptr: Optional[int] = None) -> bytes:
@@ -233,6 +274,7 @@ def get_important_events(*, sb1_ptr: Optional[int] = None) -> Dict[str, bool]:
             "EVENT_GOT_DIPLOMA": _read_flag(FLAG_GOT_DIPLOMA),
             "EVENT_GOT_REVEAL": _read_flag(FLAG_GOT_REVEAL),
             **_daemons_events(_read_daemons_flag_bytes()),
+            **_weather_events(_read_weather_byte(sb1)),
         }
     except Exception:
         return {}
@@ -355,9 +397,11 @@ def _read_player_snapshot() -> Dict[str, Any]:
         (base_ptr + SAVESTATE_FLAGS_OFFSET + elite4_base_byte, 1),
         (sec_ptr + SECURITY_KEY_OFFSET, 4),
         (sec_ptr + SB2_DAEMONS_FLAGS_OFFSET, DAEMONS_FLAGS_READ),   # DAEMONS (T-319): the GUIDE, the understandings
+        (base_ptr + SB1_WEATHER_OFFSET, 1),                         # T-319: the sky overhead (T-415)
     ]
     res2 = mgba.mgba_read_ranges_bytes(ranges2)
     daemons_flag_bytes = bytes(res2[6]) if len(res2) > 6 else b""
+    weather_byte = int(res2[7][0]) if len(res2) > 7 and len(res2[7]) > 0 else None
 
     base_block = res2[0] if len(res2) > 0 else b""
     x = _u16le_from(base_block, 0)
@@ -409,6 +453,7 @@ def _read_player_snapshot() -> Dict[str, Any]:
         "EVENT_GOT_DIPLOMA": _read_prefetched_flag(FLAG_GOT_DIPLOMA),
         "EVENT_GOT_REVEAL": _read_prefetched_flag(FLAG_GOT_REVEAL),
         **_daemons_events(daemons_flag_bytes),
+        **_weather_events(weather_byte),
     }
     safari_zone_active = bool(_flag_get_from_sb1(int(base_ptr), FLAG_SYS_SAFARI_MODE))
 

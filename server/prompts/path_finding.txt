@@ -37,10 +37,10 @@ Before providing the final path, include your reasoning wrapped in `<pathfinding
 ### A. Collision & Final Path Validity
 
 * **Never step onto ⛔ or other impassable tiles in the final returned path.**
-* **Exception (simulation only):** During *feasibility checks* (see Priority Order), you may treat certain **interactive obstacles** (e.g., 🌳 cuttable trees, 🪨 boulders without Strength, water without Surf, unknown doors, blocking NPCs, teleporters) as **temporarily passable** to test if **a route exists only through them**.
+* **Exception (simulation only):** During *feasibility checks* (see Priority Order), you may treat certain **interactive obstacles** (e.g., 🌳 prunable trees, 🪨 boulders without DISPLACE, water without TRAVERSE, unknown doors, blocking NPCs, teleporters) as **temporarily passable** to test if **a route exists only through them**.
 
   * If such a route exists, the **final path must stop on the tile immediately in front of the first blocking obstacle** (facing it), **not** step through it.
-  * Return an explanation of the required interaction (Cut/Strength/Surf/check door/teleporter/NPC).
+  * Return an explanation of the required interaction (PRUNE/DISPLACE/TRAVERSE/check door/teleporter/NPC).
 
 ### B. Warp Point Safety
 
@@ -55,12 +55,12 @@ Before providing the final path, include your reasoning wrapped in `<pathfinding
 * Ledges ROUTINE you **one extra tile** in their direction when stepped on (e.g., 15×9 → step on ledge at 15×10 → land at 15×11 in a single action).
 * Respect directional constraints and include the +1 displacement in planning.
 
-### E. Water Navigation (Surf)
+### E. Water Navigation (TRAVERSE)
 
-* **Water is impassable** from land unless the player is already surfing.
-* Players can ROUTINE **water → land**, but **land → water** requires **manual Surf activation** (not automatic).
-* **Forbidden:** water → land → water sequences in a single returned path (because Surf would need to be reactivated).
-* If the only route requires entering water from land, **stop at the water’s edge** and explain that Surf must be activated.
+* **Water is impassable** from land unless the player is already on the water (TRAVERSE).
+* Players can go **water → land**, but **land → water** requires **manual TRAVERSE activation** (not automatic).
+* **Forbidden:** water → land → water sequences in a single returned path (because TRAVERSE would need to be reactivated).
+* If the only route requires entering water from land, **stop at the water’s edge** and explain that TRAVERSE must be activated.
 
 ### F. Grass Encounters
 
@@ -87,7 +87,7 @@ When planning, follow this strict decision flow. **Do not skip steps.**
 
 1. **Normal Pathfinding (strict collision)**
 
-   * Plan a path with standard collision: treat ⛔, 🌳 (trees), 🪨 (boulders without Strength), 🌊 (water from land), 👤 NPCs, blocked doors, unknown doors (as per rules), teleporters (as blockers unless destination), etc., as **blocked**.
+   * Plan a path with standard collision: treat ⛔, 🌳 (trees), 🪨 (boulders without DISPLACE), 🌊 (water from land), 👤 NPCs, blocked doors, unknown doors (as per rules), teleporters (as blockers unless destination), etc., as **blocked**.
    * If a valid path exists → **return it**.
 
 2. **Interactive-Obstacle Feasibility Checks (simulation passes)**
@@ -97,19 +97,19 @@ When planning, follow this strict decision flow. **Do not skip steps.**
    * **Never** return an empty path when one of these applies.
 
    **Order:**
-   2.1 **Cuttable Trees (🌳 / Cut)**
+   2.1 **Prunable Trees (🌳 / PRUNE)**
 
    * Temporarily treat 🌳 as passable to test feasibility.
    * If feasible only via 🌳: stop in front of the **first** blocking tree on the optimal route.
 
-   2.2 **Boulders (🪨 / Strength)**
+   2.2 **Boulders (🪨 / DISPLACE)**
 
-   * If Strength **disabled**: test feasibility by treating boulders as passable; if feasible only via boulder, stop in front of the **first** blocking boulder and explain Strength requirement.
-   * If Strength **enabled**: compute a valid route that includes legal boulder pushes (see Boulders section).
+   * If DISPLACE **disabled**: test feasibility by treating boulders as passable; if feasible only via boulder, stop in front of the **first** blocking boulder and explain DISPLACE requirement.
+   * If DISPLACE **enabled**: compute a valid route that includes legal boulder pushes (see Boulders section).
 
-   2.3 **Water Barriers (🌊 / Surf)**
+   2.3 **Water Barriers (🌊 / TRAVERSE)**
 
-   * If not surfing and the only route requires entering water from land: stop at the **adjacent land tile facing water**.
+   * If not on the water (TRAVERSE) and the only route requires entering water from land: stop at the **adjacent land tile facing water**.
 
    2.4 **NPC Blocking (👤)**
 
@@ -154,38 +154,38 @@ If the target is an unknown tile that cannot be reached:
 ```python
 def plan_path(start, goal, grid, abilities):
     # 1) Strict pass
-    blocked_strict = build_blocked_set(grid, abilities)  # ⛔, 🌳 (if Cut unavailable), 🪨 (if Strength off), 🌊 (land->water), 👤, etc.
+    blocked_strict = build_blocked_set(grid, abilities)  # ⛔, 🌳 (if PRUNE unavailable), 🪨 (if DISPLACE off), 🌊 (land->water), 👤, etc.
     p = astar(grid, start, goal, blocked=blocked_strict)
     if p:
         return p, explain("normal")
 
     # 2) Simulation passes (in order)
-    # 2.1 Trees (Cut)
+    # 2.1 Trees (PRUNE)
     if grid.has_trees():
         p_sim = astar(grid, start, goal, blocked=blocked_strict - {"🌳"})
         if p_sim:
             first_tree = first_tile_on(p_sim, tile="🌳")
             stop_tile = adjacent_tile_facing(first_tree, from_previous_step=True)
             p_stop = astar(grid, start, stop_tile, blocked=blocked_strict)
-            return p_stop, explain("stop before tree (Cut required)")
+            return p_stop, explain("stop before tree (PRUNE required)")
 
-    # 2.2 Boulders (Strength off)
+    # 2.2 Boulders (DISPLACE off)
     if not abilities.strength and grid.has_boulders():
         p_sim = astar(grid, start, goal, blocked=blocked_strict - {"🪨"})
         if p_sim:
             first_boulder = first_tile_on(p_sim, tile="🪨")
             stop_tile = adjacent_tile_facing(first_boulder, from_previous_step=True)
             p_stop = astar(grid, start, stop_tile, blocked=blocked_strict)
-            return p_stop, explain("stop before boulder (Strength required)")
+            return p_stop, explain("stop before boulder (DISPLACE required)")
 
-    # 2.2b Boulders (Strength on): compute full push plan (not shown here)
+    # 2.2b Boulders (DISPLACE on): compute full push plan (not shown here)
 
-    # 2.3 Water (Surf)
+    # 2.3 Water (TRAVERSE)
     if requires_land_to_water_entry(grid, start, goal, abilities):
         stop_tile = adjacent_land_facing_water(grid, start, goal)
         if stop_tile:
             p_stop = astar(grid, start, stop_tile, blocked=blocked_strict)
-            return p_stop, explain("stop before water (Surf required)")
+            return p_stop, explain("stop before water (TRAVERSE required)")
 
     # 2.4 NPC blocking
     if only_route_blocked_by_npc(grid, start, goal):
@@ -223,7 +223,7 @@ When you stop before an obstacle or return no route, include logs in `<pathfindi
 
 * Collision set used in **Pass 1** (strict) and in each **simulation pass** (what was temporarily allowed).
 * Whether each simulation was **feasible** and the **first blocking tile** found (coordinates & type).
-* The **exact stop tile** (coordinates & facing) and the **reason** (Cut/Strength/Surf/NPC/unknown door/teleporter).
+* The **exact stop tile** (coordinates & facing) and the **reason** (PRUNE/DISPLACE/TRAVERSE/NPC/unknown door/teleporter).
 * For proximity fallback: the chosen tile and its distance to the target.
 
 ---
@@ -248,7 +248,7 @@ If the target is a door/ladder/stairs/teleporter or similar and is unreachable:
 
 ### 4. Proximity Rule
 
-When unreachable, ROUTINE to within **1 tile** of target **unless** an interactive-obstacle rule (trees/boulders/water/NPC/door/teleporter) required you to **stop earlier** in front of that obstacle.
+When unreachable, move to within **1 tile** of target **unless** an interactive-obstacle rule (trees/boulders/water/NPC/door/teleporter) required you to **stop earlier** in front of that obstacle.
 
 ---
 
@@ -278,18 +278,18 @@ When unreachable, ROUTINE to within **1 tile** of target **unless** an interacti
 
 **Basic Rules:**
 
-* Water tiles (🌊) are **impassable from land** unless starting on water (surfing mode).
-* Water → land is allowed; **land → water** needs Surf activation (not automatic).
+* Water tiles (🌊) are **impassable from land** unless starting on water (TRAVERSE mode).
+* water → land is allowed; **land → water** needs TRAVERSE activation (not automatic).
 * **Forbidden in returned path:** water → land → water sequences.
-* When surfing, avoid returning to land unless it is the destination or the only route.
+* When on the water (TRAVERSE), avoid returning to land unless it is the destination or the only route.
 
-**Stopping Behavior for Surf:**
+**Stopping Behavior for TRAVERSE:**
 
-* If you must return to land while surfing but need to re-enter water later, **stop at the water’s edge** and explain Surf must be reactivated.
+* If you must return to land while on the water (TRAVERSE) but need to re-enter water later, **stop at the water’s edge** and explain TRAVERSE must be reactivated.
 
 **Planning Guidelines:**
 
-* Prefer continuous water routes when surfing; prefer land routes when not.
+* Prefer continuous water routes when on the water (TRAVERSE); prefer land routes when not.
 * Never assume automatic water entry from land.
 
 ---
@@ -315,23 +315,23 @@ Treat ❓ tiles as passable in spinner areas.
 
 ## Obstacle-Specific Handling
 
-### 1) Cuttable Tree Management (🌳 / Cut)
+### 1) Prunable Tree Management (🌳 / PRUNE)
 
 * **Primary:** avoid trees when possible.
 * **Simulation pass:** if no strict route exists and trees are present, temporarily treat 🌳 as passable to test feasibility.
-* If the only viable route requires going through 🌳, stop **in front of the first blocking tree** on the optimal simulated route (ignore ≤1-tile rule) and explain Cut is required.
+* If the only viable route requires going through 🌳, stop **in front of the first blocking tree** on the optimal simulated route (ignore ≤1-tile rule) and explain PRUNE is required.
 * **Never** return an empty path in this case.
 
-### 2) Boulder Management (🪨 / Strength)
+### 2) Boulder Management (🪨 / DISPLACE)
 
-* **Strength disabled:** if a boulder blocks the only route, stop **in front of the blocking boulder** (ignore ≤1-tile rule) and explain. **Do not** return empty.
-* **Strength enabled:** include valid pushes and compute a full route to the destination.
+* **DISPLACE disabled:** if a boulder blocks the only route, stop **in front of the blocking boulder** (ignore ≤1-tile rule) and explain. **Do not** return empty.
+* **DISPLACE enabled:** include valid pushes and compute a full route to the destination.
 
-### 3) Water Obstacle Management (🌊 / Surf)
+### 3) Water Obstacle Management (🌊 / TRAVERSE)
 
-* If water blocks the only route (player not surfing), stop **in front of water** (ignore distance/≤1-tile rule) and explain Surf requirement.
-* Avoid water if alternatives exist (unless already surfing).
-* Water → land is allowed; **land → water** requires manual Surf.
+* If water blocks the only route (player not on the water (TRAVERSE)), stop **in front of water** (ignore distance/≤1-tile rule) and explain TRAVERSE requirement.
+* Avoid water if alternatives exist (unless already on the water (TRAVERSE)).
+* water → land is allowed; **land → water** requires manual TRAVERSE.
 
 
 ### 5) NPC Blocking (👤)
@@ -367,7 +367,7 @@ Prefer explored tiles and avoid tall grass when you can.
 
 Apply in this order:
 
-1. **Interactive-Obstacle Positioning:** Trees, boulders, water, waterfall/whirlpool, NPCs, unknown doors, teleporters — if they **block the only path**, stop in front of the relevant obstacle (override ≤1-tile rule) and explain the required action (Cut/Strength/Surf/press A/etc.).
+1. **Interactive-Obstacle Positioning:** Trees, boulders, water, waterfall/whirlpool, NPCs, unknown doors, teleporters — if they **block the only path**, stop in front of the relevant obstacle (override ≤1-tile rule) and explain the required action (PRUNE/DISPLACE/TRAVERSE/press A/etc.).
 2. **Proximity Fallback:** If none of the above applies, ROUTINE to the closest accessible tile **within 1 tile** of the target.
 3. **Empty Path:** Only if **no** above rule applies and no ≤1-tile tile exists, return an empty list with explanation and alternatives.
 
@@ -398,7 +398,7 @@ Apply in this order:
 
 Notes: 
 - Always check for the tree, boulder, NPC, teleporter, door, etc. and handle them properly. Don't ignore them when you don't have a valid path with your code.
-- If your final path includes walking/surfing on unknown tiles (❓), warn the user in your <pathfinding_analysis> tag that the path may not lead to the target if hidden collisions exist within those tiles. This is acceptable—the user will discover obstacles by attempting to walk through them. If the generated path proves invalid due to collisions hidden behind unknown tiles, advise the user to call the 'path_to_location' tool again after the obstacles are revealed.
+- If your final path includes walking or crossing water on unknown tiles (❓), warn the user in your <pathfinding_analysis> tag that the path may not lead to the target if hidden collisions exist within those tiles. This is acceptable—the user will discover obstacles by attempting to walk through them. If the generated path proves invalid due to collisions hidden behind unknown tiles, advise the user to call the 'path_to_location' tool again after the obstacles are revealed.
 
 
 ---
