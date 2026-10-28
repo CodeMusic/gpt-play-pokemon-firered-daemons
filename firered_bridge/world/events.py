@@ -37,6 +37,7 @@ from ..constants.addresses import (
     OBJECT_EVENT_FLAGS_OFFSET,
     OBJECT_EVENT_FACING_DIR_OFFSET,
     OBJECT_EVENT_GRAPHICS_ID_OFFSET,
+    OBJECT_EVENT_GRAPHICS_ID_HI_SHIFT,
     OBJECT_EVENT_LOCAL_ID_OFFSET,
     OBJECT_EVENT_MAP_GROUP_OFFSET,
     OBJECT_EVENT_MAP_NUM_OFFSET,
@@ -49,6 +50,7 @@ from ..constants.addresses import (
     OBJECT_EVENT_TEMPLATE_ELEVATION_OFFSET,
     OBJECT_EVENT_TEMPLATE_FLAG_ID_OFFSET,
     OBJECT_EVENT_TEMPLATE_GRAPHICS_ID_OFFSET,
+    OBJECT_EVENT_TEMPLATE_GRAPHICS_ID_HI_OFFSET,
     OBJECT_EVENT_TEMPLATE_LOCAL_ID_OFFSET,
     OBJECT_EVENT_TEMPLATE_MOVEMENT_RANGE_OFFSET,
     OBJECT_EVENT_TEMPLATE_MOVEMENT_TYPE_OFFSET,
@@ -73,6 +75,19 @@ from ..game_data import get_event_object_name, get_map_name
 from ..memory import mgba
 from ..player.save import _flag_get_from_sb1
 from ..util.bytes import _s16_from_u16, _u16le_from, _u32le_from, _u8_from
+
+
+#  DAEMONS T-461: an object's graphics id is 12 bits, kept where the u8 always was plus bytes every older save and map
+#  held as 0 -- the template's padding at +3, and bits 28-31 of a live object's flags word (the engine's OBJ_GFX_ID).
+#  Read as one byte, an id past 255 came out as another sprite's, and the agent was told the wrong person.
+def _template_graphics_id(raw: bytes, off: int) -> int:
+    return int(_u8_from(raw, off + OBJECT_EVENT_TEMPLATE_GRAPHICS_ID_OFFSET)) | (
+        int(_u8_from(raw, off + OBJECT_EVENT_TEMPLATE_GRAPHICS_ID_HI_OFFSET)) << 8)
+
+
+def _live_graphics_id(raw: bytes, off: int, flags: int) -> int:
+    return int(_u8_from(raw, off + OBJECT_EVENT_GRAPHICS_ID_OFFSET)) | (
+        ((int(flags) >> OBJECT_EVENT_GRAPHICS_ID_HI_SHIFT) & 0xF) << 8)
 
 # Warps, NPCs, Connexions
 # =============================================================================
@@ -284,7 +299,7 @@ def _build_object_template_cache_entry(*, sb1_ptr: int) -> Optional[_ObjectTempl
     for i in range(obj_count):
         off = i * OBJECT_EVENT_TEMPLATE_SIZE
         local_id = int(_u8_from(raw, off + OBJECT_EVENT_TEMPLATE_LOCAL_ID_OFFSET))
-        gid = int(_u8_from(raw, off + OBJECT_EVENT_TEMPLATE_GRAPHICS_ID_OFFSET))
+        gid = _template_graphics_id(raw, off)
         if local_id <= 0 or gid == 0:
             continue
 
@@ -422,7 +437,7 @@ def _read_current_map_object_event_templates(sb1_ptr: int) -> List[Dict[str, Any
     for i in range(obj_count):
         off = i * OBJECT_EVENT_TEMPLATE_SIZE
         local_id = int(_u8_from(raw, off + OBJECT_EVENT_TEMPLATE_LOCAL_ID_OFFSET))
-        gid = int(_u8_from(raw, off + OBJECT_EVENT_TEMPLATE_GRAPHICS_ID_OFFSET))
+        gid = _template_graphics_id(raw, off)
         if local_id <= 0 or gid == 0:
             continue
 
@@ -522,7 +537,7 @@ def get_current_map_npcs(
         if not is_active:
             continue
         is_off = (flags >> OBJECT_EVENT_OFFSCREEN_BIT) & 1
-        gid = _u8_from(raw, off + OBJECT_EVENT_GRAPHICS_ID_OFFSET)
+        gid = _live_graphics_id(raw, off, flags)
         if gid == 0:
             continue
         local_id = int(_u8_from(raw, off + OBJECT_EVENT_LOCAL_ID_OFFSET))
