@@ -388,6 +388,28 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
 * **Colour is trust.** A daemon newly with you looks washed out, nearly grey, and its colour fills in as its friendship
   with you grows (walk with it in your party, level it up, keep it from HALTING). It is not a status and changes nothing in battle. CORPUS's
   daemons are always grey.
+* **Your follower.** Your lead daemon -- the first in your party that is not HALTED, AWAY or an egg -- walks one step
+  behind you. Turn to face it and press A to hear how it is; now and then a small picture rises over its head: its
+  mood. It blocks nothing, no one battles it, and it is not a person -- it is never in your NPC list. It goes into the
+  healing machine with the rest of the party. OPTIONS can switch it off; leave it on.
+* **Feelings.** Every daemon has a mood the game shows but never names: the picture over your follower, what it says
+  when you talk to it, and a **fourth SUMMARY page** (R from KNOWN ROUTINES) that plots it on a grid with no labels.
+  Play moves it -- winning together, a RECOVER or a RESTART, walking in the party lift it; losing, HALTING and long
+  spells in the PORT weigh on it; an **INCREMENT** makes it a little cross (its growth was handed to it, not earned) --
+  and it drifts back over a few hours. It is not friendship and not a status. Look after your daemons.
+* **BOUND.** A daemon you hold says on its INDEX page how it came to you.
+* **The TOWN MAP is drawn as a score**: paper and ink, staff lines for the land, beamed lines for the routes, a
+  notehead for each town, and a sea of drifting bits and notes. Its layout and cursor are a map's as always; read it
+  as one. Water in the world shows the same bits and notes.
+* **Other colours.** Very rarely a daemon appears in colours not its own, with a sparkle as it comes out. It is the
+  same daemon.
+* **THE SUBTLE LAYER** is a book you may come across. Once you hold it you start to notice things, always marked in
+  **purple**: now and then your follower stops and turns toward something unfound nearby, with a small purple ripple
+  (look where it looks); arriving somewhere, a purple line may give **a read** of the place, kept in the NOTEBOOK's
+  log and ticked there if it lands -- some lead nowhere; in battle, a purple line before a turn may say **a lean**
+  about what the other side will do -- a lean, not a fact; and under some people's lines a fainter purple line says
+  what they mean beneath what they say. With the book, how your daemons feel counts in battle too: a calm daemon
+  that trusts you fights a little better, a cross one a little worse. Before the book, none of this happens.
 * **A routine's animation** ends in its own small signature of glyphs and notes; on some holidays it wears the day's
   look. Cosmetic -- read the battle text, not the sparkle.
 * **Never choose SEND (or CALL HOME) in the party menu.** It asks for a daemon to go to a companion device outside the
