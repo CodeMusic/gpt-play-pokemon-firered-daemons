@@ -842,6 +842,11 @@ function stripMarkerGuidance(text) {
 
 async function buildDeveloperPrompt() {
   let gamePrompt = await fs.readFile(path.join(config.promptsDir, "game.txt"), "utf8");
+  //  DAEMONS keeps four things out of public writing (its CLAUDE.md: the Five Witnesses' lock among them), and this
+  //  repository is public. What the agent should know of them lives in prompts/private.txt, gitignored, and is added
+  //  here when this machine has it. A clone without it plays from the public brief alone.
+  const privateNotes = await fs.readFile(path.join(config.promptsDir, "private.txt"), "utf8").catch(() => "");
+  if (privateNotes.trim()) gamePrompt = gamePrompt.trimEnd() + "\n\n" + privateNotes.trim() + "\n";
   //  Only the full schema carries add_marker. Keyed off the same env var
   //  defineTools() reads, so the prompt and the tool list cannot disagree.
   if ((process.env.DAEMONS_SCHEMA || "full") !== "full") {

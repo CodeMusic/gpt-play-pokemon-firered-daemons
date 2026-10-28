@@ -12,3 +12,6 @@ backup_saves
 # --fresh archives the previous run beside the live one. A days testing made
 # 25 of these totalling ~8 GB; they are local scratch, never shared state.
 server/gpt_data_*
+
+# what the agent may know of DAEMONS' private things (its CLAUDE.md's four): this machine only
+server/prompts/private.txt

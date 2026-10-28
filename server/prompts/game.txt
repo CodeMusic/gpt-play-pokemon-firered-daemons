@@ -450,9 +450,8 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   * **After the GLOBAL INDEX** many more daemons live in THE MARGINS' grass and water, and some legends stand in places
     of their own: a few are seen standing there, a few cannot be seen at all and are met by **walking into** the place
     where they stand. The ferry also sails for NAVEL ROCK. Nothing tells you where; post-game only.
-  * **The Five Witnesses.** Five people in five cities describe the QUICKSILVER lab accident, and a damaged terminal
-    in the MANSION logs a number. Only once you hold **every** UNDERSTANDING does the place they point to answer.
-    Work it out from what they say; nothing will tell you where.
+  * **The Five Witnesses.** Five people in five cities describe the QUICKSILVER lab accident. Work out what they
+    point to from what they say; nothing will tell you where.
 
 ### 5.2. Team Building & Documentation
 
