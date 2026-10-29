@@ -1,23 +1,49 @@
 # gpt-play-pokemon-firered-daemons
 
 > **A fork of [Clad3815/gpt-play-pokemon-firered][up], pointed at a different
-> game and a local model.** All the hard parts — the mGBA Lua bridge, the RAM
-> reader, the agent loop, the dashboard — are Clad3815's. Their README is kept
-> in full below.
+> game and at models that are not frontier ones.** All the hard parts — the
+> mGBA Lua bridge, the RAM reader, the agent loop, the dashboard — are
+> Clad3815's. Their README is kept in full below.
 
 [up]: https://github.com/Clad3815/gpt-play-pokemon-firered
 
-This fork drives **CONTEXT / CONTENT**, a total conversion of FireRed where the
-creatures are daemons and the type chart is an argument about consciousness.
+This fork drives **DAEMONS: CONTEXT / CONTENT**, a total conversion of FireRed
+where the creatures are daemons and the type chart is an argument about
+consciousness.
+
+**[The wiki](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/wiki)**
+covers every feature: running it, how it reads the game, the agent loop, its
+inner life, playtesting, the dashboard and what the agent is told about the
+game. New to DAEMONS itself? **[The player's manual](https://github.com/CodeMusic/DAEMONS/blob/main/docs/DAEMONS-manual.pdf)**
+(PDF) tells how to play it.
 
 | | |
 |---|---|
-| the design | [CodeMusic/DAEMONS](https://github.com/CodeMusic/DAEMONS) |
-| the ROM | [CodeMusic/pokefirered-daemons](https://github.com/CodeMusic/pokefirered-daemons) |
-| this | the harness that lets a model play it |
+| the game | [CodeMusic/DAEMONS](https://github.com/CodeMusic/DAEMONS) ([wiki](https://github.com/CodeMusic/DAEMONS/wiki)) — the design, the tools, the releases, and `./bindDaemons.sh --ai` |
+| the engine | [CodeMusic/pokefirered-daemons](https://github.com/CodeMusic/pokefirered-daemons) ([wiki](https://github.com/CodeMusic/pokefirered-daemons/wiki)) — the ROM this plays |
+| the companion | [CodeMusic/daemons-companion](https://github.com/CodeMusic/daemons-companion) ([wiki](https://github.com/CodeMusic/daemons-companion/wiki)) |
+| the playground | [CodeMusic/daemons-playground](https://github.com/CodeMusic/daemons-playground) ([wiki](https://github.com/CodeMusic/daemons-playground/wiki)) |
+| this | the harness that lets a model play it ([wiki](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/wiki)) |
 
 ![The dashboard: runtime, inner life, user and frames across the top; tabs for
 summary, party, inventory, objectives, progress and memory below.](docs/screenshots/dashboard.png)
+
+*The dashboard during a September 2026 run. The Playtest tab, the Backchannel
+panel and the pause button came after it.*
+
+## Where it stands
+
+As of 2026-10-28:
+
+- **Built, and played.** It ran through September 2026 against local models
+  (LM Studio, mlx-vlm) and hosted open ones through OpenRouter; the longest run
+  went past step 1,100.
+- **Kept current since, not re-run.** The game's changes since then have
+  reached the brief, the bridge and the name tables a piece at a time (DAEMONS
+  T-319), checked against the engine's source and by DAEMONS' vocabulary check.
+  The most recent run on record is from mid-September.
+- **Planned.** A longer playtest run, whose notes are then read and triaged, is
+  decided and not yet made.
 
 ## What is different here
 
@@ -25,18 +51,21 @@ summary, party, inventory, objectives, progress and memory below.](docs/screensh
 `baseURL`, so it could only ever reach OpenAI. It takes `OPENAI_BASE_URL` now,
 falling back to `api.openai.com` exactly as before when unset.
 
-It did not stay one line. **87 commits, ~8,000 insertions across 30 files**,
-almost all of it in two directions: making the loop survive a model that is not
-GPT-5, and giving the run an interior.
+It did not stay one line. **152 commits, about 10,700 lines added across 44
+files**, in four directions: making the loop survive a model that is not GPT-5,
+giving the run an interior, making it a playtester, and teaching it DAEMONS.
 
 ### Running against a local or open model
 
 | | why |
 |---|---|
-| `ai/localPath.js` | **BFS pathfinding in-process.** Upstream calls OpenAI's Code Interpreter to plan a route. Reading the game's own tile grid needs no model at all, and unlike the rules we hand-wrote it has never needed revising. |
-| `ai/salvageToolCall.js` | **Recovers tool calls the bridge discards.** mlx-vlm emits calls LiteLLM drops on the floor; this parses them back out. 25/25 on real failures. |
-| `core/progress.js` | A **score** from badges, maps, levels, daemons bound and money — so "is it getting anywhere" has an answer that is not a vibe. |
-| `core/trajectory.js` | What the last 40 steps actually *did*, counted. Self-critique was asked to spot loops while being shown a single screen; this is the half it was missing. |
+| `server/src/ai/localPath.js` | **BFS pathfinding in-process.** Upstream calls OpenAI's Code Interpreter to plan a route. Reading the game's own tile grid needs no model at all, and unlike the rules we hand-wrote it has never needed revising. |
+| `server/src/ai/salvageToolCall.js` | **Recovers tool calls the server throws away.** MiniCPM's calls arrive in an XML dialect mlx-vlm's parser drops when the JSON inside is imperfect; this parses them back out. 25/25 on real failures. |
+| flat tools | **One tool per action**, not upstream's single `execute_action`: through the union qwen3-vl-8b emitted 27 duplicate calls in one response, as separate tools one. |
+| a ceiling on a turn | `DAEMONS_MAX_OUTPUT_TOKENS`, no SDK retries, two turns of screenshots rather than ten, and only the last two reasoning items replayed — each measured on a local model. |
+| `server/src/core/progress.js` | A **score** from badges, maps, levels, daemons bound and money — so "is it getting anywhere" has an answer that is not a vibe. |
+| `server/src/core/trajectory.js` | What the last 40 steps actually *did*, counted. Self-critique was asked to spot loops while being shown a single screen; this is the half it was missing. |
+| the loop guard | A repeated move that went nowhere is refused, or taken back out of the history, so the model is not outvoted by its own mistakes. |
 | history folding | The summariser could fail forever without advancing, and the history it failed to fold grew to 12.4 MB and timed out every call. Three strikes, then a mechanical trim. |
 
 ### An interior
@@ -47,9 +76,9 @@ somebody's rather than nobody's:
 | | what it is | written when |
 |---|---|---|
 | `aside` | one or two sentences of inner thought, per turn | every action |
-| `core/feelings.js` | four **humor axes** — GLAD, MAD, SAD, and CALM↔AFRAID — plus a boredom drive. Derived from what happens, decaying toward nothing | every turn |
+| `server/src/core/feelings.js` | four **humor axes** — GLAD, MAD, SAD, and CALM↔AFRAID — plus a boredom drive. Derived from what happens, decaying toward nothing | every turn |
 | `<self>` | what it has noticed about **how it plays** | when it reflects |
-| `core/dream.js` | what the summariser threw away, written back as images | at every fold |
+| `server/src/core/dream.js` | what the summariser threw away, written back as images | at every fold |
 
 None of it is asked of the model as a self-report. The feelings come off the
 same snapshot the score does; the trajectory comes off the history. Every time
@@ -58,13 +87,36 @@ this fork has let a model assert something about itself, the value drifted.
 Any line of inner voice — or any dream — can be **spoken aloud** in the INDEX
 voice, through an n8n workflow in the DAEMONS repo. Click the ▶.
 
-**[docs/WHAT-THIS-FORK-ADDS.md](docs/WHAT-THIS-FORK-ADDS.md)** goes through all
-of it properly — every module, why it exists, what it replaced, and the
-configuration. Including the pattern most of these bugs turned out to share.
+### A playtester, and a way to reach it
+
+| | what it is |
+|---|---|
+| `server/src/core/playtest.js` | notes on the game as a place — **LIKED, DISLIKED, CONFUSED** — asked for on first arrival at a map, kept for the people building the game and never returned to the agent |
+| `server/src/core/backchannel.js` | a line typed into the dashboard reaches the agent once, from nowhere it can check; `consult` lets it ask one question back, which may or may not be answered |
+| **Pause agent** | a person takes the controls; when they are handed back the agent is told that what changed was not its doing, and to draw no lesson from it |
+
+### Knowing the game
+
+The brief, [`server/prompts/game.txt`](server/prompts/game.txt), knows DAEMONS
+as of 2026-10-28 and is kept current with it (DAEMONS T-319). The name tables in
+[`game_data_firered/mappings.json`](game_data_firered/mappings.json) are written
+from the engine's own source by DAEMONS' `tools/port_gamedata.py`, so the agent
+is told who it is looking at in the game's own words. The bridge reads the
+game's type names, its own flags (the understandings, the SONGBOOK, the
+weather), a daemon that is AWAY, the two-column START menu and the engine's
+wider graphics ids. DAEMONS' `tools/check_agent_vocab.py` renders what the
+model sees and fails if a vanilla word reaches it.
+
+**[docs/WHAT-THIS-FORK-ADDS.md](docs/WHAT-THIS-FORK-ADDS.md)** goes through the
+first two directions properly — every module, why it exists, what it replaced,
+and the configuration. Including the pattern most of these bugs turned out to
+share. The [wiki](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/wiki)
+has all four.
 
 **The rest is configuration**, and it lives in the DAEMONS repo:
 `./bindDaemons.sh --ai` builds the ROM, regenerates the symbol table from that
-build, finds the model proxy, reads its key, and starts the bridge and agent.
+build, finds the model proxy, reads its key, and starts the bridge, the agent
+and the dashboard.
 
 ## If you are trying this against a local model, read this first
 
@@ -129,13 +181,17 @@ dofile("/ABSOLUTE/PATH/TO/mgba/scripts/DaemonsBridgeSocketServer.lua")
 **Or use the menu**, which on macOS is in the screen's menu bar rather than in
 the window: with the Scripting window focused, **File → Load script…**
 
-Either way the scripting window reports the socket server starting. **Leave it
-open — closing it stops the bridge.** If the agent logs connection refused,
-this is the step that was missed.
+Either way the scripting window reports the socket server starting. The script
+lives as long as the emulator does, not as long as the window, so the window
+can be closed once it is running. If the agent logs connection refused, this is
+the step that was missed — or the bridge itself crashed
+([Running it](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/wiki/Running-it)).
 
 ---
 
-*Everything below is Clad3815's original README, unchanged.*
+*Everything below is Clad3815's original README. One thing in it has changed:
+the Lua script it names is now `DaemonsBridgeSocketServer.lua`, renamed from
+`FireRedBridgeSocketServer.lua`.*
 
 ---
 
