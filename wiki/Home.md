@@ -11,8 +11,8 @@ hard parts are theirs**: the mGBA Lua bridge, the RAM reader, the agent loop, th
 dashboard. They work, and everything here is built on them. This fork points them at DAEMONS and makes them run on a
 model that is not a frontier one.
 
-New to the game itself? **[The player's manual](https://github.com/CodeMusic/DAEMONS/blob/main/docs/DAEMONS-manual.pdf)**
-(PDF) tells how to play it.
+New to the game itself? **[QUICK START](https://github.com/CodeMusic/DAEMONS/blob/main/docs/DAEMONS-quickstart.pdf)** (PDF) is a short guide in large type, and
+**[the player's manual](https://github.com/CodeMusic/DAEMONS/blob/main/docs/DAEMONS-manual.pdf)** (PDF) tells the whole of it.
 
 ## What this fork adds
 

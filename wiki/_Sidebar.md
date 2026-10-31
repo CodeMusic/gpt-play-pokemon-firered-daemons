@@ -12,6 +12,7 @@
 - [Keeping it current](Keeping-it-current)
 
 **Elsewhere**
+- [QUICK START](https://github.com/CodeMusic/DAEMONS/blob/main/docs/DAEMONS-quickstart.pdf) (PDF)
 - [The player's manual](https://github.com/CodeMusic/DAEMONS/blob/main/docs/DAEMONS-manual.pdf) (PDF)
 - [README](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons#readme)
 - [What this fork adds](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/blob/context-content/docs/WHAT-THIS-FORK-ADDS.md)

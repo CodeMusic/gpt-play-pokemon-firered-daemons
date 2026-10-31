@@ -14,8 +14,8 @@ consciousness.
 **[The wiki](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/wiki)**
 covers every feature: running it, how it reads the game, the agent loop, its
 inner life, playtesting, the dashboard and what the agent is told about the
-game. New to DAEMONS itself? **[The player's manual](https://github.com/CodeMusic/DAEMONS/blob/main/docs/DAEMONS-manual.pdf)**
-(PDF) tells how to play it.
+game. New to DAEMONS itself? **[QUICK START](https://github.com/CodeMusic/DAEMONS/blob/main/docs/DAEMONS-quickstart.pdf)** (PDF) is a short
+guide in large type, and **[the player's manual](https://github.com/CodeMusic/DAEMONS/blob/main/docs/DAEMONS-manual.pdf)** (PDF) tells the whole of it.
 
 | | |
 |---|---|
