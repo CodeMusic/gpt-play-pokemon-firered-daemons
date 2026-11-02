@@ -16,6 +16,7 @@ covers every feature: running it, how it reads the game, the agent loop, its
 inner life, playtesting, the dashboard and what the agent is told about the
 game. New to DAEMONS itself? **[MICRO-START](https://github.com/CodeMusic/DAEMONS/blob/main/docs/DAEMONS-microstart.pdf)** (PDF) is five pages,
 **[QUICK-START](https://github.com/CodeMusic/DAEMONS/blob/main/docs/DAEMONS-quickstart.pdf)** (PDF) 25 in large type, and **[the player's manual](https://github.com/CodeMusic/DAEMONS/blob/main/docs/DAEMONS-manual.pdf)** (PDF) tells the whole of it.
+**Why the name? [THE OLD WORD](https://github.com/CodeMusic/DAEMONS/blob/main/docs/DAEMONS-etymology.pdf)** (PDF) tells how the Greek *daimon* branched, and why it is said *DAY-mons*.
 
 | | |
 |---|---|
