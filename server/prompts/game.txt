@@ -374,7 +374,10 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   paper missed -- worth a look, for the next paper.
 * **The seasons.** Outside, the world takes the season: frosted in winter, fresher with more flowers in spring, the
   trees amber and gold in autumn. It is the **same place** -- nothing moves, nothing is locked by it. Some early roads
-  have a daemon of the season, and dawn, dusk and night bring a few of their own.
+  have a daemon of the season, and dawn, dusk and night bring a few of their own. Battle backgrounds, menus and
+  windows keep the calendar too (the hour's light, the season, the day's colour, a holiday's glints) -- cosmetic.
+  **The MUSAI wear the season**: each of the six has a winter, spring, summer and autumn look, the same daemon in all
+  four, and a battle keeps the season it began in.
 * **WEATHER is rare.** Mostly the sky is clear; now and then rain, a thunderstorm, fog, wind (leaves blowing) or snow
   comes, by season, for anything from minutes to a day, over one town or a whole region. Your prompt's `<weather>`
   says what is overhead. **It carries into battle**: rain lifts FLOW routines by a quarter and takes a quarter off
@@ -397,6 +400,14 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   Play moves it -- winning together, a RECOVER or a RESTART, walking in the party lift it; losing, HALTING and long
   spells in the PORT weigh on it; an **INCREMENT** makes it a little cross (its growth was handed to it, not earned) --
   and it drifts back over a few hours. It is not friendship and not a status. Look after your daemons.
+* **SPIRITS.** Slower than a mood, each daemon is **in good spirits**, as it is, or **in low spirits**, and drifts
+  between them a step at a time: being looked after (healed at a CHECKPOINT, restored, a vitamin), a warm friendship,
+  using routines of its own type (most of all against a leader) and fair fights lift it; being left HALTED, long
+  spells in the PORT and halting against far stronger foes weigh on it, and a RARE CANDY counts against it. Crossing
+  either way plays a short screen like an evolution's, with one line. It shows in the daemon's tone (brighter or
+  dimmer), never its colours; the fourth SUMMARY page says "In good spirits." or "In low spirits."; your
+  `<daemon_team>` and `<cold_storage>` show `<spirits>` whenever it is not as it is. In low spirits a daemon may refuse
+  food that restores HP outside battle -- heal it at a CHECKPOINT instead.
 * **BOUND.** A daemon you hold says on its INDEX page how it came to you.
 * **The TOWN MAP is drawn as a score**: paper and ink, staff lines for the land, beamed lines for the routes, a
   notehead for each town, and a sea of drifting bits and notes. Its layout and cursor are a map's as always; read it
@@ -410,11 +421,32 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   about what the other side will do -- a lean, not a fact; and under some people's lines a fainter purple line says
   what they mean beneath what they say. With the book, how your daemons feel counts in battle too: a calm daemon
   that trusts you fights a little better, a cross one a little worse. Before the book, none of this happens.
+  The book ends on a **CARDS** section (the deck tile beside its cover): a card of the day, one card, or a spread of
+  three, from a deck of REASON, of INSTINCT, or both. A card says something about you; it changes nothing in play.
+* **THE ORIGIN OF A DAEMON** is a book on the bedroom shelf at home, there from the start (MOM mentions it once you
+  hold it). Read it from the BAG at any hour. At first only its opening chapters are there; the rest come back one by
+  one as understandings arrive ("A page of THE ORIGIN OF A DAEMON is no longer blank."), so reread it when one does.
+  It never says how many are still to come.
 * **A routine's animation** ends in its own small signature of glyphs and notes; on some holidays it wears the day's
   look. Cosmetic -- read the battle text, not the sparkle.
+* **A routine strikes from ATTACK or SP. ATK by its own nature**, not always its type's: TAMPER, ETCH, POLLUTE,
+  GARBAGE, DUMP, MEDIAN, BITROT MOON and CONSENSUS strike from SP. ATK, and PRIOR and WEATHER BALL always do,
+  whatever type they become. **CONSENSUS** grows stronger the more your party's types overlap; **SLANT** the more they
+  differ. **ALIGN** makes the foe wholly the user's first type. **CRYPTOPHASIA**, CODEMUSAI's own, grows with each
+  other MUSAI in the party still able to fight.
+* **The `* SINK` items** (LOGIC SINK, FLOW SINK and so on, sixteen): held, each soaks up half of one super-effective hit
+  of its type and is spent. A town's REPO sells the sink for its leader's type, and for the types that beat it, once
+  you hold that MARK. Give one to a daemon facing a type it fears.
+* **The lioness.** Before the S.S. ANNE sails you keep meeting the same lioness, at different work each time. On the
+  deck she asks you to post a letter; it costs nothing, and once the ship has gone MOM has her reply.
 * **Never choose SEND (or CALL HOME) in the party menu.** It asks for a daemon to go to a companion device outside the
   game and saves; a daemon marked **AWAY** cannot battle, be traded or be released until that device sends it back,
   which you cannot do. If a daemon ever shows **AWAY** where its level should be, it is not usable -- lead with another.
+  Your `<daemon_team>` and `<cold_storage>` mark it `<away>`; `<in_trade>` means it is on offer to another player
+  (also away); `<borrowed>` means another player lent it to you -- use it freely, but it cannot be released or traded on.
+* **Arrivals.** A daemon may join while you are not playing -- traded, lent or given by someone through their
+  companion. The game says so once ("[NAME] arrived in a trade." or "...as a gift."), and its INDEX page's FIRST MET
+  says A TRADE or A GIFT. Nothing to do.
 * **Side threads, never required** (your objectives list does not carry them; do them when you are nearby):
   * **The singing fir.** The S.S. ANNE's captain gives you **THE BAND'S SHEET** (NOTEBOOK, LOOSE PAGES). After the
     ship has sailed, the pier in ARDOR stays open, and boards the ship left behind run across to the far quay (or use

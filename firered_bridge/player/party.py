@@ -82,6 +82,22 @@ def is_shiny(pid: int, otid: int) -> bool:
     return (tid ^ sid ^ pid_lo ^ pid_hi) < 8
 
 
+_SPIRITS = {1: "good", 2: "low"}   # DAEMONS T-519: 0 is as it is, and 3 is never written (read as 0)
+
+
+def daemons_bits(flags: int, word: int) -> Dict[str, Any]:
+    """DAEMONS: what is kept beside a record (include/pokemon.h, struct BoxPokemon). In the flags byte at 0x13, AWAY
+    (bit 4, T-358: on the player's companion device, so it cannot battle) and TRADING (bit 3, T-473: on the companion's
+    exchange, so it cannot be called home); in the u16 at 0x1E, a LOAN (bit 0: borrowed, never released or traded on)
+    and SPIRITS (bits 12-13, T-519): "good", "low", or None as it is."""
+    return {
+        "away": ((flags >> 4) & 1) == 1,
+        "trading": ((flags >> 3) & 1) == 1,
+        "loan": (word & 1) == 1,
+        "spirits": _SPIRITS.get((word >> 12) & 3),
+    }
+
+
 def get_types_for_species(species_id: int) -> List[str]:
     if species_id == SPECIES_NONE:
         return []
@@ -157,8 +173,8 @@ def get_pokemon_data_slot(slot: int) -> Optional[Dict[str, Any]]:
     base = PARTY_BASE_ADDR + slot * POKEMON_DATA_SIZE
     nickname_raw = mgba.mgba_read_range(base + NICKNAME_OFFSET, 10)
     nickname = text_encoding.decode_gba_string(nickname_raw, 10)
-    # DAEMONS T-358: AWAY is bit 4 of the record's flags byte -- on the player's companion device, so it cannot battle
-    away = ((mgba.mgba_read8(base + BOXMON_FLAGS_OFFSET) >> 4) & 1) == 1
+    # DAEMONS: AWAY, TRADING, a LOAN and SPIRITS (daemons_bits)
+    carried = daemons_bits(mgba.mgba_read8(base + BOXMON_FLAGS_OFFSET), mgba.mgba_read16(base + BOXMON_DAEMONS_WORD_OFFSET))
 
     level = mgba.mgba_read8(base + LEVEL_OFFSET)
     status_cond = mgba.mgba_read32(base + STATUS_OFFSET)
@@ -234,7 +250,7 @@ def get_pokemon_data_slot(slot: int) -> Optional[Dict[str, Any]]:
         "evs": {"hp": ev_hp, "attack": ev_atk, "defense": ev_def, "speed": ev_spe, "spAttack": ev_spa, "spDefense": ev_spd},
         "ivs": {"hp": iv_of(0), "attack": iv_of(1), "defense": iv_of(2), "speed": iv_of(3), "spAttack": iv_of(4), "spDefense": iv_of(5)},
         "isEgg": is_egg,
-        "away": away,
+        **carried,
         "is_shiny": is_shiny(pid, otid),
         "abilitySlot": ability_slot,
     }
@@ -284,7 +300,10 @@ def _get_party_data_fast_from_raw(raw: bytes) -> List[Dict[str, Any]]:
 
         nickname_raw = raw[base + NICKNAME_OFFSET : base + NICKNAME_OFFSET + 10]
         nickname = text_encoding.decode_gba_string(nickname_raw, 10)
-        away = ((raw[base + BOXMON_FLAGS_OFFSET] >> 4) & 1) == 1   # DAEMONS T-358
+        carried = daemons_bits(   # DAEMONS: AWAY, TRADING, a LOAN and SPIRITS
+            raw[base + BOXMON_FLAGS_OFFSET],
+            int.from_bytes(raw[base + BOXMON_DAEMONS_WORD_OFFSET : base + BOXMON_DAEMONS_WORD_OFFSET + 2], "little"),
+        )
 
         level = raw[base + LEVEL_OFFSET]
         status_cond = int.from_bytes(raw[base + STATUS_OFFSET : base + STATUS_OFFSET + 4], "little")
@@ -366,7 +385,7 @@ def _get_party_data_fast_from_raw(raw: bytes) -> List[Dict[str, Any]]:
                     "spDefense": iv_of(5),
                 },
                 "isEgg": is_egg,
-                "away": away,
+                **carried,
                 "is_shiny": is_shiny(pid, otid),
                 "abilitySlot": ability_slot,
             }

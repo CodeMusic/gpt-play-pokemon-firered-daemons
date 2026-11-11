@@ -58,6 +58,17 @@ function mapStatus(statusCondition) {
   return STATE_NAMES[upper] || upper;
 }
 
+//  DAEMONS: what the bridge reads beside a record (firered_bridge/player/party.py daemons_bits) -- AWAY, in a trade,
+//  borrowed, and its SPIRITS. The bridge has reported AWAY since T-358; nothing passed it on until now.
+function carriedFields(mon) {
+  return {
+    away: Boolean(mon?.away),
+    in_trade: Boolean(mon?.trading),
+    borrowed: Boolean(mon?.loan),
+    spirits: mon?.spirits === "good" || mon?.spirits === "low" ? mon.spirits : null,
+  };
+}
+
 function transformParty(party) {
   if (!Array.isArray(party)) return [];
 
@@ -96,6 +107,7 @@ function transformParty(party) {
       held_item_id,
       held_item_name,
       is_shiny: Boolean(mon?.is_shiny),
+      ...carriedFields(mon),
     };
   });
 }
@@ -167,6 +179,7 @@ function transformPcData(pc) {
         status: mapStatus(mon?.statusCondition),
         pokedex_id: toInt(mon?.pokedexId),
         is_shiny: Boolean(mon?.is_shiny),
+        ...carriedFields(mon),
       });
     }
   }

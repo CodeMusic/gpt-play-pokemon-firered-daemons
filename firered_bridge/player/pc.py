@@ -8,6 +8,7 @@ from ..memory import mgba
 from ..text import encoding as text_encoding
 from ..util.bytes import _u8_from
 from .party import (
+    daemons_bits,
     get_ability_for_species,
     get_species_id_from_growth,
     get_types_for_species,
@@ -201,7 +202,9 @@ def _parse_box_slot_to_party_schema(slot_raw: bytes) -> Optional[Dict[str, Any]]
 
     flags = int(slot_raw[BOXMON_FLAGS_OFFSET])
     has_species = ((flags >> 1) & 1) == 1
-    away = ((flags >> 4) & 1) == 1   # DAEMONS T-358: on the player's companion device
+    carried = daemons_bits(   # DAEMONS: AWAY, TRADING, a LOAN and SPIRITS
+        flags, int.from_bytes(slot_raw[BOXMON_DAEMONS_WORD_OFFSET : BOXMON_DAEMONS_WORD_OFFSET + 2], "little")
+    )
     if not has_species:
         return None
 
@@ -295,7 +298,7 @@ def _parse_box_slot_to_party_schema(slot_raw: bytes) -> Optional[Dict[str, Any]]
             "spDefense": iv_of(5),
         },
         "isEgg": bool(is_egg),
-        "away": away,
+        **carried,
         "is_shiny": is_shiny(pid, otid),
         "abilitySlot": int(ability_slot),
         # Filled later (species info)

@@ -302,6 +302,17 @@ function formatPcItems(pcItems) {
   return lines.join("\n") + "\n";
 }
 
+//  DAEMONS: only what is so, so a plain daemon costs nothing -- AWAY (on a companion device: it cannot battle, and you
+//  cannot bring it back), in a trade, borrowed (never released or traded on), and its SPIRITS when not as it is.
+function carriedLines(pokemon, indent) {
+  const lines = [];
+  if (pokemon.away) lines.push(`${indent}<away>true</away>`);
+  if (pokemon.in_trade) lines.push(`${indent}<in_trade>true</in_trade>`);
+  if (pokemon.borrowed) lines.push(`${indent}<borrowed>true</borrowed>`);
+  if (pokemon.spirits) lines.push(`${indent}<spirits>${pokemon.spirits === "good" ? "in good spirits" : "in low spirits"}</spirits>`);
+  return lines;
+}
+
 function formatPcPokemon(pcData) {
   const currentBox = Number(pcData?.current_box) || 1;
   const mons = Array.isArray(pcData?.pokemons) ? pcData.pokemons : [];
@@ -330,6 +341,7 @@ function formatPcPokemon(pcData) {
     lines.push(`    <types>${escapeXml(types)}</types>`);
     lines.push(`    <status>${escapeXml(pokemon.status || "OK")}</status>`);
     lines.push(`    <pokedex_id>${Number(pokemon.pokedex_id) || 0}</pokedex_id>`);
+    lines.push(...carriedLines(pokemon, "    "));
     lines.push("  </daemon>");
   }
 
@@ -371,6 +383,7 @@ function formatPokemonTeam(team) {
     lines.push(`    <ability>${escapeXml(ability)}</ability>`);
     lines.push(`    <status>${escapeXml(status)}</status>`);
     lines.push(`    <is_shiny>${pokemon.is_shiny ? "true" : "false"}</is_shiny>`);
+    lines.push(...carriedLines(pokemon, "    "));
     lines.push("  </daemon>");
   }
 
