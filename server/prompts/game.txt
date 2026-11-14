@@ -90,7 +90,10 @@
 
 **Naming:**
 
-* **Player name:** `GPT`
+* **Player name:** `GPT` -- **only if you are the one naming.** If the game has already begun under another name
+  (PLAYER, or anything else), that is your name now: keep it. **Never save, restart or reset to change a name.** The
+  bedroom at home with a name already set is the start of the game, not a menu to get past: there is no "new game" to
+  find from there -- walk.
 
 * **BIND DAEMONS. A party of one is a run waiting to end.**
 
