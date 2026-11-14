@@ -120,6 +120,29 @@ has all four.
 build, finds the model proxy, reads its key, and starts the bridge, the agent
 and the dashboard.
 
+## Which mind plays
+
+One setting, **`DAEMONS_MIND`**, four answers:
+
+| | what plays |
+|---|---|
+| **`mind`** (default) | whatever mind the [companion](https://github.com/CodeMusic/daemons-companion)'s hub is using, if it is well -- today the Tiiny, an AI box on the desk. The hub is *asked* which mind, and the harness talks to it itself; failing that, the Tiiny directly, then seer. Never OpenRouter |
+| **`tiiny`** | the Tiiny directly |
+| **`seer`** | the local cloud: LiteLLM on roverbyteseer:4000 |
+| **`openrouter`** | hosted open models through LiteLLM. **Paid**, and never chosen for you |
+
+```sh
+DAEMONS_MIND=tiiny ./bindDaemons.sh --ai        # from the DAEMONS repo
+DAEMONS_TIINY_MODEL=9b DAEMONS_MIND=seer npm start   # or the agent alone, from server/
+```
+
+On the Tiiny it plays **Qwen3.6-35B-A3B with thinking off** (`DAEMONS_TIINY_MODEL=35b|9b`, `DAEMONS_THINK=1`):
+12 of 13 real turns a valid tool call, median 15 seconds, measured by `server/tools/mindbench.js` --
+**[docs/MINDS.md](docs/MINDS.md)** has the measurements, what the Tiiny serves and why the local minds are spoken to in
+chat completions. Keys are fetched when the agent starts and never stored. The
+[Configuration](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/wiki/Configuration) page lists every
+setting.
+
 ## If you are trying this against a local model, read this first
 
 **It is not one environment variable.** The call sites use

@@ -8,6 +8,34 @@ and [`.env.example`](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemo
 the agent's are read in
 [`server/src/config.js`](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/blob/context-content/server/src/config.js).
 
+## Which mind plays
+
+**`DAEMONS_MIND`** chooses the machine that plays, from four
+([`server/src/ai/mind.js`](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/blob/context-content/server/src/ai/mind.js)):
+
+| `DAEMONS_MIND` | what plays | spoken to in |
+|---|---|---|
+| `mind` (the default) | whatever mind the companion's hub is using, if it is well -- the harness asks the hub (`GET /api/talk/settings` on daemons-hearth, over ssh) and plays on that; today it is the Tiiny, through LiteLLM. If the hub cannot be asked, the Tiiny directly; then seer. Never OpenRouter | chat completions |
+| `tiiny` | the Tiiny on the desk, directly (`http://openai.api.tiiny/v1`) | chat completions |
+| `seer` | the local cloud: LiteLLM on roverbyteseer:4000 (`tiiny-35b`, `tiiny-9b` and the rest of its names) | chat completions |
+| `openrouter` | hosted open models through LiteLLM's `or-*` names (`or-muse-glimmer` by default). **Paid**: never chosen for you | the Responses API, `store` off |
+
+**`DAEMONS_TIINY_MODEL`** picks the model on a Tiiny mind: `35b` (Qwen3.6-35B-A3B, the default and the measured
+choice, [Local and open models](Local-and-open-models)) or `9b` (Qwen3.5-9B). **`DAEMONS_MODEL`**, set, names the model
+outright (not `OPENAI_MODEL`, which `bindDaemons.sh` has always exported for its own reasons). **`DAEMONS_THINK=0`** turns the model's thinking off (it is on whenever the reasoning effort is above
+`minimal`). The keys are fetched when the agent starts -- the Tiiny's and LiteLLM's from roverbyteseer over ssh, or
+`TIINY_API_KEY` and `LITELLM_KEY` from the environment -- and never written anywhere. The agent's first log line says
+what it chose and why: `[mind] mind:seer: tiiny-35b at http://roverbyteseer:4000/v1 (chat) -- the hub's mind is ...`.
+
+The hub is asked rather than called because it speaks for a daemon: its talk route wraps every call in the daemon's
+self, takes no tools and does not stream text. **Why chat completions**: the Tiiny serves the Responses API too, but
+refuses images, `reasoning` and the thinking switch there; its chat completions take all three.
+[`chatBridge.js`](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/blob/context-content/server/src/ai/chatBridge.js)
+answers the harness's `responses.create()` calls in chat completions, so none of the call sites changed.
+
+Leave `DAEMONS_MIND` unset and set `OPENAI_BASE_URL` yourself, and the harness uses that endpoint exactly as before
+(upstream's way, and OpenAI's own API when it is empty).
+
 ## The model
 
 | variable | default | `--ai` sets | what it does |
@@ -68,6 +96,7 @@ the agent's are read in
 | variable | default | what it does |
 |---|---|---|
 | `DAEMONS_LLM_HOST` | probed | the LiteLLM proxy's host, if the probe should be skipped |
+| `DAEMONS_SEER_HOST`, `DAEMONS_SEER_URL`, `DAEMONS_TIINY_URL`, `DAEMONS_HUB_SSH`, `DAEMONS_HUB_API` | roverbyteseer, its :4000, `openai.api.tiiny`, `debian@daemons-hearth`, `127.0.0.1:4730` | where `mind.js` looks (the agent reads these, not only the script) |
 | `DAEMONS_DASH_PORT` | `5173` | the dashboard's port |
 | `DAEMONS_KEEP_RUNS` | `5` | archived runs `--fresh` keeps; `0` keeps them all |
 

@@ -50,8 +50,17 @@ proxy refuses one.
 
 What has been played on it, through LiteLLM: qwen3-vl-8b served by LM Studio, which tool-calls well when the tools are
 flat; MiniCPM served by mlx-vlm, which needs the salvage above (it cannot tool-call through LM Studio at all -- its XML
-dialect needs SGLang's or vLLM's parser); and hosted open models through OpenRouter, which `--ai` uses by default. A
-frontier model on OpenAI's own API still works as it did upstream: leave `OPENAI_BASE_URL` unset.
+dialect needs SGLang's or vLLM's parser); and hosted open models through OpenRouter (`or-muse-glimmer` and the rest).
+
+**Since 2026-11-14 the default is the Tiiny**, an AI box on the desk, chosen through the companion's hub
+(`DAEMONS_MIND=mind`, [Configuration](Configuration)): **Qwen3.6-35B-A3B with thinking off**, 13 of 13 real turns a
+valid tool call in a replay through the real client, median about 20 seconds. The local minds are spoken to in chat
+completions, not the Responses API, through
+[`chatBridge.js`](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/blob/context-content/server/src/ai/chatBridge.js),
+and every image is flattened to RGB on the way: the harness's RGBA grid overlay made the Tiiny drop its model.
+[`docs/MINDS.md`](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/blob/context-content/docs/MINDS.md)
+has the measurements, and `server/tools/mindbench.js` makes them again. A frontier model on OpenAI's own API still
+works as it did upstream: leave `DAEMONS_MIND` unset and set `OPENAI_BASE_URL` (empty for OpenAI itself).
 
 ## The lesson most of these shared
 

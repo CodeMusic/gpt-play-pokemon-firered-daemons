@@ -37,5 +37,12 @@ const openai = new OpenAI({
   maxRetries: Number(process.env.OPENAI_MAX_RETRIES ?? 2),
 });
 
+//  DAEMONS (T-560): a local mind (the Tiiny, or LiteLLM in front of it) is spoken to in chat completions; the harness
+//  keeps calling responses.create() and src/ai/chatBridge.js answers it. DAEMONS_API is set by src/ai/mind.js.
+if (process.env.DAEMONS_API === "chat") {
+  const { makeResponsesCreate } = require("../ai/chatBridge");
+  openai.responses.create = makeResponsesCreate(openai);
+}
+
 module.exports = { openai };
 

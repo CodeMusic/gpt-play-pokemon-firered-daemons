@@ -1,4 +1,7 @@
 const path = require("path");
+//  DAEMONS (T-560): which mind plays -- DAEMONS_MIND=mind|tiiny|seer|openrouter -- settled before anything reads the
+//  environment below. See src/ai/mind.js.
+require("./ai/mind").applyMind();
 
 // `__dirname` points to `server/src`; ROOT_DIR is `server/`
 const ROOT_DIR = path.join(__dirname, "..");
