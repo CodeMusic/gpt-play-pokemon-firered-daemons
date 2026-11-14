@@ -78,3 +78,15 @@ once, then cached), and the Tiiny's times vary between runs by about a third.
 faster at the median and the worst case in the like-for-like run -- it is a mixture of experts with about 3B active, so its size costs memory
 rather than time -- and it is the stronger voice for the inner life. Thinking is off by default on every chat mind (measured
 above: on is slower and no better); `DAEMONS_THINK=1` turns it back on.
+
+## The live run
+
+2026-11-14, the v11.364 CONTENT ROM (a scratch copy, a new game), `DAEMONS_MIND=mind` -- which the hub answered
+with seer's `tiiny-35b` -- thinking off, full schema, local pathfinder. **15 turns, 15 valid tool calls, no stream
+errors, no images refused.** The first three turns took 170-255 s (the 44,000-token prompt read cold); after that
+31-54 s a turn, growing with the history. Its inner voice was in character throughout.
+
+It found a bug in the brief, not the mind: told its name is GPT, and waking in the bedroom of a game already named
+PLAYER, it went looking through START, OPTION and SAVE for a "new game" and decided to save and restart the console
+to rename. The brief now keeps a name the game already has (c99c539). Worth knowing for the next run: the agent spends
+its first turns on the OPTION menu (text speed) before it walks anywhere.
