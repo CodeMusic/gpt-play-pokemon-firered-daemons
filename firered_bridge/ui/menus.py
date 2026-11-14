@@ -1275,7 +1275,7 @@ def get_title_menu_state(callback2: Optional[int] = None, tasks_raw: Optional[by
         return None
 
 
-TITLE_SCREEN_PRESS_START_VISIBLE_TEXT = "Pokémon FireRed Version\n PRESS START\n2004 Game Freak inc."
+TITLE_SCREEN_PRESS_START_VISIBLE_TEXT = "DAEMONS\n PRESS START"  # DAEMONS: the title as our ROM draws it, not retail's
 
 
 def get_title_screen_press_start_state(
