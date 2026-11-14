@@ -178,6 +178,39 @@
           </div>
       </section>
 
+      <!-- T-560: which mind plays. Local by default; OpenRouter is paid and asks first. The key is never shown back,
+           only where it comes from. Changes apply from the agent's next model call. -->
+      <section class="card mind-card" aria-labelledby="mind-title">
+        <h2 id="mind-title">Mind</h2>
+        <p id="mind-now" class="muted small">Asking the agent&hellip;</p>
+        <form id="mind-form" class="mind-form" autocomplete="off">
+          <label>Plays on
+            <select id="mind-select">
+              <option value="mind">The mind hub (local, picks the best mind)</option>
+              <option value="tiiny">The Tiiny, directly (local)</option>
+              <option value="seer">Seer's LiteLLM (local cloud)</option>
+              <option value="openrouter">OpenRouter (PAID)</option>
+            </select>
+          </label>
+          <label>On the Tiiny
+            <select id="mind-tiiny">
+              <option value="35b">35B (Qwen3.6-35B-A3B)</option>
+              <option value="9b">9B (Qwen3.5-9B)</option>
+            </select>
+          </label>
+          <button type="submit" class="btn btn-primary">Use this mind</button>
+        </form>
+        <div class="mind-key">
+          <p id="mind-key-status" class="muted small"></p>
+          <form id="mind-key-form" class="mind-form" autocomplete="off">
+            <input id="mind-key-input" type="password" placeholder="OpenRouter key (sk-or-...)" aria-label="OpenRouter key" />
+            <button type="submit" class="btn btn-secondary">Save key</button>
+            <button type="button" id="mind-key-forget" class="btn btn-secondary">Forget key</button>
+          </form>
+        </div>
+        <p id="mind-msg" class="small" role="status"></p>
+      </section>
+
       <!-- The backchannel. Named for the listener's "mm-hm" -- how you steer a
            speaker without taking the floor. The agent is never told what it is. -->
       <section class="card backchannel-card">

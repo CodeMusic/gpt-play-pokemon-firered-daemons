@@ -33,6 +33,15 @@ refuses images, `reasoning` and the thinking switch there; its chat completions 
 [`chatBridge.js`](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/blob/context-content/server/src/ai/chatBridge.js)
 answers the harness's `responses.create()` calls in chat completions, so none of the call sites changed.
 
+**Or choose it on the dashboard**: the **Mind** card (beside the Backchannel) sets the mind and the Tiiny's model
+while the agent runs -- from the next model call -- and keeps the choice on this machine in `server/mind.local.json`
+(gitignored, mode 0600). Choosing OpenRouter asks first, because every turn there is billed. The card also takes an
+**OpenRouter key**: saved there, the paid choice calls OpenRouter directly (`meta/muse-glimmer-30b`, pinned to
+DeepInfra); if `OPENROUTER_API_KEY` is already in the agent's environment the card says so and leaves it alone; with
+neither, the paid choice goes through seer's LiteLLM, which keeps its own. The key is never shown back. Changes are
+accepted only from the machine running the agent (the server answers the network too, and switching to a paid mind is
+not the network's to do). An environment variable pins a launch; a choice on the card takes over for that run.
+
 Leave `DAEMONS_MIND` unset and set `OPENAI_BASE_URL` yourself, and the harness uses that endpoint exactly as before
 (upstream's way, and OpenAI's own API when it is empty).
 

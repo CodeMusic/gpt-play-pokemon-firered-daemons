@@ -594,6 +594,96 @@
     if (input) { input.placeholder = "Answer its question\u2026"; input.focus(); }
   });
 
+  //  T-560: the MIND card. The agent's own HTTP server holds the setting (GET/POST /mind); POST is accepted only from
+  //  this machine, so the card works where the dashboard is opened on the machine running the agent.
+  function mindUrl() {
+    const scheme = window.location.protocol === "https:" ? "https" : "http";
+    return `${scheme}://${state.settings.host}:${state.settings.port}/mind`;
+  }
+
+  const MIND_NAMES = { mind: "the mind hub", tiiny: "the Tiiny", seer: "seer's LiteLLM", openrouter: "OpenRouter (paid)" };
+
+  function renderMind(v) {
+    if (!v || !v.choices) return;
+    const now = document.getElementById("mind-now");
+    const sel = document.getElementById("mind-select");
+    const tiiny = document.getElementById("mind-tiiny");
+    const keyStatus = document.getElementById("mind-key-status");
+    const keyForm = document.getElementById("mind-key-form");
+    const forget = document.getElementById("mind-key-forget");
+    if (sel) sel.value = v.mind;
+    if (tiiny) tiiny.value = v.tiinyModel;
+    if (now) {
+      const r = v.resolved;
+      const pinned = v.mindFrom === "env" ? " Pinned by DAEMONS_MIND in the launcher's environment until you choose here." : "";
+      now.textContent = r
+        ? `Playing on ${r.model} -- ${r.mind} (${r.why})${r.keyFound ? "" : ". NO KEY FOUND"}.${pinned}`
+        : `Set by hand (OPENAI_BASE_URL), not by this card.${pinned}`;
+      now.classList.toggle("mind-paid", Boolean(r && r.mind === "openrouter"));
+    }
+    if (keyStatus && keyForm) {
+      const k = v.openrouter && v.openrouter.keyFrom;
+      if (k === "env") {
+        keyStatus.textContent = "OpenRouter's key is set by OPENROUTER_API_KEY in the agent's environment. Leave it there; nothing to do here.";
+        keyForm.hidden = true;
+      } else if (k === "saved") {
+        keyStatus.textContent = "An OpenRouter key is saved on this machine (never shown). OpenRouter would be called directly with it.";
+        keyForm.hidden = false;
+        if (forget) forget.hidden = false;
+      } else {
+        keyStatus.textContent = "No OpenRouter key here: the paid choice would go through seer's LiteLLM, which keeps its own. Or save one for OpenRouter directly.";
+        keyForm.hidden = false;
+        if (forget) forget.hidden = true;
+      }
+    }
+  }
+
+  async function postMind(body) {
+    const msg = document.getElementById("mind-msg");
+    try {
+      const r = await fetch(mindUrl(), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const v = await r.json();
+      if (!r.ok || !v.ok) throw new Error(v.error || `HTTP ${r.status}`);
+      renderMind(v);
+      if (msg) msg.textContent = "Saved. The next model call uses it.";
+    } catch (e) {
+      if (msg) msg.textContent = `Not changed: ${e.message}`;
+    }
+  }
+
+  async function loadMind() {
+    try {
+      const r = await fetch(mindUrl());
+      if (r.ok) renderMind(await r.json());
+    } catch (_) { /* the agent is not up yet; the socket's reconnect calls this again */ }
+  }
+
+  function wireMind() {
+    const form = document.getElementById("mind-form");
+    const keyForm = document.getElementById("mind-key-form");
+    const keyInput = document.getElementById("mind-key-input");
+    const forget = document.getElementById("mind-key-forget");
+    if (form) form.addEventListener("submit", (ev) => {
+      ev.preventDefault();
+      const mind = document.getElementById("mind-select").value;
+      const tiinyModel = document.getElementById("mind-tiiny").value;
+      const body = { mind, tiinyModel };
+      if (mind === "openrouter") {
+        if (!window.confirm("OpenRouter is PAID: every turn the agent takes is billed. Switch to it?")) return;
+        body.confirmPaid = true;
+      }
+      postMind(body);
+    });
+    if (keyForm && keyInput) keyForm.addEventListener("submit", (ev) => {
+      ev.preventDefault();
+      const key = keyInput.value.trim();
+      keyInput.value = "";
+      if (key) postMind({ openrouterKey: key });
+    });
+    if (forget) forget.addEventListener("click", () => postMind({ forgetOpenrouterKey: true }));
+    loadMind();
+  }
+
   function wireBackchannel() {
     const form = document.getElementById("bc-form");
     const input = document.getElementById("bc-input");
@@ -1590,6 +1680,10 @@
         }
         return;
 
+      case "mind_update":
+        renderMind(payload);
+        return;
+
       case "backchannel":
         if (payload && payload.text) {
           if (!Array.isArray(state.game.backchannel)) state.game.backchannel = [];
@@ -1819,6 +1913,7 @@
       clearReconnectTimer();
       renderRuntime();
       addLog("status", "WebSocket connected.");
+      loadMind();
     };
 
     ws.onmessage = handleWsMessage;
@@ -1970,6 +2065,7 @@
     initTabs();
     initFrameView();
     wireBackchannel();
+    wireMind();
     renderAllPanels();
     renderAsides();
     connectWebSocket();

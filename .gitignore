@@ -15,3 +15,7 @@ server/gpt_data_*
 
 # what the agent may know of DAEMONS' private things (its CLAUDE.md's four): this machine only
 server/prompts/private.txt
+
+# T-560: the dashboard's mind setting, and an OpenRouter key if one was typed there -- this machine only
+server/mind.local.json
+server/mind.local.json.*.tmp

@@ -851,6 +851,17 @@ input:focus-visible {
    dashboard is actually used in. It belongs with the log and the map anyway:
    those three are the watching panels, and this is the one you type into. */
 .backchannel-card { grid-column: span 3; display: flex; flex-direction: column; }
+.mind-card { grid-column: span 3; display: flex; flex-direction: column; gap: 0.5rem; }
+.mind-form { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: flex-end; }
+.mind-form label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.8rem; color: var(--text-secondary); }
+.mind-form select, .mind-form input {
+  background: var(--surface-raised); color: var(--text); border: 1px solid var(--border-light);
+  border-radius: 6px; padding: 0.35rem 0.5rem; min-width: 0; max-width: 100%;
+}
+.mind-form input { flex: 1 1 12rem; }
+.mind-form select:focus-visible, .mind-form input:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.mind-key { border-top: 1px solid var(--border); padding-top: 0.5rem; }
+.mind-paid { color: var(--warn); }
 
 .bc-log {
   flex: 1 1 auto;
@@ -1290,6 +1301,7 @@ input:focus-visible {
   .objectives,
   .aside-card,
   .backchannel-card,
+  .mind-card,
   .frame-card {
     grid-column: span 6;
   }
@@ -1328,6 +1340,7 @@ input:focus-visible {
   .logs,
   .aside-card,
   .backchannel-card,
+  .mind-card,
   .frame-card {
     grid-column: span 12;
   }
@@ -1504,3 +1517,4 @@ input:focus-visible {
   max-height: 50vh;
   overscroll-behavior: contain;
 }
+.mind-card [hidden] { display: none !important; }

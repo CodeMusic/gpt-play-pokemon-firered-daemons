@@ -39,10 +39,22 @@ const openai = new OpenAI({
 
 //  DAEMONS (T-560): a local mind (the Tiiny, or LiteLLM in front of it) is spoken to in chat completions; the harness
 //  keeps calling responses.create() and src/ai/chatBridge.js answers it. DAEMONS_API is set by src/ai/mind.js.
-if (process.env.DAEMONS_API === "chat") {
-  const { makeResponsesCreate } = require("../ai/chatBridge");
-  openai.responses.create = makeResponsesCreate(openai);
+const { makeResponsesCreate } = require("../ai/chatBridge");
+const responsesCreate = openai.responses.create.bind(openai.responses);
+const chatCreate = makeResponsesCreate(openai);
+openai.responses.create = (...a) => (process.env.DAEMONS_API === "chat" ? chatCreate : responsesCreate)(...a);
+
+//  T-560: the dashboard's MIND card changes the mind while the agent runs. The client is shared by reference across
+//  the harness, so it is pointed at the new mind in place; the next call (never one already streaming) goes there.
+function retarget() {
+  const { config } = require("../config");
+  openai.baseURL = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
+  openai.apiKey = process.env.OPENAI_API_KEY || "local";
+  config.openai.model = process.env.OPENAI_MODEL || config.openai.model;
+  config.openai.modelPathFinding = process.env.OPENAI_MODEL_PATHFINDING || config.openai.modelPathFinding;
+  config.openai.apiKey = openai.apiKey;
+  config.openai.store = false;   // no mind of mind.js's keeps one; OpenRouter refuses it outright
 }
 
-module.exports = { openai };
+module.exports = { openai, retarget };
 

@@ -159,6 +159,39 @@ async function start() {
   const VOICE_RELAY = process.env.DAEMONS_VOICE_RELAY
     || "https://n8n.codemusic.ca/webhook/daemon/voice";
 
+  //  T-560: WHICH MIND PLAYS, from the dashboard's MIND card. GET is the view (never a key: only where each comes
+  //  from); POST changes it -- the choice, the Tiiny's model, an OpenRouter key -- saved on this machine
+  //  (server/mind.local.json, gitignored) and applied from the next model call. POST only from this machine itself:
+  //  the server listens on every interface, and switching to a paid mind or setting its key is not something the
+  //  network gets to do. Switching TO OpenRouter needs {confirmPaid: true}: every turn there is billed.
+  const isLoopback = (req) => /^(::1|127\.|::ffff:127\.)/.test(String(req.socket?.remoteAddress || ""));
+  app.get("/mind", (req, res) => {
+    res.json({ ok: true, ...require("./src/ai/mind.js").mindView() });
+  });
+  app.post("/mind", express.json({ limit: "4kb" }), (req, res) => {
+    if (!isLoopback(req)) {
+      res.status(403).json({ ok: false, error: "the mind is chosen only from this machine" });
+      return;
+    }
+    const body = req.body || {};
+    if (body.mind === "openrouter" && body.confirmPaid !== true) {
+      res.status(400).json({ ok: false, error: "OpenRouter is paid: confirm it" });
+      return;
+    }
+    try {
+      const mind = require("./src/ai/mind.js");
+      mind.setMind({ mind: body.mind, tiinyModel: body.tiinyModel, openrouterKey: body.openrouterKey,
+                     forgetOpenrouterKey: body.forgetOpenrouterKey === true });
+      require("./src/core/openaiClient.js").retarget();
+      const view = mind.mindView();
+      socketHub.broadcast({ type: "mind_update", payload: view });
+      console.log(`INFO: [mind] set from the dashboard: ${view.resolved?.mind} ${view.resolved?.model}`);
+      res.json({ ok: true, ...view });
+    } catch (e) {
+      res.status(400).json({ ok: false, error: String(e?.message || e) });
+    }
+  });
+
   //  The other half of the backchannel: what the watcher sends in. Kept on the
   //  server for the same reason /speak is -- the page never needs a secret and
   //  the log survives a refresh.

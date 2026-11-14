@@ -91,9 +91,41 @@ function askHub() {
   }
 }
 
+//  THE SETTING, KEPT ON THIS MACHINE (the user, 2026-11-14: "a setting between the local mind hub (tiiny) or paid",
+//  and "you should also be able to set the paid openrouter key via this settings ui (or if it is set up as an env var
+//  we can state that to leave that working)"). The dashboard's MIND card writes it through POST /mind (server/index.js),
+//  loopback only. One small JSON file, gitignored, mode 0600, written to a temporary file and renamed. It holds the
+//  choice, the Tiiny model, and -- only when one was typed into the dashboard -- an OpenRouter key, which is never
+//  sent back out: the view says only where the key comes from.
+//  Precedence, for each field: the environment, then this file, then the default. An environment variable is how a
+//  launcher pins a run, so it wins, and the dashboard says so rather than pretending its choice took.
+const fs = require("fs");
+const path = require("path");
+const SETTINGS_FILE = process.env.DAEMONS_MIND_SETTINGS || path.join(__dirname, "..", "..", "mind.local.json");
+
+function loadSaved() {
+  try { return JSON.parse(fs.readFileSync(SETTINGS_FILE, "utf8")) || {}; } catch { return {}; }
+}
+
+function saveSettings(patch) {
+  const next = { ...loadSaved(), ...patch };
+  for (const k of Object.keys(next)) if (next[k] === null || next[k] === "") delete next[k];
+  const tmp = `${SETTINGS_FILE}.${process.pid}.tmp`;
+  fs.writeFileSync(tmp, JSON.stringify(next, null, 2) + "\n", { mode: 0o600 });
+  fs.renameSync(tmp, SETTINGS_FILE);
+  return next;
+}
+
+const pick = (envName, savedKey, dflt) => {
+  if (process.env[envName]) return { value: process.env[envName], from: "env" };
+  const saved = loadSaved()[savedKey];
+  if (saved) return { value: saved, from: "saved" };
+  return { value: dflt, from: "default" };
+};
+
 function modelFor(where) {
   if (process.env.DAEMONS_MODEL) return process.env.DAEMONS_MODEL;
-  const size = (process.env.DAEMONS_TIINY_MODEL || "35b").toLowerCase();
+  const size = String(pick("DAEMONS_TIINY_MODEL", "tiinyModel", "35b").value).toLowerCase();
   const m = TIINY_MODELS[size] || TIINY_MODELS["35b"];
   return m[where];
 }
@@ -113,11 +145,32 @@ function asSeer(why) {
            pathModel: pathModelFor("seer"), api: "chat", store: false };
 }
 
+//  Where an OpenRouter key would come from, without reading it out: the environment, this machine's setting, or none
+//  here at all -- in which case the or-* names on seer's LiteLLM use the key kept there.
+function openrouterKeySource() {
+  if (process.env.OPENROUTER_API_KEY) return "env";
+  if (loadSaved().openrouterKey) return "saved";
+  return "seer";
+}
+
+const OPENROUTER_DIRECT_MODEL = "meta/muse-glimmer-30b";   // the model or-muse-glimmer names, on OpenRouter itself
+
 function asOpenRouter(why) {
-  //  OpenRouter rejects the Responses API's `store` (bindDaemons.sh's or- rule), so it is off here as it was there.
-  return { mind: "openrouter", why, baseURL: SEER_URL, apiKey: seerKey(),
-           model: process.env.DAEMONS_MODEL || (/^or-/.test(process.env.OPENAI_MODEL || "") ? process.env.OPENAI_MODEL : OPENROUTER_DEFAULT),
-           pathModel: process.env.DAEMONS_MODEL_PATHFINDING || "daemons-pathfinding", api: "responses", store: false };
+  const src = openrouterKeySource();
+  if (src === "seer") {
+    //  OpenRouter rejects the Responses API's `store` (bindDaemons.sh's or- rule), so it is off here as it was there.
+    return { mind: "openrouter", why: `${why}; through seer's LiteLLM, whose key is kept there`, baseURL: SEER_URL, apiKey: seerKey(),
+             model: process.env.DAEMONS_MODEL || (/^or-/.test(process.env.OPENAI_MODEL || "") ? process.env.OPENAI_MODEL : OPENROUTER_DEFAULT),
+             pathModel: process.env.DAEMONS_MODEL_PATHFINDING || "daemons-pathfinding", api: "responses", store: false };
+  }
+  //  A key here: OpenRouter directly, in chat completions (its own API), pinned to DeepInfra as LiteLLM's entry is, so
+  //  an outage stops the run loudly instead of moving it onto other weights.
+  return { mind: "openrouter", why: `${why}; directly, with the key ${src === "env" ? "in OPENROUTER_API_KEY" : "saved on this machine"}`,
+           baseURL: "https://openrouter.ai/api/v1",
+           apiKey: src === "env" ? process.env.OPENROUTER_API_KEY : loadSaved().openrouterKey,
+           model: process.env.DAEMONS_MODEL || pick("DAEMONS_OPENROUTER_MODEL", "openrouterModel", OPENROUTER_DIRECT_MODEL).value,
+           pathModel: process.env.DAEMONS_MODEL_PATHFINDING || OPENROUTER_DIRECT_MODEL, api: "chat", store: false,
+           chatExtra: { provider: { order: ["DeepInfra"], allow_fallbacks: false } }, thinkSwitch: false };
 }
 
 //  The hub's choice, mapped onto a mind this harness can reach.
@@ -126,7 +179,7 @@ function viaHub() {
   if (!hub) return null;
   const url = String(hub.tiiny.url || "");
   if (hub.ok && url) {
-    if (url.includes(`${SEER_HOST}:4000`)) return { ...asSeer(`the hub's mind is the Tiiny through LiteLLM (${url}), and it is well`), mind: "mind:seer" };
+    if (url.includes(":4000")) return { ...asSeer(`the hub's mind is the Tiiny through LiteLLM (${url}), and it is well`), mind: "mind:seer" };
     if (url.includes("api.tiiny")) return { ...asTiiny(`the hub's mind is the Tiiny directly (${url}), and it is well`), mind: "mind:tiiny" };
     //  A mind at another address: its key stays in the hub's store and is never shown, so it can only be used keyless.
     return { mind: "mind:other", why: `the hub's mind is at ${url}`, baseURL: url, apiKey: "local", model: process.env.DAEMONS_MODEL || hub.tiiny.model,
@@ -135,12 +188,16 @@ function viaHub() {
   return null;
 }
 
-function resolveMind(name = process.env.DAEMONS_MIND) {
-  const want = String(name || "mind").toLowerCase();
-  if (!MINDS.includes(want)) throw new Error(`DAEMONS_MIND=${name}: choose one of ${MINDS.join(", ")}`);
+function chosenMind() {
+  return pick("DAEMONS_MIND", "mind", "mind");
+}
+
+function resolveMind(name) {
+  const want = String(name || chosenMind().value).toLowerCase();
+  if (!MINDS.includes(want)) throw new Error(`DAEMONS_MIND=${want}: choose one of ${MINDS.join(", ")}`);
   if (want === "tiiny") return asTiiny("asked for directly");
   if (want === "seer") return asSeer("asked for directly");
-  if (want === "openrouter") return asOpenRouter("asked for directly (paid)");
+  if (want === "openrouter") return asOpenRouter("asked for (PAID)");
   //  mind: the hub's choice, else the Tiiny directly, else seer. Never OpenRouter: that costs money and must be asked for.
   const hub = viaHub();
   if (hub) return hub;
@@ -148,26 +205,80 @@ function resolveMind(name = process.env.DAEMONS_MIND) {
   return { ...asSeer("neither the hub nor the Tiiny answered; trying seer"), mind: "mind:seer" };
 }
 
-//  Called once, before config.js reads the environment. DAEMONS_MIND unset AND OPENAI_BASE_URL set means the caller
-//  configured an endpoint by hand (the old way, or upstream's api.openai.com): leave it alone.
-function applyMind() {
-  if (!process.env.DAEMONS_MIND && process.env.OPENAI_BASE_URL !== undefined) {
-    process.env.DAEMONS_API = process.env.DAEMONS_API || "responses";
-    return null;
-  }
-  const m = resolveMind();
+//  The process environment the rest of the harness reads, from a resolved mind.
+function exportMind(m) {
   process.env.OPENAI_BASE_URL = m.baseURL;
   process.env.OPENAI_API_KEY = m.apiKey || "local";
   process.env.OPENAI_MODEL = m.model;
   process.env.OPENAI_MODEL_PATHFINDING = m.pathModel;
   process.env.DAEMONS_API = m.api;
-  if (process.env.DAEMONS_STORE === undefined) process.env.DAEMONS_STORE = m.store ? "1" : "0";
-  //  Thinking off on a chat mind unless asked for: the user's pick 2026-11-14, from docs/MINDS.md's measurements
-  //  (35B, thinking off: 12 of 13 real turns a valid call, median 15 s). DAEMONS_THINK=1 turns it back on.
-  if (m.api === "chat" && process.env.DAEMONS_THINK === undefined) process.env.DAEMONS_THINK = "0";
+  process.env.DAEMONS_CHAT_EXTRA = m.chatExtra ? JSON.stringify(m.chatExtra) : "";
+  process.env.DAEMONS_THINK_SWITCH = m.thinkSwitch === false ? "0" : "1";
   process.env.DAEMONS_MIND_RESOLVED = m.mind;
   console.log(`[mind] ${m.mind}: ${m.model} at ${m.baseURL} (${m.api}) -- ${m.why}${m.apiKey ? "" : "; NO KEY FOUND"}`);
+}
+
+let lastResolved = null;
+
+//  Called once, before config.js reads the environment. With no mind chosen anywhere (environment or this machine's
+//  setting) AND OPENAI_BASE_URL set, the caller configured an endpoint by hand (the old way, or upstream's
+//  api.openai.com): leave it alone.
+function applyMind() {
+  if (!process.env.DAEMONS_MIND && !loadSaved().mind && process.env.OPENAI_BASE_URL !== undefined) {
+    process.env.DAEMONS_API = process.env.DAEMONS_API || "responses";
+    return null;
+  }
+  const m = resolveMind();
+  exportMind(m);
+  if (process.env.DAEMONS_STORE === undefined) process.env.DAEMONS_STORE = m.store ? "1" : "0";
+  //  Thinking off on a chat mind unless asked for: the user's pick 2026-11-14, from docs/MINDS.md's measurements
+  //  (35B, thinking off: 13 of 13 real turns a valid call). DAEMONS_THINK=1 turns it back on.
+  if (m.api === "chat" && process.env.DAEMONS_THINK === undefined) process.env.DAEMONS_THINK = "0";
+  lastResolved = m;
   return m;
 }
 
-module.exports = { applyMind, resolveMind, MINDS, TIINY_MODELS };
+//  What the dashboard is shown. NEVER a key: only where each comes from.
+function mindView() {
+  const chosen = chosenMind();
+  const tiiny = pick("DAEMONS_TIINY_MODEL", "tiinyModel", "35b");
+  const src = openrouterKeySource();
+  const r = lastResolved;
+  return {
+    choices: MINDS,
+    mind: chosen.value, mindFrom: chosen.from,
+    tiinyModel: tiiny.value, tiinyModelFrom: tiiny.from, tiinyModels: Object.keys(TIINY_MODELS),
+    resolved: r ? { mind: r.mind, model: r.model, baseURL: r.baseURL, api: r.api, why: r.why, keyFound: !!r.apiKey } : null,
+    openrouter: {
+      keyFrom: src,   // "env" (OPENROUTER_API_KEY), "saved" (this machine, from the dashboard), "seer" (LiteLLM's own)
+      model: src === "seer" ? OPENROUTER_DEFAULT : pick("DAEMONS_OPENROUTER_MODEL", "openrouterModel", OPENROUTER_DIRECT_MODEL).value,
+      paid: true,
+    },
+  };
+}
+
+//  A change from the dashboard: saved, resolved and exported, so the next model call goes to the new mind.
+function setMind({ mind, tiinyModel, openrouterKey, forgetOpenrouterKey } = {}) {
+  const patch = {};
+  if (mind !== undefined) {
+    if (!MINDS.includes(mind)) throw new Error(`choose one of ${MINDS.join(", ")}`);
+    patch.mind = mind;
+  }
+  if (tiinyModel !== undefined) {
+    if (!TIINY_MODELS[tiinyModel]) throw new Error(`the Tiiny model is one of ${Object.keys(TIINY_MODELS).join(", ")}`);
+    patch.tiinyModel = tiinyModel;
+  }
+  if (forgetOpenrouterKey) patch.openrouterKey = null;
+  else if (typeof openrouterKey === "string" && openrouterKey.trim()) patch.openrouterKey = openrouterKey.trim();
+  saveSettings(patch);
+  //  A choice made in the dashboard is the person's, made now: it takes over from whatever the launcher's environment
+  //  pinned, for this run. (A later launch that sets DAEMONS_MIND pins that launch again, and the card says so.)
+  if (patch.mind) delete process.env.DAEMONS_MIND;
+  if (patch.tiinyModel) delete process.env.DAEMONS_TIINY_MODEL;
+  const m = resolveMind();
+  exportMind(m);
+  lastResolved = m;
+  return m;
+}
+
+module.exports = { applyMind, resolveMind, mindView, setMind, MINDS, TIINY_MODELS, SETTINGS_FILE };

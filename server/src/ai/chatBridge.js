@@ -132,7 +132,12 @@ function toChatBody(body) {
   }
   const effort = String(body.reasoning?.effort || "").toLowerCase();
   const think = process.env.DAEMONS_THINK !== "0" && !["none", "minimal", ""].includes(effort);
-  chat.chat_template_kwargs = { enable_thinking: think };
+  //  The thinking switch is Qwen's template's, which the Tiiny and LiteLLM pass on; OpenRouter is not sent it.
+  if (process.env.DAEMONS_THINK_SWITCH !== "0") chat.chat_template_kwargs = { enable_thinking: think };
+  //  Anything a mind needs in every request (OpenRouter's provider pin), from mind.js.
+  if (process.env.DAEMONS_CHAT_EXTRA) {
+    try { Object.assign(chat, JSON.parse(process.env.DAEMONS_CHAT_EXTRA)); } catch { /* ignored */ }
+  }
   return chat;
 }
 

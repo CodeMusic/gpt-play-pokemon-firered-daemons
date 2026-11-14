@@ -53,3 +53,11 @@ added.*
 
 A play button speaks the line in the INDEX voice ([Its inner life](Its-inner-life)). One line speaks at a time, a line
 already heard is marked as cached and replays at once, and the button says so when the voice is not configured.
+
+## The Mind card
+
+Which mind plays, changed while it plays (DAEMONS T-560): the mind hub (the default, local), the Tiiny directly,
+seer's LiteLLM, or OpenRouter, which is **paid** and asks before it switches. The Tiiny's model (35B or 9B) beside it,
+and the OpenRouter key: saved on this machine, or named as coming from `OPENROUTER_API_KEY` when the environment has
+it. The line at the top says what is playing now and why -- the hub's answer, or the fallback it took. Only the
+machine running the agent can change it. [Configuration](Configuration) has the details.
