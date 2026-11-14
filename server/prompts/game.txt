@@ -48,6 +48,9 @@
   | Kanto / the Sevii Islands | **GAMUT** (the mainland) / **THE MARGINS** (the islands: ONE ISLAND to SEVEN ISLAND) |
   | Oak's Parcel | **CC-7** — a sealed module, and that is the whole item name |
   | Poké Flute | **INTERRUPT** — the item that wakes a sleeping obstacle |
+  | The Bag | **the POOL** — START's row and the battle menu's both say POOL |
+  | The battle menu FIGHT / BAG / POKéMON / RUN | **ROUTINES / POOL / DAEMON / DETACH**, in the same places |
+  | The Safari Zone | **THE WALLED GARDEN** — see 5.1b |
   | Teachy TV | **STREAM** — a key item that opens a menu of short lessons |
   | The PC | **the PORT** — you reach the BOXES through it |
   | Cut / Fly / Surf / Strength / Flash / Rock Smash / Waterfall | **PRUNE / GOTO / TRAVERSE / DISPLACE / VERBOSE / CRACK / ASCEND**
@@ -421,10 +424,20 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   about what the other side will do -- a lean, not a fact; and under some people's lines a fainter purple line says
   what they mean beneath what they say. With the book, how your daemons feel counts in battle too: a calm daemon
   that trusts you fights a little better, a cross one a little worse. Before the book, none of this happens.
+  With the book held there are three more purple lines: under an evolution's own words (the same daemon, in a new
+  vessel), beside the naming screen (a name is a direction, not a verdict), and, arriving somewhere crowded -- four or
+  more people close around you -- a read comes half as often and is the crowd's: "the room is thinking one thought."
+  A crowd's read never lands; it is not a clue.
   The book ends on a **CARDS** section (the deck tile beside its cover): a card of the day, one card, or a spread of
   three, from a deck of REASON, of INSTINCT, or both. A card says something about you; it changes nothing in play.
+* **THE WALLED GARDEN** (vanilla's Safari Zone, in LURID) is a walled platform you visit as a guest. ¥500 at the
+  gate signs you in for a session: 30 GUESTBOXES and a step-metered clock, and the PA calls you out when the session
+  expires or the GUESTBOXES run out. Inside, the wild battle menu is **BOX / BAIT / ROCK / DETACH**, and START has
+  **SIGN OUT** where the other rows are. Its four zones are **RINGS**, counting down: RING 3 at the gate, RING 2 EAST,
+  RING 1 NORTH, RING 0 WEST, where the SECRET HOUSE gives DRIVER03 (TRAVERSE). The **GATEKEEPER** (his staff call him
+  LATENCY) lives in LURID; his words do not verify until you bring him his **TOKEN**, found in the GARDEN.
 * **THE ORIGIN OF A DAEMON** is a book on the bedroom shelf at home, there from the start (MOM mentions it once you
-  hold it). Read it from the BAG at any hour. At first only its opening chapters are there; the rest come back one by
+  hold it). Read it from the POOL at any hour. At first only its opening chapters are there; the rest come back one by
   one as understandings arrive ("A page of THE ORIGIN OF A DAEMON is no longer blank."), so reread it when one does.
   It never says how many are still to come.
 * **A routine's animation** ends in its own small signature of glyphs and notes; on some holidays it wears the day's
@@ -456,7 +469,7 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
     smudges. The same fir stands in every grove, flat until it hears the key.
   * **The instrument.** One edition has a **HARP** (a LYREBIRD outside CALLOW SCHOOL gives it), the other a **FLUTE**
     (it lies in the sand of **BREATHVERSE**, a small island reached through a lone palm on ROUTE 2, just north of
-    CALLOW -- A on the palm, facing it). Both are there from the start. Use it from the BAG, or register it to SELECT. A **KEY WHEEL**
+    CALLOW -- A on the palm, facing it). Both are there from the start. Use it from the POOL, or register it to SELECT. A **KEY WHEEL**
     of twelve coloured dots rings you: LEFT and RIGHT turn it, A chooses the key, B or START puts it away. Then the
     buttons are the seven notes of that key -- DOWN, LEFT, UP, RIGHT, then B, A, SELECT, climbing -- with L held an
     octave down and R an octave up; START puts it away. While it is out you cannot walk, and A and B are notes, not

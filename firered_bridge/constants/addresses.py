@@ -136,13 +136,15 @@ START_MENU_TASK_ADDR = sym_addr("Task_StartMenuHandleInput")
 START_MENU_ACTION_NAMES = {
     0: "INDEX",       # gText_MenuPokedex
     1: "DAEMONS",     # gText_MenuPokemon
-    2: "BAG",
+    2: "POOL",        # gText_MenuBag (T-193)
     3: "PLAYER",
     4: "SAVE",
     5: "OPTION",
     6: "EXIT",
-    7: "RETIRE",  # Safari Zone
-    8: "PLAYER",  # Link mode
+    7: "SIGN OUT",    # gText_MenuRetire: THE WALLED GARDEN (T-540)
+    8: "PLAYER",      # Link mode
+    9: "HELP",        # gText_MenuHelp (T-179)
+    10: "SPELLBOOK",  # gText_MenuSpellbook, once THE HERMETIC LAYER is held (T-483)
 }
 
 # Bag Menu structure (FireRed)

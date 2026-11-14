@@ -353,9 +353,10 @@ def _build_battle_ui_state(
 
     if _ptr_matches_any(controller_func, BATTLE_HANDLE_INPUT_CHOOSE_ACTION_ADDRS):
         if int(battle_type_flags) & BATTLE_TYPE_SAFARI:
-            options = ["BALL", "POKéBLOCK", "GO NEAR", "RUN"]
+            #  DAEMONS: gText_SafariZoneMenu and gText_BattleMenu in engineGba src/battle_message.c, in their order.
+            options = ["BOX", "BAIT", "ROCK", "DETACH"]
         else:
-            options = ["FIGHT", "BAG", "POKéMON", "RUN"]
+            options = ["ROUTINES", "POOL", "DAEMON", "DETACH"]
         cursor = int(action_cursor) if 0 <= int(action_cursor) < 4 else 0
         return {
             "type": "battleActions",

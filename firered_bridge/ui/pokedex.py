@@ -243,14 +243,14 @@ def _selected_summary(species: Optional[int], *, dex_order_id: int) -> Optional[
 
 def _build_mon_info_text(species: Optional[int]) -> str:
     if species is None:
-        return "POKEDEX"
+        return "INDEX"
 
     sid = int(species)
     if sid <= 0:
-        return "POKEDEX"
+        return "INDEX"
 
     nat = int(player_save.get_national_pokedex_num(sid) or 0)
-    name = get_species_name(sid) or "POKEMON"
+    name = get_species_name(sid) or "DAEMON"
 
     if nat <= 0 or int(GPOKEDEXENTRIES_ADDR) == 0:
         return f"{_format_no(nat)} {name}".strip()
@@ -352,7 +352,7 @@ def get_pokedex_state(
             return {
                 "screen": "loading",
                 "currentPage": "loading",
-                "visibleText": "POKEDEX",
+                "visibleText": "INDEX",
                 "choiceMenu": None,
             }
 
@@ -361,7 +361,7 @@ def get_pokedex_state(
             return {
                 "screen": "loading",
                 "currentPage": "loading",
-                "visibleText": "POKEDEX",
+                "visibleText": "INDEX",
                 "choiceMenu": None,
             }
 
@@ -441,7 +441,7 @@ def get_pokedex_state(
         }
 
         choice_menu: Optional[Dict[str, Any]] = None
-        lines: List[str] = ["POKEDEX"]
+        lines: List[str] = ["INDEX"]
 
         if task_kind == "topMenu":
             lines.append("TOP MENU")
@@ -510,7 +510,7 @@ def get_pokedex_state(
 
         return {
             **base,
-            "visibleText": "\n".join([ln for ln in lines if isinstance(ln, str) and ln]).strip() or "POKEDEX",
+            "visibleText": "\n".join([ln for ln in lines if isinstance(ln, str) and ln]).strip() or "INDEX",
             "choiceMenu": choice_menu,
         }
 

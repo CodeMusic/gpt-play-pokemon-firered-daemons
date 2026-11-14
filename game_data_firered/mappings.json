@@ -784,7 +784,9 @@
   "238": "DESK_FLOWERS",
   "239": "DESK_CARD",
   "256": "LIONESS_BALL",
-  "257": "TULIKKO"
+  "257": "TULIKKO",
+  "258": "OLD_TOAD",
+  "259": "BLANK_TABLET"
  },
  "ABILITY_NAME": {
   "0": "NONE",

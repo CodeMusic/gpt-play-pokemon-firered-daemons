@@ -3638,7 +3638,7 @@ def get_pokemon_summary_state(
             except Exception:
                 ability_id = None
 
-        species_name = species_name_txt or get_species_name(int(species_id)) or "POKEMON"
+        species_name = species_name_txt or get_species_name(int(species_id)) or "DAEMON"
         nickname = nickname_txt or mon_nickname or species_name
         ability_name = ability_name_txt or (get_ability_name(int(ability_id)) if ability_id is not None else None) or ""
         held_item_name = item_name_txt or (get_item_name(int(held_item_id)) if held_item_id > 0 else "") or ""
@@ -4026,7 +4026,7 @@ def get_pokemon_summary_select_move_state(
         if not nickname:
             nickname = decode_gba_string(mon_raw[NICKNAME_OFFSET : NICKNAME_OFFSET + 10], 10).strip()
         if not nickname:
-            nickname = get_species_name(species_id) or "POKEMON"
+            nickname = get_species_name(species_id) or "DAEMON"
 
         # Build move IDs from currentMon encrypted data for the 4 known moves.
         # This avoids stale/shifted summary slots during transitions.
