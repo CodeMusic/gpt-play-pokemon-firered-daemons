@@ -25,6 +25,8 @@
   | Pokédex | **the INDEX** |
   | Poké Balls | **BOXES** — USERBOX, ADMINBOX, SUPERBOX, ROOTBOX in rising order. This is what you acquire a daemon WITH |
   | Catching | **BINDING** — you *bind* a daemon, you do not catch it |
+  | Trainers | **USERS** — a trainer is a USER, the trainer card is the USER card, and you are one |
+  | Running away | **DETACH** — from the battle menu; you detach, you do not flee |
   | Badges | **MARKS** |
   | Fainting | **HALTED** |
   | Poisoned | **LEAKING** — and badly poisoned is **CASCADING**, which is a different thing: LEAKING costs a fixed amount per turn, CASCADING gets worse each turn |
@@ -443,6 +445,9 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   hold it). Read it from the POOL at any hour. At first only its opening chapters are there; the rest come back one by
   one as understandings arrive ("A page of THE ORIGIN OF A DAEMON is no longer blank."), so reread it when one does.
   It never says how many are still to come.
+* **THE BLANK TABLET** is a stone by the path north out of BLANCHE TOWN with nothing on it -- at first. It is read
+  from the side you stand on, and it fills in by itself as you play; there is nothing to do there but read it when
+  you pass. The **OLD TOAD** by the pond beside it says one line about how you have been leaning, and nothing else.
 * **A routine's animation** ends in its own small signature of glyphs and notes; on some holidays it wears the day's
   look. Cosmetic -- read the battle text, not the sparkle.
 * **A routine strikes from ATTACK or SP. ATK by its own nature**, not always its type's: TAMPER, ETCH, POLLUTE,

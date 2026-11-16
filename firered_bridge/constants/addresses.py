@@ -393,7 +393,8 @@ FLAG_SYS_SAFARI_MODE = SYSTEM_FLAGS_START + 0x00  # 0x800
 FLAG_SYS_USE_FLASH = SYSTEM_FLAGS_START + 0x06  # 0x806
 FLAG_SYS_USE_STRENGTH = SYSTEM_FLAGS_START + 0x05  # 0x805
 FLAG_SYS_NATIONAL_DEX = SYSTEM_FLAGS_START + 0x40  # 0x840
-FLAG_SYS_PC_LANETTE = SYSTEM_FLAGS_START + 0x4B  # 0x8AB (PC name becomes "Lanette's PC")
+FLAG_SYS_NOT_SOMEONES_PC = SYSTEM_FLAGS_START + 0x34  # 0x834: the PORT is named for its keeper (HOLT'S PORT), as script_menu.c reads it
+FLAG_SYS_PC_LANETTE = FLAG_SYS_NOT_SOMEONES_PC  # the old name; 0x84B was Emerald's idea and in FireRed is the BIRTH ISLAND ship
 
 # Story progression / overworld state flags (pokefirered/include/constants/flags.h)
 FLAG_HIDE_HIDEOUT_GIOVANNI = 0x038
