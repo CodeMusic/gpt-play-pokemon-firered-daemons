@@ -96,3 +96,13 @@ its first turns on the OPTION menu (text speed) before it walks anywhere.
 The 9B with thinking on was the last line T-560 left open. On 2026-11-16 the Tiiny served only the 35B (the 9B
 answered *not loaded* on every turn), and loading it would unload the 35B the companion talks through. The user
 closed it unrun: the 35B, thinking off, is the pick, and thinking on already measured slower and no better on the 35B.
+
+## The smoke run from the title screen
+
+2026-11-16, the v11.375 debug CONTENT ROM (a copy of its save, restored after), `--mind tiiny` -- Qwen3.6-35B-A3B,
+thinking off. **The bridge could not read the title screen**: before a game loads the save-block pointers are null,
+and every state read failed (*Security key base pointer null*), so the agent waited at the title. The null branch now
+reports an empty player (ef04fc4). After that: **12 turns, 12 valid tool calls, about a minute a turn**, no stream
+errors. It pressed START, read CONTINUE and chose NEW GAME, went through the controls and INDEX pages, answered
+CRYSTAL CLEAR's REASON / INSTINCT question and typed its name on the keyboard. Two slips in its voice, both the
+model's own words: it called CRYSTAL CLEAR *he* and the INDEX by retail's name once.
