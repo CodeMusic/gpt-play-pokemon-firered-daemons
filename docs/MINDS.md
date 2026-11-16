@@ -90,3 +90,9 @@ It found a bug in the brief, not the mind: told its name is GPT, and waking in t
 PLAYER, it went looking through START, OPTION and SAVE for a "new game" and decided to save and restart the console
 to rename. The brief now keeps a name the game already has (c99c539). Worth knowing for the next run: the agent spends
 its first turns on the OPTION menu (text speed) before it walks anywhere.
+
+## Closed unrun
+
+The 9B with thinking on was the last line T-560 left open. On 2026-11-16 the Tiiny served only the 35B (the 9B
+answered *not loaded* on every turn), and loading it would unload the 35B the companion talks through. The user
+closed it unrun: the 35B, thinking off, is the pick, and thinking on already measured slower and no better on the 35B.
