@@ -361,27 +361,31 @@ def _read_player_snapshot() -> Dict[str, Any]:
         }
 
     if base_ptr == 0 or sec_ptr == 0:
+        # DAEMONS (T-319): no save block yet -- the title screen, or a new game before it loads. Every read through
+        # the save pointers would fail ("Security key base pointer null") and the agent would wait forever at the
+        # title, so report an empty player and let the UI readers (dialog.py) see the title screen and its menu.
         return {
             "in_battle": in_battle,
             "field_locked": field_locked,
-            "x": get_player_position()[0],
-            "y": get_player_position()[1],
+            "x": 0,
+            "y": 0,
             "facing": facing,
             "elevation": elevation,
-            "surfing": (avatar_flags & PLAYER_AVATAR_FLAG_SURFING) != 0,
-            "biking": (avatar_flags & PLAYER_AVATAR_FLAG_BIKING) != 0,
-            "bike_type": bike_type,
-            "diving": (avatar_flags & PLAYER_AVATAR_FLAG_DIVING) != 0,
-            "money": get_player_money(),
-            "badges": get_player_badges(),
-            "important_events": get_important_events(sb1_ptr=int(base_ptr) if base_ptr else None),
-            "safari_zone_steps_remaining": int(safari_steps_remaining),
-            "safari_zone_active": bool(int(safari_steps_remaining) > 0),
-            "map_group": get_current_map_group_num()[0],
-            "map_num": get_current_map_group_num()[1],
-            "security_key": get_security_key(),
+            "surfing": False,
+            "biking": False,
+            "bike_type": None,
+            "diving": False,
+            "money": 0,
+            "badges": {},
+            "important_events": {},
+            "safari_zone_steps_remaining": 0,
+            "safari_zone_active": False,
+            "map_group": 0,
+            "map_num": 0,
+            "security_key": 0,
             "sb1_ptr": int(base_ptr),
             "sb2_ptr": int(sec_ptr),
+            "no_save_loaded": True,
         }
 
     badge_base_byte = min(flag_id // 8 for _badge_id, _label, flag_id in BADGES)
