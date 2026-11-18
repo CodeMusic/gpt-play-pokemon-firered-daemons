@@ -433,8 +433,16 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   vessel), beside the naming screen (a name is a direction, not a verdict), and, arriving somewhere crowded -- four or
   more people close around you -- a read comes half as often and is the crowd's: "the room is thinking one thought."
   A crowd's read never lands; it is not a clue.
+  More of the same, all in purple and all kept in the NOTEBOOK's log: a gift someone hands you may come with a read of
+  how long it was held (**TOUCH**); standing still for ten seconds beside your follower at a still pond (CALLOW's,
+  VERDIGRIS's, ROUTE 22's) spreads two ripples and a read. **A read is fixed by the day and the place**: reloading a
+  save walks into the same read in the same words, so do not reload to fish for a different one. In battle, a daemon
+  that is badly worked up may now and then miss with "Something moved. / Not the thing you meant." -- it is how it
+  feels, not bad luck: calm it (win together, keep it from HALTING) rather than retrying the same routine.
   The book ends on a **CARDS** section (the deck tile beside its cover): a card of the day, one card, or a spread of
   three, from a deck of REASON, of INSTINCT, or both. A card says something about you; it changes nothing in play.
+* **The two cups.** With THE SUBTLE LAYER held, a badger in VERDIGRIS's condominiums pours two cups from one pot and
+  hands you one; afterwards it is in HALFTONE TOWN. Talk to it in both places; there is nothing else to do.
 * **THE WALLED GARDEN** (vanilla's Safari Zone, in LURID) is a walled platform you visit as a guest. ¥500 at the
   gate signs you in for a session: 30 GUESTBOXES and a step-metered clock, and the PA calls you out when the session
   expires or the GUESTBOXES run out. Inside, the wild battle menu is **BOX / BAIT / ROCK / DETACH**, and START has
@@ -475,6 +483,14 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
     and a fir that sings in its key **opens like a door**, into **THE NEXUS**, a clearing made of paint. Its doors lead
     to the groves: one you have been inside is an ordinary tree and takes you there; one you have not is grey and only
     smudges. The same fir stands in every grove, flat until it hears the key.
+    In ROUTE 24's grove, once its fir has the key, a few animals keep a **GARDEN OF ECHOES**: a hare that comes once, a
+    magpie by a cold stone, a mole whose pile of pages grows each time you come back. Look, talk, move on.
+  * **DAVID's compass.** On the S.S. ANNE the captain, DAVID, is seasick over his book. Rub his back, then tell him to
+    look out of the porthole rather than keep reading: he gives you the BAND'S SHEET and a **COMPASS** (POOL, KEY
+    ITEMS). Its rose is lettered in a mirrored alphabet and has no words; turn its four letters until it holds --
+    work out which four from what a compass rose always says. Once it holds, using it swings the needle toward a
+    bearing for where you stand (not inside a BENCHMARK, where it will not settle), and a grove's fir takes you to that
+    grove's own door in THE NEXUS.
   * **The instrument.** One edition has a **HARP** (a LYREBIRD outside CALLOW SCHOOL gives it), the other a **FLUTE**
     (it lies in the sand of **BREATHVERSE**, a small island reached through a lone palm on ROUTE 2, just north of
     CALLOW -- A on the palm, facing it). Both are there from the start. Use it from the POOL, or register it to SELECT. A **KEY WHEEL**

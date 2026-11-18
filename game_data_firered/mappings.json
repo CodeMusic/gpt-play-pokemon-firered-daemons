@@ -786,7 +786,12 @@
   "256": "LIONESS_BALL",
   "257": "TULIKKO",
   "258": "OLD_TOAD",
-  "259": "BLANK_TABLET"
+  "259": "BLANK_TABLET",
+  "260": "GARDEN_HARE",
+  "261": "GARDEN_MAGPIE",
+  "262": "GARDEN_MOLE",
+  "263": "GARDEN_SHEAF",
+  "264": "GARDEN_STONES"
  },
  "ABILITY_NAME": {
   "0": "NONE",
@@ -1121,7 +1126,7 @@
   "249": "EUDAIMON",
   "250": "UNITY_BOOK",
   "251": "ORIGIN_BOOK",
-  "252": "0FC",
+  "252": "COMPASS",
   "253": "0FD",
   "254": "RED_SCARF",
   "255": "BLUE_SCARF",
