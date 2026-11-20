@@ -23,4 +23,4 @@
 - [DAEMONS wiki](https://github.com/CodeMusic/DAEMONS/wiki) -- playing, the world, releases
 - [Engine wiki](https://github.com/CodeMusic/pokefirered-daemons/wiki)
 - [Companion wiki](https://github.com/CodeMusic/daemons-companion/wiki)
-- [Playground wiki](https://github.com/CodeMusic/daemons-playground/wiki)
+- [EUDAIMONIA and the playground's wiki](https://github.com/CodeMusic/daemons-eudaimonia/wiki)

@@ -24,7 +24,7 @@ game. New to DAEMONS itself? **[MICRO-START](https://github.com/CodeMusic/DAEMON
 | the game | [CodeMusic/DAEMONS](https://github.com/CodeMusic/DAEMONS) ([wiki](https://github.com/CodeMusic/DAEMONS/wiki)) — the design, the tools, the releases, and `./bindDaemons.sh --ai` |
 | the engine | [CodeMusic/pokefirered-daemons](https://github.com/CodeMusic/pokefirered-daemons) ([wiki](https://github.com/CodeMusic/pokefirered-daemons/wiki)) — the ROM this plays |
 | the companion | [CodeMusic/daemons-companion](https://github.com/CodeMusic/daemons-companion) ([wiki](https://github.com/CodeMusic/daemons-companion/wiki)) |
-| the playground | [CodeMusic/daemons-playground](https://github.com/CodeMusic/daemons-playground) ([wiki](https://github.com/CodeMusic/daemons-playground/wiki)) |
+| the playground | [CodeMusic/daemons-eudaimonia](https://github.com/CodeMusic/daemons-eudaimonia) ([wiki](https://github.com/CodeMusic/daemons-eudaimonia/wiki)) |
 | this | the harness that lets a model play it ([wiki](https://github.com/CodeMusic/gpt-play-pokemon-firered-daemons/wiki)) |
 
 ![The dashboard: runtime, inner life, user and frames across the top; tabs for

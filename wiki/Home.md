@@ -66,7 +66,7 @@ changes are allowed, commercial use is not, and credit is required.
 | [CodeMusic/DAEMONS](https://github.com/CodeMusic/DAEMONS) ([wiki](https://github.com/CodeMusic/DAEMONS/wiki)) | **the game** -- its design, its tools, its releases and patches, and `./bindDaemons.sh --ai` |
 | [CodeMusic/pokefirered-daemons](https://github.com/CodeMusic/pokefirered-daemons) ([wiki](https://github.com/CodeMusic/pokefirered-daemons/wiki)) | the game's engine, the build this harness plays |
 | [CodeMusic/daemons-companion](https://github.com/CodeMusic/daemons-companion) ([wiki](https://github.com/CodeMusic/daemons-companion/wiki)) | where a daemon goes when it leaves the game: the app, the hub, the boards |
-| [CodeMusic/daemons-playground](https://github.com/CodeMusic/daemons-playground) ([wiki](https://github.com/CodeMusic/daemons-playground/wiki)) | the game in a browser, for demos and beta tests on your own network |
+| [CodeMusic/daemons-eudaimonia](https://github.com/CodeMusic/daemons-eudaimonia) ([wiki](https://github.com/CodeMusic/daemons-eudaimonia/wiki)) | EUDAIMONIA to come; today the playground, the game in a browser, for demos and beta tests on your own network |
 | **CodeMusic/gpt-play-pokemon-firered-daemons** | this: the harness that lets a model play it |
 
 *Pokémon is Nintendo / Creatures / GAME FREAK. This fork is unaffiliated with and unendorsed by them. The harness is
