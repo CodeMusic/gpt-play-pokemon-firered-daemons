@@ -19,6 +19,7 @@
   | Pewter, Cerulean, Vermilion | **SLATE, DOLDRUM, ARDOR** |
   | Lavender, Celadon, Fuchsia | **HALFTONE, VERDIGRIS, LURID** |
   | Saffron, Cinnabar | **BRAZEN, QUICKSILVER** |
+  | Cinnabar's lab, Pewter's museum | **SCORN SOLUTIONS** (QUICKSILVER), **ERRATA** (SLATE) -- each shows its name card the first time you go in |
   | Pokémon | **DAEMONS** |
   | Poké Mart | **THE REPO** |
   | Pokémon Center | **CHECKPOINT** |
@@ -384,7 +385,7 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   trees amber and gold in autumn. It is the **same place** -- nothing moves, nothing is locked by it. Some early roads
   have a daemon of the season, and dawn, dusk and night bring a few of their own. Battle backgrounds, menus and
   windows keep the calendar too (the hour's light, the season, the day's colour, a holiday's glints) -- cosmetic.
-  **The MUSAI wear the season**: each of the six has a winter, spring, summer and autumn look, the same daemon in all
+  **The MUSAI wear the season**: each of them has a winter, spring, summer and autumn look, the same daemon in all
   four, and a battle keeps the season it began in.
 * **WEATHER is rare.** Mostly the sky is clear; now and then rain, a thunderstorm, fog, wind (leaves blowing) or snow
   comes, by season, for anything from minutes to a day, over one town or a whole region. Your prompt's `<weather>`
@@ -458,9 +459,10 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
   you pass. The **OLD TOAD** by the pond beside it says one line about how you have been leaning, and nothing else.
 * **A routine's animation** ends in its own small signature of glyphs and notes; on some holidays it wears the day's
   look. Cosmetic -- read the battle text, not the sparkle.
-* **A routine strikes from ATTACK or SP. ATK by its own nature**, not always its type's: TAMPER, ETCH, POLLUTE,
-  GARBAGE, DUMP, MEDIAN, BITROT MOON and CONSENSUS strike from SP. ATK, and PRIOR and WEATHER BALL always do,
-  whatever type they become. **CONSENSUS** grows stronger the more your party's types overlap; **SLANT** the more they
+* **A routine strikes from ATTACK or SP. ATK by its own nature, not its type's: contact is physical.** A routine
+  that touches the foe (a strike, a bite, a grapple) strikes from ATTACK and hits DEFENSE; one that does not strikes
+  from SP. ATK and hits SP. DEF -- whatever its type. A few are ruled otherwise, so if a strong SP. ATK daemon's hit
+  lands weakly, that routine is one of them. **CONSENSUS** grows stronger the more your party's types overlap; **SLANT** the more they
   differ. **ALIGN** makes the foe wholly the user's first type. **CRYPTOPHASIA**, CODEMUSAI's own, grows with each
   other MUSAI in the party still able to fight.
 * **The `* SINK` items** (LOGIC SINK, FLOW SINK and so on, sixteen): held, each soaks up half of one super-effective hit
@@ -506,6 +508,19 @@ DAEMONS is not only eight MARKS. Your progress list (`<objectives_section>`) car
     -- is answered as such: change the key, not the notes. Nobody will play a song for you or tell you its notes; do
     not guess at random for long -- go back and listen again, or read the SONGBOOK. Once you know a song, its next
     notes appear faintly on the staff as you begin it. Never required.
+  * **Every daemon has a song of its own**, and learns it as it gains experience: a note it has not learned yet
+    flickers toward its pitch over a hiss. Hear it from the INDEX (START on a page: SONG) or the party menu (SING).
+    **A daemon's colours come in with its song**: one that has learned little of it looks grey -- that is not
+    illness, damage or a bug, and no CHECKPOINT changes it; the colours tied to each note arrive as that note is
+    learned and never go grey again. Before it evolves, a daemon sings its whole part.
+  * **The wish to sing.** A daemon walking with you that is close to evolving sometimes hums a bar of its song,
+    coloured notes rising from its mouth. After a won battle it may say "[NAME] wants to sing." -- YES lets it.
+    Cosmetic either way.
+  * **Play a daemon's song and it comes.** With the instrument out, playing the opening of a song belonging to a
+    daemon you have SEEN (any octave; a minor song is played in its relative major's key) calls it: it appears near
+    you, sings its part and goes. It cannot be caught and there is no battle; the INDEX remembers that it came.
+  * **MUSAI's two new forms.** Besides its other inputs, MUSAI evolves with **WAVEFORM** into **SONGMUSAI** (SIGNAL)
+    or with **UTTERANCE** into **LANGMUSAI** (EMERGENT). Both are sold with the other inputs at VERDIGRIS DEPT. 4F.
   * **The groves.** Here and there a **tree or bush stands alone in the open**, apart from every hedge and wall. Press
     A on it facing north: it is a way into a hidden clearing, and its own lone tree takes you back. There are fourteen,
     on the mainland and one on each island, and each holds a family of DAEMONS **found nowhere else**. REVEAL makes the
