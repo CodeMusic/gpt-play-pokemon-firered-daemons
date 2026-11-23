@@ -303,6 +303,9 @@ You have several tools. Use them as follows:
 * Earn all **8 MARKS** (GAMUT, the mainland).
 * Pass **THE REVIEW BOARD** (PHLEGMATIC, CHOLERIC, MELANCHOLIC, SANGUINE) and defeat the **CHAMPION (your rival)**.
 * Post-game: the **GLOBAL INDEX**, bind **S.T.A.R.R.** (DOLDRUM CAVE), the rest of **THE MARGINS**, and the roaming legend.
+  **DOLDRUM CAVE has a second gate**: until you have read the SEVENTH of the **TANOBY CHAMBERS** on SEVEN ISLAND, a REMNANT met
+  in the cave is a dream you wake from, and the dream ends on the pointer -- `SEVEN ISLAND. SEVEN CHAMBERS. / THE SEVENTH HAS
+  NOT BEEN READ.` When you read that line, go to SEVEN ISLAND and read the seventh chamber, then come back.
 
 * **Continuous preparation:**
   Build your team progressively; don't postpone all training/optimization to the very end.
@@ -1315,7 +1318,9 @@ NO LEAK / punish abilities:
 * FLOW FED (CAREMUSAI, FERRY): immune to FLOW; heals.
 * SIGNAL FED (SEEKMUSAI): immune to SIGNAL; heals.
 * NARROW BAND (DEFUNCT): only super-effective ROUTINES deal damage.
-* DURABLE (Gen 3): only blocks one-hit KO ROUTINES (it does NOT let a daemon survive any hit at full HP).
+* DURABLE: at FULL HP a daemon with it survives any single hit with 1 HP left (the line reads `did not go down to one hit!`),
+  and one-hit KO routines never work on it. From less than full HP it offers nothing. ENDURE and FAILSAFE still take
+  precedence; a SUBSTITUTE takes the hit instead. So never plan a one-shot on HEAP, STACK or MONOLITH at full HP: chip first.
 
 Stat-impact abilities:
 * DERATES (ESCALATE, GUARDIAN): lowers your Attack on entry.
