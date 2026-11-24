@@ -94,8 +94,10 @@ const config = {
   },
 
   // --- Runtime Paths ---
+  // DAEMONS C-496: DAEMONS_DATA_DIR keeps a run's history apart -- ai/airun.sh's run-through, on its own save, keeps its
+  // own notes rather than the ones bindDaemons.sh --ai's runs leave. Absolute, or relative to the server as before.
   get dataDir() {
-    return "gpt_data";
+    return process.env.DAEMONS_DATA_DIR || "gpt_data";
   },
 
   get promptsDir() {
@@ -111,74 +113,74 @@ const config = {
     },
 
     get historySaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "history.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "history.json");
     },
     get memorySaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "memory.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "memory.json");
     },
     get objectivesSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "objectives.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "objectives.json");
     },
     get markersSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "markers.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "markers.json");
     },
     get countersSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "counters.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "counters.json");
     },
     get badgesSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "badges_log.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "badges_log.json");
     },
     get mapVisitsSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "map_visits.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "map_visits.json");
     },
     get summariesSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "summaries.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "summaries.json");
     },
     get allSummariesSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "all_summaries.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "all_summaries.json");
     },
     //  The inner voice, kept with the run rather than in the browser. Living
     //  in the run's own data dir means --fresh clears it along with everything
     //  else it archives -- no separate rule, and no stale thoughts from a
     //  previous run reappearing under a new one.
     get asidesSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "asides.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "asides.json");
     },
     get selfModelSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "self_model.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "self_model.json");
     },
     get dreamsSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "dreams.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "dreams.json");
     },
     get feelingsSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "feelings.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "feelings.json");
     },
     get backchannelSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "backchannel.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "backchannel.json");
     },
     get playtestSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "playtest.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "playtest.json");
     },
     get progressStepsFile() {
-      return path.join(ROOT_DIR, config.dataDir, "progress_steps.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "progress_steps.json");
     },
     get lastVisitedMapsFile() {
-      return path.join(ROOT_DIR, config.dataDir, "last_visited_maps.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "last_visited_maps.json");
     },
     get gameDataJsonFile() {
-      return path.join(ROOT_DIR, config.dataDir, "game_data.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "game_data.json");
     },
     get lastCriticismSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "last_criticism.txt");
+      return path.resolve(ROOT_DIR, config.dataDir, "last_criticism.txt");
     },
     get tokenUsageFile() {
-      return path.join(ROOT_DIR, config.dataDir, "token_usage.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "token_usage.json");
     },
     get timeUsageFile() {
-      return path.join(ROOT_DIR, config.dataDir, "time_usage.json");
+      return path.resolve(ROOT_DIR, config.dataDir, "time_usage.json");
     },
     get lastUserInputTextSaveFile() {
-      return path.join(ROOT_DIR, config.dataDir, "last_userInputText_prompt.txt");
+      return path.resolve(ROOT_DIR, config.dataDir, "last_userInputText_prompt.txt");
     },
   },
 
