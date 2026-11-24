@@ -7,6 +7,7 @@ const cors = require("cors");
 const fsSync = require("fs");
 
 const { config } = require("./src/config");
+const { sayable } = require("./src/utils/sayable");
 const { state, loadPersistentState, attachBroadcast } = require("./src/state/stateManager");
 const socketHub = require("./src/core/socketHub");
 const { fetchMinimapSnapshot, getMinimapData } = require("./src/services/pythonService");
@@ -219,7 +220,8 @@ async function start() {
       res.status(503).json({ audioBase64: null, error: "voice_not_configured" });
       return;
     }
-    const text = String((req.body && req.body.text) || "").trim();
+    //  T-618: the voice is handed the words respelled (DAY-mon), never the words as written.
+    const text = sayable(String((req.body && req.body.text) || "").trim());
     if (!text) {
       res.status(400).json({ audioBase64: null, error: "missing_text" });
       return;
