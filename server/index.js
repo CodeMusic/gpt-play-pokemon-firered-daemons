@@ -157,7 +157,7 @@ async function start() {
   //  from a reachable backend is NOT retried: that is the voice being broken
   //  rather than unreachable, and trying a second host would only hide it.
   const VOICE_RELAY = process.env.DAEMONS_VOICE_RELAY
-    || "https://n8n.codemusic.ca/webhook/daemon/voice";
+    || "https://n8n.daemons.codemusic.ca/webhook/daemon/voice";   // C-408: roverbyteseer's n8n itself, needs x-dex-secret
 
   //  T-560: WHICH MIND PLAYS, from the dashboard's MIND card. GET is the view (never a key: only where each comes
   //  from); POST changes it -- the choice, the Tiiny's model, an OpenRouter key -- saved on this machine
