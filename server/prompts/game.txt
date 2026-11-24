@@ -1319,7 +1319,7 @@ NO LEAK / punish abilities:
 * SIGNAL FED (SEEKMUSAI): immune to SIGNAL; heals.
 * NARROW BAND (DEFUNCT): only super-effective ROUTINES deal damage.
 * DURABLE: at FULL HP a daemon with it survives any single hit with 1 HP left (the line reads `did not go down to one hit!`),
-  and one-hit KO routines never work on it. From less than full HP it offers nothing. ENDURE and FAILSAFE still take
+  and one-hit KO routines never work on it. From less than full HP it offers nothing. SURVIVE and FAILSAFE still take
   precedence; a SUBSTITUTE takes the hit instead. So never plan a one-shot on HEAP, STACK or MONOLITH at full HP: chip first.
 
 Stat-impact abilities:
