@@ -1,3 +1,4 @@
+// BRAIN: pathway -- the perception-action cycle: state, prompt, model, tools, fold, each turn
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const path = require('path');

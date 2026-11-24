@@ -1,3 +1,4 @@
+# BRAIN: hippocampus (encode) -- the tiles seen, kept per map across runs: a map built from experience
 """Persistent fog-of-war grids for map minimaps.
 
 Stores one JSON file per map with the same shape as `fullMap.minimap_data.grid`,

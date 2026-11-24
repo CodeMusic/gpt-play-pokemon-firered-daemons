@@ -1,3 +1,4 @@
+// BRAIN: none -- a protocol adapter: the Responses API answered over chat completions, as ollama.ts
 //  DAEMONS (T-560): the Responses API, spoken over chat completions.
 //
 //  The harness was written against openai.responses.create() -- typed stream events, `input` items, flat function

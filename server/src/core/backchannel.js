@@ -1,3 +1,4 @@
+// BRAIN: none -- a message log: one open question at a time, each reply shown once
 //  THE BACKCHANNEL.
 //
 //  In linguistics a backchannel is the listener's "mm-hm" -- how you steer a

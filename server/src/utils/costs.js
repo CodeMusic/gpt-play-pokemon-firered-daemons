@@ -1,3 +1,4 @@
+// BRAIN: none -- accounting
 function calculateRequestCost(usage, modelName, priceConfig, serviceTier) {
   if (!usage || !priceConfig[modelName]) {
     console.warn("Could not calculate cost: Missing usage data or price config for model:", modelName);

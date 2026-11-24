@@ -1,3 +1,4 @@
+// BRAIN: basal_ganglia (repertoire, act, stop) -- the actions, each sent to the game; a just-failed move refused
 const fs = require('fs').promises;
 const fsSync = require('fs');
 const { planPath } = require("./localPath.js");

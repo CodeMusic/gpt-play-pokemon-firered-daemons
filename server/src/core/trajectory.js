@@ -1,3 +1,4 @@
+// BRAIN: none -- a digest: recent positions and tools counted, never judged; the critique reads it
 //  What the critique could not see, and why it was confidently wrong.
 //
 //  Self-critique was disabled after it reported "No loops detected; the player

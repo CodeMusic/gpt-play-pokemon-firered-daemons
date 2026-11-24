@@ -1,3 +1,4 @@
+// BRAIN: none -- the agent's state store and its persistence
 const fs = require("fs").promises;
 const fsSync = require("fs");
 const path = require("path");

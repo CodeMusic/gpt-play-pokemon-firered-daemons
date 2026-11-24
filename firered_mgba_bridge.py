@@ -1,3 +1,4 @@
+# BRAIN: none -- the bridge's server: RAM read for the harness, keys passed to mGBA
 from __future__ import annotations
 
 import logging

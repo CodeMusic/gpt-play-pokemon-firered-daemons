@@ -1,3 +1,4 @@
+// BRAIN: none -- context hygiene: keep-last-N, old reasoning and unparseable calls dropped, for prefill and the API
 const { config } = require("../config");
 
 function cleanTextSections(text, sectionsToRemove) {

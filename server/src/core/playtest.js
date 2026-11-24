@@ -1,3 +1,4 @@
+// BRAIN: none -- the playtest ledger: the agent's verdicts kept for the builders, never read back to it
 //  THE AGENT AS PLAYTESTER.
 //
 //  It is walking through a game being built, and nobody has ever asked it what

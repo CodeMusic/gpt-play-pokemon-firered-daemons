@@ -1,3 +1,4 @@
+// BRAIN: none -- the harness's server: the dashboard, its sockets and the MIND card
 require("dotenv").config();
 
 const express = require("express");

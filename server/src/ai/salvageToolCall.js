@@ -1,3 +1,4 @@
+// BRAIN: none -- a parser: recovers a tool call the serving layer dropped
 //  DAEMONS: recover a tool call that the serving layer threw away.
 //
 //  MiniCPM emits tool calls in Qwen3-Coder's XML dialect, and mlx-vlm parses

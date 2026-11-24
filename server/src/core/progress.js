@@ -1,3 +1,4 @@
+// BRAIN: none -- a run's score for comparing models; the agent reads only its delta, in words
 //  DAEMONS: a number for how the run is actually going.
 //
 //  Yesterday every comparison between models was "seems better" -- and the one

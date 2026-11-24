@@ -1,3 +1,4 @@
+// BRAIN: thalamus (relay, gate) -- which mind plays: hub, Tiiny, seer, first well; paid never automatic (the ring)
 //  DAEMONS (T-560): WHICH MIND PLAYS. One setting, DAEMONS_MIND, four answers:
 //
 //    mind        the default. Ask the companion's hub (daemons-hearth) which mind it is using and whether that mind is

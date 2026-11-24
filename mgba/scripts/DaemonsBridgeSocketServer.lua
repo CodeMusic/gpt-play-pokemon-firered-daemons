@@ -1,3 +1,4 @@
+-- BRAIN: none -- the socket into mGBA: memory reads and key presses
 -- ***********************
 -- DAEMONS Bridge Socket Server
 -- Custom Lua interface for fast memory reads + input control

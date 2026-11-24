@@ -1,3 +1,4 @@
+// BRAIN: none -- a codec: the screen and its coordinate overlay, as the model and dashboard see it
 const fs = require("fs").promises;
 const path = require("path");
 const sharp = require("sharp");

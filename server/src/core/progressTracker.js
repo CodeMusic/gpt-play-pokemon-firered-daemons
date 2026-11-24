@@ -1,3 +1,4 @@
+// BRAIN: none -- the progress checklist ticked from the state each turn
 const { state } = require("../state/stateManager");
 
 function updateProgressSteps(gameDataJson) {

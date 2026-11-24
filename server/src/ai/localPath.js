@@ -1,3 +1,4 @@
+// BRAIN: hippocampus (navigate) -- a route by BFS over the remembered map, unseen tiles blocked
 //  DAEMONS: pathfinding that does not leave the machine.
 //
 //  Upstream's findPath asks a frontier model to WRITE PYTHON, uploads it to an

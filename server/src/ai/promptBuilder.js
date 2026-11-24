@@ -1,3 +1,4 @@
+// BRAIN: cortex.prefrontal (hold) -- working memory: the context built fresh each turn
 const fs = require("fs").promises;
 const path = require("path");
 

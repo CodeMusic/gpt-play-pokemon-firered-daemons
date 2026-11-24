@@ -1,3 +1,4 @@
+// BRAIN: none -- state rendered as text for the prompt
 const {
     MARKDOWN_TILES,
     PLAYER_ORIENTATION_TILES,

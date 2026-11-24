@@ -1,3 +1,4 @@
+// BRAIN: none -- the OpenAI client, pointed at whichever mind mind.js resolved
 const OpenAI = require("openai");
 const { config } = require("../config");
 

@@ -1,3 +1,4 @@
+// BRAIN: none -- a socket to the dashboard
 const WebSocket = require("ws");
 
 const clients = new Set();
