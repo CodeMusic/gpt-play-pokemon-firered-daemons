@@ -29,7 +29,7 @@ const { config } = require("../config");
 //  not a hiccup: slower turns cause more retries, and more retries make turns
 //  slower. 97 requests started against 95 completed.
 //
-//  So the retry count is settable, and bindDaemons.sh takes it to 0 for --ai.
+//  So the retry count is settable, and mind.js's applyMind takes it to 0 for every local mind (T-619).
 //  A local failure is better surfaced than silently tripled.
 const openai = new OpenAI({
   apiKey: config.openai.apiKey || "local",

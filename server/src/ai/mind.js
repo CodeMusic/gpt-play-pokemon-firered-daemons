@@ -74,10 +74,11 @@ function seerKey() {
   return unquote(sshRead(`roverbyte@${SEER_HOST}`, `sed -n "s/^LITELLM_MASTER_KEY=//p" ~/.litellm.env`));
 }
 
-//  Is a /v1 endpoint up? Any HTTP answer from /models counts (401 included): it is listening.
+//  Is a /v1 endpoint up? An answer below 500 from /models counts (401 included): it is listening. A 5xx does not
+//  (T-620): a proxy answering 502 in front of a dead Tiiny is not a mind that is up.
 function answers(url) {
   const code = sh(["curl", "-s", "-o", "/dev/null", "-m", "5", "-w", "%{http_code}", `${url}/models`], 7000);
-  return /^[1-5]\d\d$/.test(code) && code !== "000";
+  return /^[1-4]\d\d$/.test(code);
 }
 
 //  What the hub says, or null. Read from the hub's own loopback over ssh: that needs no token.
@@ -235,6 +236,9 @@ function applyMind() {
   //  Thinking off on a chat mind unless asked for: the user's pick 2026-11-14, from docs/MINDS.md's measurements
   //  (35B, thinking off: 13 of 13 real turns a valid call). DAEMONS_THINK=1 turns it back on.
   if (m.api === "chat" && process.env.DAEMONS_THINK === undefined) process.env.DAEMONS_THINK = "0";
+  //  No retries against a local mind unless asked for (T-619): a retry there does not cancel the first generation, it
+  //  decodes beside it (core/openaiClient.js has the measurements). The paid mind keeps the SDK's two.
+  if (process.env.OPENAI_MAX_RETRIES === undefined && m.mind !== "openrouter") process.env.OPENAI_MAX_RETRIES = "0";
   lastResolved = m;
   return m;
 }
